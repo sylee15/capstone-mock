@@ -4,18 +4,31 @@ const dashboardData = {
   overview: {
     title: 'Your story with Miro',
     subtitle: 'The recent rhythm between you and me, gathered into one place.',
-    cards: [
-      { eyebrow: 'The recent rhythm', title: 'Build & critique', tone: 'ink', note: 'I draft, you reshape' },
-      { eyebrow: 'Most independent', title: 'Lab report', tone: 'you', note: 'Felt clearly yours' },
-      { eyebrow: 'Deepest collab', title: 'Thesis brainstorm', tone: 'miro', note: 'We moved together' },
-      { eyebrow: "Where you've grown", title: 'Synthesis', tone: 'gold', note: 'Combining sources in your own way' }
-    ],
     letter: [
       "Hey. It's been a good week between us.",
       "We've been in a build-and-critique rhythm. I draft, you reshape, I rebuild. Most of your strongest ideas seem to arrive when you're pushing back on something I made first.",
       "The essay on climate policy? That conclusion was distinctly yours. I gave you frameworks, but you built something I wouldn't have written."
     ],
     signoff: 'Miro · April 14'
+  },
+  arc: [
+    { month: 'January', text: "You asked open questions and let me lead. There were lots of 'help me figure this out' chats where I did most of the shaping." },
+    { month: 'February', text: "You started pushing back sooner. The rhythm changed when your replies stopped being reactions and started becoming redirections." },
+    { month: 'March', text: "Your critiques got sharper. You were naming why something felt off, which meant I had more to build against." },
+    { month: 'April - now', text: "You bring more of your own frame now. I still help build, but it increasingly feels like I'm building toward a vision you already sense.", current: true }
+  ],
+  tapestry: [
+    'miro-heavy', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'you-heavy',
+    'miro-heavy', 'balanced', 'miro-heavy', 'you-lean', 'you-heavy', 'balanced', 'miro-lean', 'miro-heavy', 'you-lean', 'balanced',
+    'miro-heavy', 'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'miro-heavy', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean',
+    'balanced', 'you-lean', 'you-heavy', 'miro-heavy', 'balanced', 'miro-lean', 'you-heavy', 'balanced', 'you-lean', 'miro-heavy',
+    'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'balanced', 'miro-heavy', 'miro-heavy', 'you-lean', 'balanced', 'you-heavy',
+    'miro-lean', 'balanced'
+  ],
+  reflection: {
+    seed: 'When I helped most in this stretch, was I extending your thinking or replacing the part you most wanted to own?',
+    nextTitle: 'Take back one piece',
+    nextStep: 'The next time I give you a strong first draft, pause before keeping it. Rewrite one paragraph or one decision in your own words so the shape of it comes back through you.'
   },
   taskBreakdown: [
     {
@@ -197,6 +210,9 @@ const dashboardData = {
 document.addEventListener('DOMContentLoaded', () => {
   renderChrome();
   renderOverview();
+  renderArc();
+  renderTapestry();
+  renderReflection();
   renderTaskBreakdown();
   renderTopics();
   renderStyle();
@@ -234,15 +250,6 @@ function renderOverview() {
     .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
     .join('');
   document.getElementById('overviewSignoff').textContent = dashboardData.overview.signoff;
-  document.getElementById('overviewMetrics').innerHTML = dashboardData.overview.cards
-    .map((card) => `
-      <div class="metric-card card">
-        <div class="metric-eyebrow">${escapeHtml(card.eyebrow)}</div>
-        <div class="metric-title ${card.tone}">${escapeHtml(card.title)}</div>
-        <div class="metric-note">${escapeHtml(card.note)}</div>
-      </div>
-    `)
-    .join('');
 }
 
 function renderTaskBreakdown() {
@@ -267,6 +274,28 @@ function renderTaskBreakdown() {
       </div>
     `)
     .join('');
+}
+
+function renderArc() {
+  const host = document.getElementById('arcStory');
+  host.innerHTML = dashboardData.arc.map((item) => `
+    <div class="arc-chapter${item.current ? ' current' : ''}">
+      <div class="arc-month">${escapeHtml(item.month)}</div>
+      <div class="arc-chapter-text">${escapeHtml(item.text)}</div>
+    </div>
+  `).join('');
+}
+
+function renderTapestry() {
+  document.getElementById('tapestryGrid').innerHTML = dashboardData.tapestry
+    .map((kind) => `<div class="tap-cell ${kind}"></div>`)
+    .join('');
+}
+
+function renderReflection() {
+  document.getElementById('seedQuestion').textContent = dashboardData.reflection.seed;
+  document.getElementById('nextStepTitle').textContent = dashboardData.reflection.nextTitle;
+  document.getElementById('nextStepCopy').textContent = dashboardData.reflection.nextStep;
 }
 
 function renderTopics() {
@@ -308,21 +337,19 @@ function renderStyle() {
 }
 
 function buildTopicBubbleStyle(topic) {
-  const youColor = { r: 194, g: 126, b: 102 };
-  const miroColor = { r: 94, g: 182, b: 214 };
-  const youWeight = topic.youShare / 100;
-  const miroWeight = topic.miroShare / 100;
-  const baseRgb = mixRgb(youColor, miroColor, miroWeight);
-  const lighter = mixRgb(baseRgb, { r: 255, g: 249, b: 243 }, 0.26);
-  const accent = topic.youShare >= topic.miroShare ? youColor : miroColor;
-  const wash = topic.youShare >= topic.miroShare ? miroColor : youColor;
+  const youColor = { r: 196, g: 126, b: 102 };
+  const miroColor = { r: 103, g: 183, b: 214 };
+  const dominantColor = topic.youShare >= topic.miroShare ? youColor : miroColor;
+  const secondaryColor = topic.youShare >= topic.miroShare ? miroColor : youColor;
+  const secondaryShare = Math.min(topic.youShare, topic.miroShare) / 100;
+  const patchSize = 20 + (secondaryShare * 34);
   const lightText = Math.max(topic.youShare, topic.miroShare) >= 62;
 
   return {
     textClass: lightText ? 'light-text' : 'dark-text',
     style: [
-      `--topic-fill: radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.08) 26%, rgba(255, 255, 255, 0) 42%), radial-gradient(circle at 72% 74%, ${toRgba(wash, 0.18)} 0%, ${toRgba(wash, 0)} 48%), linear-gradient(165deg, ${toRgba(lighter, 0.98)} 0%, ${toRgba(baseRgb, 0.96)} 55%, ${toRgba(accent, 0.9)} 100%)`,
-      `--topic-shadow: 0 18px 36px ${toRgba(accent, 0.2)}, 0 8px 24px rgba(51, 43, 36, 0.12)`
+      `--topic-fill: radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.14) 26%, rgba(255, 255, 255, 0) 42%), radial-gradient(circle at 76% 74%, ${toRgba(secondaryColor, 0.98)} 0%, ${toRgba(secondaryColor, 0.98)} ${patchSize.toFixed(1)}%, ${toRgba(secondaryColor, 0)} ${(patchSize + 6).toFixed(1)}%), linear-gradient(165deg, ${toRgba(dominantColor, 0.98)} 0%, ${toRgba(dominantColor, 0.98)} 100%)`,
+      `--topic-shadow: 0 18px 36px ${toRgba(dominantColor, 0.22)}, 0 8px 24px rgba(51, 43, 36, 0.12)`
     ].join('; ')
   };
 }
@@ -331,14 +358,6 @@ function verdictTone(verdict) {
   if (verdict === 'Leaned toward you') return 'you-text';
   if (verdict === 'Leaned toward me') return 'miro-text';
   return 'shared-text';
-}
-
-function mixRgb(colorA, colorB, amount) {
-  return {
-    r: Math.round(colorA.r + ((colorB.r - colorA.r) * amount)),
-    g: Math.round(colorA.g + ((colorB.g - colorA.g) * amount)),
-    b: Math.round(colorA.b + ((colorB.b - colorA.b) * amount))
-  };
 }
 
 function toRgba(color, alpha) {

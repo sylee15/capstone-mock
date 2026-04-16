@@ -52,8 +52,6 @@
       </header>
 
       <section class="panel active" data-panel="overview">
-        <div class="overview-metrics" id="overviewMetrics"></div>
-
         <section class="card letter-card">
           <div class="section-kicker">The story so far</div>
           <div class="letter-shell">
@@ -64,6 +62,39 @@
             </div>
             <div class="letter-art">
               <img id="overviewSlime" src="sprites/cute.png" alt="Miro sprite" />
+            </div>
+          </div>
+        </section>
+
+        <div class="overview-grid">
+          <section class="card">
+            <div class="section-kicker">A quick arc</div>
+            <div class="arc-story" id="arcStory"></div>
+          </section>
+
+          <section class="card">
+            <div class="section-kicker">Every chat, at a glance</div>
+            <p class="section-sub small">Each square is one conversation. Color shows where the weight seemed to sit.</p>
+            <div class="tapestry-grid" id="tapestryGrid"></div>
+            <div class="tapestry-legend">
+              <div class="leg-item"><div class="leg-swatch miro-swatch strong"></div>I carried more</div>
+              <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
+              <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
+            </div>
+          </section>
+        </div>
+
+        <section class="closing-band">
+          <div class="closing-card card">
+            <div>
+              <div class="section-kicker">A seed to sit with</div>
+              <div class="reflection-question" id="seedQuestion"></div>
+            </div>
+            <div class="closing-divider"></div>
+            <div>
+              <div class="section-kicker">A gentle next step</div>
+              <div class="next-step-title" id="nextStepTitle"></div>
+              <div class="next-step-copy" id="nextStepCopy"></div>
             </div>
           </div>
         </section>
