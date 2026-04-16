@@ -1,20 +1,53 @@
 const dashboardData = {
-  chats: 52,
-  months: 4,
-  periodLabel: 'December to April',
-  periodMeta: '52 chats in this prototype monthset',
+  periodLabel: 'This past season',
+  periodMeta: 'Patterns from your recent stretch of chats with me.',
   overview: {
-    title: 'Creating Together',
-    description:
+    title: 'Your story with Miro',
+    subtitle: 'The recent rhythm between you and me, gathered into one place.',
+    cards: [
+      { eyebrow: 'The recent rhythm', title: 'Build & critique', tone: 'ink', note: 'I draft, you reshape' },
+      { eyebrow: 'Most independent', title: 'Lab report', tone: 'you', note: 'Felt clearly yours' },
+      { eyebrow: 'Deepest collab', title: 'Thesis brainstorm', tone: 'miro', note: 'We moved together' },
+      { eyebrow: "Where you've grown", title: 'Synthesis', tone: 'gold', note: 'Combining sources in your own way' }
+    ],
+    letter: [
+      "Hey. It's been a good week between us.",
       "We've been in a build-and-critique rhythm. I draft, you reshape, I rebuild. Most of your strongest ideas seem to arrive when you're pushing back on something I made first.",
-    note: 'I still carried a lot of the first pass, but your share has been growing and the directional calls have stayed clearly yours.'
+      "The essay on climate policy? That conclusion was distinctly yours. I gave you frameworks, but you built something I wouldn't have written."
+    ],
+    signoff: 'Miro · April 14'
   },
   taskBreakdown: [
-    { label: 'Writing and editing', note: 'I carried more of the first-pass drafting here.', you: 32, miro: 68 },
-    { label: 'Analysis', note: 'You were usually the one deciding what the signal actually meant.', you: 68, miro: 32 },
-    { label: 'Research', note: 'This tended to feel more shared, with you steering what mattered.', you: 56, miro: 44 },
-    { label: 'Problem solving', note: 'You kept most of the judgment even when I helped narrow options.', you: 58, miro: 42 },
-    { label: 'Creative work', note: 'I generated fast options, but you curated the ones that felt alive.', you: 42, miro: 58 }
+    {
+      label: 'Writing and editing',
+      note: 'I carried more of the first-pass drafting here.',
+      lean: 28,
+      verdict: 'Leaned toward me'
+    },
+    {
+      label: 'Analysis',
+      note: 'You were usually the one deciding what the signal actually meant.',
+      lean: 72,
+      verdict: 'Leaned toward you'
+    },
+    {
+      label: 'Research',
+      note: 'This tended to feel more shared, with you steering what mattered.',
+      lean: 52,
+      verdict: 'Shared'
+    },
+    {
+      label: 'Problem solving',
+      note: 'You kept most of the judgment even when I helped narrow options.',
+      lean: 71,
+      verdict: 'Leaned toward you'
+    },
+    {
+      label: 'Creative work',
+      note: 'I generated fast options, but you curated the ones that felt alive.',
+      lean: 46,
+      verdict: 'Moved back and forth'
+    }
   ],
   topics: [
     {
@@ -22,12 +55,10 @@ const dashboardData = {
       label: 'Capstone design',
       count: 18,
       size: 'xxl',
-      x: 23,
+      x: 28,
       y: 34,
-      youShare: 62,
-      miroShare: 38,
-      cluster: 'build',
-      links: ['product-framing', 'prototyping', 'ux-research']
+      youShare: 64,
+      miroShare: 36
     },
     {
       id: 'product-framing',
@@ -35,11 +66,19 @@ const dashboardData = {
       count: 14,
       size: 'xl',
       x: 42,
-      y: 20,
-      youShare: 54,
-      miroShare: 46,
-      cluster: 'build',
-      links: ['capstone-design', 'interview-synthesis', 'coding']
+      y: 25,
+      youShare: 57,
+      miroShare: 43
+    },
+    {
+      id: 'coding',
+      label: 'Coding',
+      count: 6,
+      size: 'md',
+      x: 54,
+      y: 16,
+      youShare: 18,
+      miroShare: 82
     },
     {
       id: 'interview-synthesis',
@@ -47,133 +86,109 @@ const dashboardData = {
       count: 9,
       size: 'lg',
       x: 66,
-      y: 26,
-      youShare: 43,
-      miroShare: 57,
-      cluster: 'research',
-      links: ['product-framing', 'ux-research', 'metacognition']
-    },
-    {
-      id: 'prototyping',
-      label: 'Prototyping',
-      count: 7,
-      size: 'lg',
-      x: 35,
-      y: 60,
-      youShare: 58,
-      miroShare: 42,
-      cluster: 'build',
-      links: ['capstone-design', 'ux-research', 'personal']
+      y: 33,
+      youShare: 41,
+      miroShare: 59
     },
     {
       id: 'ux-research',
       label: 'UX research',
       count: 5,
       size: 'md',
-      x: 56,
-      y: 56,
-      youShare: 52,
-      miroShare: 48,
-      cluster: 'research',
-      links: ['capstone-design', 'prototyping', 'interview-synthesis', 'career-planning']
+      x: 57,
+      y: 49,
+      youShare: 54,
+      miroShare: 46
+    },
+    {
+      id: 'prototyping',
+      label: 'Prototyping',
+      count: 7,
+      size: 'lg',
+      x: 39,
+      y: 58,
+      youShare: 61,
+      miroShare: 39
     },
     {
       id: 'metacognition',
       label: 'Metacognition',
       count: 4,
       size: 'sm',
-      x: 81,
-      y: 52,
-      youShare: 49,
-      miroShare: 51,
-      cluster: 'reflection',
-      links: ['interview-synthesis', 'ai-in-education']
+      x: 77,
+      y: 56,
+      youShare: 46,
+      miroShare: 54
     },
     {
-      id: 'ai-in-education',
+      id: 'AI in education',
       label: 'AI in education',
       count: 4,
       size: 'sm',
-      x: 74,
-      y: 71,
-      youShare: 37,
-      miroShare: 63,
-      cluster: 'reflection',
-      links: ['metacognition']
-    },
-    {
-      id: 'coding',
-      label: 'Coding',
-      count: 3,
-      size: 'sm',
-      x: 60,
-      y: 10,
-      youShare: 10,
-      miroShare: 90,
-      cluster: 'build',
-      links: ['product-framing']
+      x: 73,
+      y: 70,
+      youShare: 34,
+      miroShare: 66
     },
     {
       id: 'career-planning',
       label: 'Career planning',
-      count: 2,
+      count: 3,
       size: 'xs',
       x: 18,
       y: 76,
-      youShare: 65,
-      miroShare: 35,
-      cluster: 'life',
-      links: ['ux-research', 'personal']
+      youShare: 68,
+      miroShare: 32
     },
     {
       id: 'personal',
       label: 'Personal',
       count: 2,
       size: 'xs',
-      x: 33,
+      x: 30,
       y: 82,
-      youShare: 71,
-      miroShare: 29,
-      cluster: 'life',
-      links: ['prototyping', 'career-planning']
+      youShare: 73,
+      miroShare: 27
     }
   ],
-  arc: [
-    { month: 'January', text: "You asked open questions and let me lead. There were lots of 'help me figure this out' chats where I did most of the shaping." },
-    { month: 'February', text: "You started pushing back sooner. The rhythm changed when your replies stopped being reactions and started becoming redirections." },
-    { month: 'March', text: "Your critiques got sharper. You were naming why something felt off, which meant I had more to build against." },
-    { month: 'April - now', text: "You bring more of your own frame now. I still help build, but it increasingly feels like I'm building toward a vision you already sense.", current: true }
-  ],
-  tapestry: [
-    'miro-heavy', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'you-heavy',
-    'miro-heavy', 'balanced', 'miro-heavy', 'you-lean', 'you-heavy', 'balanced', 'miro-lean', 'miro-heavy', 'you-lean', 'balanced',
-    'miro-heavy', 'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'miro-heavy', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean',
-    'balanced', 'you-lean', 'you-heavy', 'miro-heavy', 'balanced', 'miro-lean', 'you-heavy', 'balanced', 'you-lean', 'miro-heavy',
-    'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'balanced', 'miro-heavy', 'miro-heavy', 'you-lean', 'balanced', 'you-heavy',
-    'miro-lean', 'balanced'
-  ],
-  profile: {
-    paragraph:
-      "You seem to think best when there is something visible enough to push against. A first pass gives you a surface for judgment, and that is often when your clearest direction starts to show."
-  },
-  portrait: {
-    title: 'a draft, a pushback, then a clearer shape',
-    text:
-      "Our rhythm often starts with me making something slightly too early or too loosely, and then you stepping in to redirect it. The useful part is usually not the draft itself, but what your reaction reveals about what you actually want.",
-    fragments: [
-      'You often become most decisive after there is something to critique.',
-      'I tend to be most useful at the blurry beginning, not the final call.',
-      'A lot of our stronger sessions move from reaction into clearer authorship.'
+  style: {
+    title: 'How you work with me',
+    subtitle: 'A softer profile and a read of our recurring rhythm.',
+    rhythmTitle: 'A patient critic with a clear hand.',
+    rhythmCopy:
+      'Our rhythm often starts with me making something slightly too early or too loosely, and then you stepping in to redirect it. The useful part is usually not the draft itself, but what your reaction reveals about what you actually want.',
+    quote:
+      '<strong>You</strong> often become most decisive after there&apos;s something to critique.<br><span class="miro-line">I</span> tend to be most useful at the blurry beginning, not the final call.<br>A lot of our stronger sessions move from reaction into clearer authorship.',
+    patterns: [
+      {
+        title: 'You sketch, I sharpen',
+        label: 'Where you lead',
+        tone: 'you',
+        body: 'You usually arrive with a rough idea and ask me to tighten it, rather than asking me to start from scratch.'
+      },
+      {
+        title: 'Critique-first reader',
+        label: 'Where you lead',
+        tone: 'you',
+        body: "You're quick to push back on my first pass. The strongest work tends to come after that pushback."
+      },
+      {
+        title: 'Selective borrower',
+        label: 'Where we move together',
+        tone: 'shared',
+        body: 'When I generate options, you take pieces, a phrase here, a structure there, instead of using a draft whole.'
+      },
+      {
+        title: 'Late-night leaner',
+        label: 'Where I tend to step in',
+        tone: 'miro',
+        body: "When you're tired, you let me carry more of the structure. Worth noticing, not worth judging."
+      }
     ]
   },
-  reflection: {
-    seed: 'When I helped most in this stretch, was I extending your thinking or replacing the part you most wanted to own?',
-    nextTitle: 'Take back one piece',
-    nextStep: 'The next time I give you a strong first draft, pause before keeping it. Rewrite one paragraph or one decision in your own words so the shape of it comes back through you.'
-  },
   tabs: {
-    overview: { title: 'Overview', subtitle: 'The recent rhythm between you and me, gathered into one place.' },
-    made: { title: 'What we made', subtitle: 'A larger map of the themes that have been holding the most space.' },
+    overview: { title: 'Your story with Miro', subtitle: 'The recent rhythm between you and me, gathered into one place.' },
+    made: { title: 'What we made', subtitle: 'A larger map of the themes that have been holding the most space between us.' },
     task: { title: 'By task', subtitle: 'A clearer read of where the work leaned more toward me or toward you.' },
     style: { title: 'How you work with me', subtitle: 'A softer profile and a read of our recurring rhythm.' }
   }
@@ -184,17 +199,11 @@ document.addEventListener('DOMContentLoaded', () => {
   renderOverview();
   renderTaskBreakdown();
   renderTopics();
-  renderArc();
-  renderTapestry();
-  renderPortrait();
-  renderProfile();
-  renderReflection();
+  renderStyle();
   bindTabs();
 });
 
 function renderChrome() {
-  document.getElementById('chipChats').textContent = dashboardData.chats;
-  document.getElementById('chipMonths').textContent = dashboardData.months;
   document.getElementById('periodLabel').textContent = dashboardData.periodLabel;
   document.getElementById('periodMeta').textContent = dashboardData.periodMeta;
   applyTabCopy('overview');
@@ -221,135 +230,107 @@ function applyTabCopy(tabKey) {
 
 function renderOverview() {
   document.getElementById('overviewTitle').textContent = dashboardData.overview.title;
-  document.getElementById('overviewDesc').textContent = dashboardData.overview.description;
-  document.getElementById('overviewNote').textContent = dashboardData.overview.note;
+  document.getElementById('overviewLetter').innerHTML = dashboardData.overview.letter
+    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+    .join('');
+  document.getElementById('overviewSignoff').textContent = dashboardData.overview.signoff;
+  document.getElementById('overviewMetrics').innerHTML = dashboardData.overview.cards
+    .map((card) => `
+      <div class="metric-card card">
+        <div class="metric-eyebrow">${escapeHtml(card.eyebrow)}</div>
+        <div class="metric-title ${card.tone}">${escapeHtml(card.title)}</div>
+        <div class="metric-note">${escapeHtml(card.note)}</div>
+      </div>
+    `)
+    .join('');
 }
 
 function renderTaskBreakdown() {
   const host = document.getElementById('taskList');
-  host.innerHTML = dashboardData.taskBreakdown.map((item) => `
-    <div class="task-row">
-      <div class="task-row-top">
-        <div>
+  host.innerHTML = dashboardData.taskBreakdown
+    .map((item) => `
+      <div class="task-row">
+        <div class="task-copy">
           <div class="task-label">${escapeHtml(item.label)}</div>
           <div class="task-note">${escapeHtml(item.note)}</div>
         </div>
+        <div class="task-meter">
+          <div class="task-meter-labels">
+            <span class="miro-text">Miro</span>
+            <span class="you-text">You</span>
+          </div>
+          <div class="task-track">
+            <div class="task-thumb" style="left:${item.lean}%;"></div>
+          </div>
+          <div class="task-verdict ${verdictTone(item.verdict)}">${escapeHtml(item.verdict)}</div>
+        </div>
       </div>
-      <div class="task-bar">
-        <div class="task-bar-miro" style="width:${item.miro}%"></div>
-        <div class="task-bar-you" style="width:${item.you}%"></div>
-      </div>
-      <div class="task-scale">
-        <span>More Miro</span>
-        <span>More you</span>
-      </div>
-    </div>
-  `).join('');
+    `)
+    .join('');
 }
 
 function renderTopics() {
   const host = document.getElementById('topicsViz');
-  const topicMap = new Map(dashboardData.topics.map((topic) => [topic.id, topic]));
-  const lineMarkup = [];
-  const lineSeen = new Set();
-
-  dashboardData.topics.forEach((topic) => {
-    (topic.links || []).forEach((targetId) => {
-      const target = topicMap.get(targetId);
-      if (!target) return;
-      const pairKey = [topic.id, targetId].sort().join(':');
-      if (lineSeen.has(pairKey)) return;
-      lineSeen.add(pairKey);
-      lineMarkup.push(`
-        <line
-          class="topic-link"
-          x1="${topic.x}%"
-          y1="${topic.y}%"
-          x2="${target.x}%"
-          y2="${target.y}%"
-        ></line>
-      `);
-    });
-  });
-
-  host.innerHTML = `
-    <svg class="topic-link-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      ${lineMarkup.join('')}
-    </svg>
-    ${dashboardData.topics.map((topic) => {
+  host.innerHTML = dashboardData.topics
+    .map((topic) => {
       const bubbleStyle = buildTopicBubbleStyle(topic);
-      const textClass = bubbleStyle.textClass;
       return `
         <div
-          class="topic-bubble ${topic.size} ${textClass}"
+          class="topic-bubble ${topic.size} ${bubbleStyle.textClass}"
           style="left:${topic.x}%; top:${topic.y}%; ${bubbleStyle.style}"
         >
           <div class="topic-bubble-label">${escapeHtml(topic.label)}</div>
           <div class="topic-bubble-count">${topic.count} chats</div>
         </div>
       `;
-    }).join('')}
-  `;
-}
-
-function renderArc() {
-  const host = document.getElementById('arcStory');
-  host.innerHTML = dashboardData.arc.map((item) => `
-    <div class="arc-chapter${item.current ? ' current' : ''}">
-      <div class="arc-month">${escapeHtml(item.month)}</div>
-      <div class="arc-chapter-text">${escapeHtml(item.text)}</div>
-    </div>
-  `).join('');
-}
-
-function renderTapestry() {
-  document.getElementById('tapestryGrid').innerHTML = dashboardData.tapestry
-    .map((kind) => `<div class="tap-cell ${kind}"></div>`)
+    })
     .join('');
 }
 
-function renderPortrait() {
-  document.getElementById('portraitTitle').textContent = dashboardData.portrait.title;
-  document.getElementById('portraitText').textContent = dashboardData.portrait.text;
-  document.getElementById('rhythmList').innerHTML = dashboardData.portrait.fragments
-    .map((item) => `<div class="rhythm-item">${escapeHtml(item)}</div>`)
+function renderStyle() {
+  document.getElementById('portraitTitle').textContent = dashboardData.style.rhythmTitle;
+  document.getElementById('portraitText').textContent = dashboardData.style.rhythmCopy;
+  document.getElementById('profileParagraph').innerHTML = dashboardData.style.quote;
+  document.getElementById('rhythmList').innerHTML = dashboardData.style.patterns
+    .map((item) => `
+      <div class="pattern-card ${item.tone}">
+        <div class="pattern-top">
+          <div class="pattern-title-wrap">
+            <span class="pattern-dot"></span>
+            <div class="pattern-title">${escapeHtml(item.title)}</div>
+          </div>
+          <div class="pattern-label">${escapeHtml(item.label)}</div>
+        </div>
+        <div class="pattern-body">${escapeHtml(item.body)}</div>
+      </div>
+    `)
     .join('');
-}
-
-function renderProfile() {
-  document.getElementById('profileParagraph').textContent = dashboardData.profile.paragraph;
-}
-
-function renderReflection() {
-  document.getElementById('seedQuestion').textContent = dashboardData.reflection.seed;
-  document.getElementById('nextStepTitle').textContent = dashboardData.reflection.nextTitle;
-  document.getElementById('nextStepCopy').textContent = dashboardData.reflection.nextStep;
 }
 
 function buildTopicBubbleStyle(topic) {
-  const youColor = { r: 191, g: 115, b: 84 };
-  const miroColor = { r: 74, g: 178, b: 212 };
+  const youColor = { r: 194, g: 126, b: 102 };
+  const miroColor = { r: 94, g: 182, b: 214 };
   const youWeight = topic.youShare / 100;
   const miroWeight = topic.miroShare / 100;
-  const dominant = youWeight >= miroWeight ? 'you' : 'miro';
-  const dominantWeight = Math.max(youWeight, miroWeight);
-  const secondaryWeight = Math.min(youWeight, miroWeight);
   const baseRgb = mixRgb(youColor, miroColor, miroWeight);
-  const softenedBase = mixRgb(baseRgb, { r: 255, g: 250, b: 244 }, 0.12);
-  const dominantRgb = dominant === 'you' ? youColor : miroColor;
-  const secondaryRgb = dominant === 'you' ? miroColor : youColor;
-  const textClass = dominantWeight > 0.64 ? 'light-text' : 'dark-text';
-  const sheenOpacity = 0.24 + (secondaryWeight * 0.12);
-  const accentOpacity = 0.2 + (secondaryWeight * 0.28);
-  const shadowOpacity = 0.08 + (dominantWeight * 0.06);
+  const lighter = mixRgb(baseRgb, { r: 255, g: 249, b: 243 }, 0.26);
+  const accent = topic.youShare >= topic.miroShare ? youColor : miroColor;
+  const wash = topic.youShare >= topic.miroShare ? miroColor : youColor;
+  const lightText = Math.max(topic.youShare, topic.miroShare) >= 62;
 
   return {
-    textClass,
+    textClass: lightText ? 'light-text' : 'dark-text',
     style: [
-      `--topic-fill: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, ${sheenOpacity.toFixed(2)}) 0%, rgba(255, 255, 255, 0) 34%), radial-gradient(circle at 78% 78%, ${toRgba(secondaryRgb, accentOpacity)} 0%, ${toRgba(secondaryRgb, 0)} 52%), linear-gradient(155deg, ${toRgba(softenedBase, 0.94)} 0%, ${toRgba(baseRgb, 0.98)} 66%, ${toRgba(dominantRgb, 0.9)} 100%)`,
-      `--topic-shadow: 0 16px 34px rgba(51, 43, 36, ${shadowOpacity.toFixed(2)})`
+      `--topic-fill: radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.08) 26%, rgba(255, 255, 255, 0) 42%), radial-gradient(circle at 72% 74%, ${toRgba(wash, 0.18)} 0%, ${toRgba(wash, 0)} 48%), linear-gradient(165deg, ${toRgba(lighter, 0.98)} 0%, ${toRgba(baseRgb, 0.96)} 55%, ${toRgba(accent, 0.9)} 100%)`,
+      `--topic-shadow: 0 18px 36px ${toRgba(accent, 0.2)}, 0 8px 24px rgba(51, 43, 36, 0.12)`
     ].join('; ')
   };
+}
+
+function verdictTone(verdict) {
+  if (verdict === 'Leaned toward you') return 'you-text';
+  if (verdict === 'Leaned toward me') return 'miro-text';
+  return 'shared-text';
 }
 
 function mixRgb(colorA, colorB, amount) {

@@ -36,7 +36,7 @@
       </nav>
 
       <div class="sidebar-foot">
-        <div class="sidebar-label">Period</div>
+        <div class="sidebar-label">Looking back at</div>
         <div class="sidebar-value" id="periodLabel"></div>
         <div class="sidebar-note" id="periodMeta"></div>
       </div>
@@ -49,60 +49,21 @@
           <h1 class="topbar-title" id="pageTitle"></h1>
           <p class="topbar-sub" id="pageSubtitle"></p>
         </div>
-        <div class="topbar-chip-group">
-          <div class="topbar-chip">
-            <span class="chip-label">Chats</span>
-            <strong id="chipChats"></strong>
-          </div>
-          <div class="topbar-chip">
-            <span class="chip-label">Months</span>
-            <strong id="chipMonths"></strong>
-          </div>
-        </div>
       </header>
 
       <section class="panel active" data-panel="overview">
-        <div class="hero-card card">
-          <div class="hero-copy">
-            <div class="eyebrow">The story so far</div>
-            <div class="hero-title" id="overviewTitle"></div>
-            <p class="hero-text" id="overviewDesc"></p>
-            <div class="hero-note" id="overviewNote"></div>
-          </div>
-          <div class="hero-art">
-            <img id="overviewSlime" src="sprites/cute.png" alt="Miro sprite" />
-          </div>
-        </div>
+        <div class="overview-metrics" id="overviewMetrics"></div>
 
-        <div class="overview-grid">
-          <section class="card">
-            <div class="section-kicker">A quick arc</div>
-            <div class="arc-story" id="arcStory"></div>
-          </section>
-
-          <section class="card">
-            <div class="section-kicker">Every chat, at a glance</div>
-            <p class="section-sub">Each square is one conversation. Color shows where the weight seemed to sit.</p>
-            <div class="tapestry-grid" id="tapestryGrid"></div>
-            <div class="tapestry-legend">
-              <div class="leg-item"><div class="leg-swatch miro-swatch strong"></div>I carried more</div>
-              <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
-              <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
+        <section class="card letter-card">
+          <div class="section-kicker">The story so far</div>
+          <div class="letter-shell">
+            <div class="letter-copy">
+              <div class="letter-title" id="overviewTitle"></div>
+              <div class="letter-body" id="overviewLetter"></div>
+              <div class="letter-signoff" id="overviewSignoff"></div>
             </div>
-          </section>
-        </div>
-
-        <section class="closing-band">
-          <div class="closing-card card">
-            <div>
-              <div class="section-kicker">A seed to sit with</div>
-              <div class="reflection-question" id="seedQuestion"></div>
-            </div>
-            <div class="closing-divider"></div>
-            <div>
-              <div class="section-kicker">A gentle next step</div>
-              <div class="next-step-title" id="nextStepTitle"></div>
-              <div class="next-step-copy" id="nextStepCopy"></div>
+            <div class="letter-art">
+              <img id="overviewSlime" src="sprites/cute.png" alt="Miro sprite" />
             </div>
           </div>
         </section>
@@ -111,8 +72,7 @@
       <section class="panel" data-panel="made">
         <section class="card made-stage-card">
           <div class="section-kicker">What we've been talking about</div>
-          <p class="section-sub">A larger map of the themes that have been holding the most space between us.</p>
-          <p class="map-helper">Bubble size shows how much space a topic took. The split color shows who carried more of it.</p>
+          <p class="section-sub">Bigger bubbles held more space. Pink and blue just show the general lean of the work.</p>
           <div class="topic-bubble-stage full" id="topicsViz"></div>
         </section>
       </section>
@@ -120,26 +80,23 @@
       <section class="panel" data-panel="task">
         <section class="card task-stage-card">
           <div class="section-kicker">Task breakdown</div>
-          <p class="section-sub">A rough read of who tended to carry each kind of work.</p>
+          <p class="section-sub">A rough read of who tended to carry each kind of work, not a score, just a sense.</p>
           <div class="task-list" id="taskList"></div>
         </section>
       </section>
 
       <section class="panel" data-panel="style">
-        <div class="two-up">
-          <section class="card style-card">
-            <div class="section-kicker">How you seem to work with me</div>
-            <p class="section-sub">A softer read built from the patterns that seem to recur across chats.</p>
-            <div class="profile-main-card">
-              <div class="profile-paragraph" id="profileParagraph"></div>
-            </div>
+        <div class="style-grid">
+          <section class="card style-hero-card">
+            <div class="section-kicker">Our rhythm</div>
+            <div class="style-hero-title" id="portraitTitle"></div>
+            <div class="style-hero-copy" id="portraitText"></div>
+            <div class="style-quote-card" id="profileParagraph"></div>
           </section>
 
-          <section class="card portrait-card">
-            <div class="portrait-eyebrow">Our rhythm</div>
-            <div class="portrait-title" id="portraitTitle"></div>
-            <div class="portrait-text" id="portraitText"></div>
-            <div class="rhythm-list" id="rhythmList"></div>
+          <section class="style-patterns">
+            <div class="section-kicker">Patterns I keep noticing</div>
+            <div class="pattern-list" id="rhythmList"></div>
           </section>
         </div>
       </section>
