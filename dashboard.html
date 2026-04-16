@@ -21,11 +21,10 @@
       </div>
 
       <nav class="tab-list" aria-label="Dashboard sections">
-        <button class="tab-button active" data-tab="period" type="button">This period</button>
+        <button class="tab-button active" data-tab="overview" type="button">Overview</button>
         <button class="tab-button" data-tab="made" type="button">What we made</button>
-        <button class="tab-button" data-tab="weight" type="button">Where the weight sat</button>
+        <button class="tab-button" data-tab="task" type="button">By task</button>
         <button class="tab-button" data-tab="style" type="button">How you work with me</button>
-        <button class="tab-button" data-tab="reflect" type="button">Reflect</button>
       </nav>
 
       <div class="sidebar-foot">
@@ -54,39 +53,37 @@
         </div>
       </header>
 
-      <section class="panel active" data-panel="period">
+      <section class="panel active" data-panel="overview">
         <div class="hero-card card">
           <div class="hero-copy">
-            <div class="eyebrow">This period's read</div>
+            <div class="eyebrow">The story so far</div>
             <div class="hero-title" id="overviewTitle"></div>
             <p class="hero-text" id="overviewDesc"></p>
-            <div class="hero-stats">
-              <div class="stat-pill">
-                <div class="stat-value" id="overviewStatOne"></div>
-                <div class="stat-label">On average</div>
-              </div>
-              <div class="stat-pill">
-                <div class="stat-value" id="overviewStatTwo"></div>
-                <div class="stat-label">Your share</div>
-              </div>
-              <div class="stat-pill">
-                <div class="stat-value" id="overviewStatThree"></div>
-                <div class="stat-label">Across time</div>
-              </div>
-            </div>
+            <div class="hero-note" id="overviewNote"></div>
           </div>
           <div class="hero-art">
             <img id="overviewSlime" src="sprites/cute.png" alt="Miro sprite" />
           </div>
         </div>
 
-        <div class="period-grid">
+        <div class="overview-grid">
           <section class="card">
             <div class="section-kicker">A quick arc</div>
             <div class="arc-story" id="arcStory"></div>
           </section>
 
           <section class="card">
+            <div class="section-kicker">Every chat, at a glance</div>
+            <p class="section-sub">Each square is one conversation. Color shows where the weight seemed to sit.</p>
+            <div class="tapestry-grid" id="tapestryGrid"></div>
+            <div class="tapestry-legend">
+              <div class="leg-item"><div class="leg-swatch miro-swatch strong"></div>I carried more</div>
+              <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
+              <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
+            </div>
+          </section>
+
+          <section class="card insights-card">
             <div class="section-kicker">Small things I've noticed</div>
             <div class="insights-list" id="insightsList"></div>
           </section>
@@ -109,14 +106,20 @@
         </div>
       </section>
 
-      <section class="panel" data-panel="weight">
-        <div class="two-up weight-layout">
+      <section class="panel" data-panel="task">
+        <div class="two-up task-layout">
+          <section class="card">
+            <div class="section-kicker">Task breakdown</div>
+            <p class="section-sub">A rough read of who tended to carry each kind of work.</p>
+            <div class="task-list" id="taskList"></div>
+          </section>
+
           <section class="card">
             <div class="section-kicker">Where the weight sat over time</div>
             <p class="section-sub">Each bar is one chat. Above the line is what I carried. Below is what you carried.</p>
             <div class="weight-legend-row">
-              <div class="weight-legend-item"><div class="wl-swatch miro-swatch"></div>What I brought</div>
               <div class="weight-legend-item"><div class="wl-swatch you-swatch"></div>What you brought</div>
+              <div class="weight-legend-item"><div class="wl-swatch miro-swatch"></div>What I brought</div>
             </div>
             <div class="weight-chart">
               <div class="weight-center-line"></div>
@@ -132,12 +135,6 @@
             <div class="weight-summary">
               <div class="ws-note" id="weightSummary"></div>
             </div>
-          </section>
-
-          <section class="card">
-            <div class="section-kicker">Where the work usually settled</div>
-            <p class="section-sub">A rough read of who tended to carry what kind of work.</p>
-            <div class="aspects-list" id="aspectsList"></div>
           </section>
         </div>
       </section>
@@ -167,32 +164,18 @@
         </div>
       </section>
 
-      <section class="panel" data-panel="reflect">
-        <div class="reflect-grid">
-          <section class="card">
+      <section class="closing-band">
+        <div class="closing-card card">
+          <div>
             <div class="section-kicker">A seed to sit with</div>
-            <div class="reflection-card">
-              <div class="reflection-label">Something to notice</div>
-              <div class="reflection-question" id="seedQuestion"></div>
-            </div>
-
-            <div class="section-kicker section-gap">A gentle next step</div>
-            <div class="next-step-card">
-              <div class="next-step-title" id="nextStepTitle"></div>
-              <div class="next-step-copy" id="nextStepCopy"></div>
-            </div>
-          </section>
-
-          <section class="card">
-            <div class="section-kicker">Every chat, at a glance</div>
-            <p class="section-sub">Each square is one conversation. Color shows where the weight seemed to sit.</p>
-            <div class="tapestry-grid" id="tapestryGrid"></div>
-            <div class="tapestry-legend">
-              <div class="leg-item"><div class="leg-swatch miro-swatch strong"></div>I carried more</div>
-              <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
-              <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
-            </div>
-          </section>
+            <div class="reflection-question" id="seedQuestion"></div>
+          </div>
+          <div class="closing-divider"></div>
+          <div>
+            <div class="section-kicker">A gentle next step</div>
+            <div class="next-step-title" id="nextStepTitle"></div>
+            <div class="next-step-copy" id="nextStepCopy"></div>
+          </div>
         </div>
       </section>
     </main>

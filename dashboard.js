@@ -7,9 +7,7 @@ const dashboardData = {
     title: 'Creating Together',
     description:
       "We've been in a build-and-critique rhythm. I draft, you reshape, I rebuild. Most of your strongest ideas seem to arrive when you're pushing back on something I made first.",
-    statOne: 'I carried more',
-    statTwo: 'Growing share',
-    statThree: '52 chats'
+    note: 'I still carried a lot of the first pass, but your share has been growing and the directional calls have stayed clearly yours.'
   },
   weightSummary:
     "Lately your bars have been growing taller. You've been bringing more of your own structure into each chat, even when I still carry the first pass.",
@@ -20,13 +18,42 @@ const dashboardData = {
     [54, 46], [59, 41], [39, 61], [52, 48], [44, 56], [58, 42],
     [40, 60], [54, 46], [36, 64], [46, 54], [42, 58], [49, 51]
   ],
-  aspects: [
-    ['Coming up with ideas', 35, 65, 'mostly you'],
-    ['Deciding direction', 22, 78, 'almost all you'],
-    ['Doing the research', 79, 21, 'mostly me'],
-    ['Building the thing', 84, 16, 'mostly me'],
-    ['Catching problems', 18, 82, 'mostly you'],
-    ['Making the final call', 8, 92, 'always you']
+  taskBreakdown: [
+    {
+      label: 'Writing and editing',
+      note: 'I carried more of the first-pass drafting here.',
+      you: 32,
+      miro: 68,
+      count: 16
+    },
+    {
+      label: 'Analysis',
+      note: 'You were usually the one deciding what the signal actually meant.',
+      you: 68,
+      miro: 32,
+      count: 14
+    },
+    {
+      label: 'Research',
+      note: 'This tended to feel more shared, with you steering what mattered.',
+      you: 56,
+      miro: 44,
+      count: 10
+    },
+    {
+      label: 'Problem solving',
+      note: 'You kept most of the judgment even when I helped narrow options.',
+      you: 58,
+      miro: 42,
+      count: 8
+    },
+    {
+      label: 'Creative work',
+      note: 'I generated fast options, but you curated the ones that felt alive.',
+      you: 42,
+      miro: 58,
+      count: 6
+    }
   ],
   topics: [
     ['Capstone design', 18, 'large'],
@@ -66,21 +93,21 @@ const dashboardData = {
   moments: [
     {
       type: 'you',
-      who: 'You noticed',
+      who: 'You',
       quote: "This was drifting toward a message you didn't actually want to send.",
       context: 'That correction pulled the project away from a generic anti-AI framing and back toward reflection.',
       meta: 'Apr 11 - Framing chat'
     },
     {
       type: 'you',
-      who: 'You named',
+      who: 'You',
       quote: 'The slime is the AI companion, not just a mascot around it.',
       context: 'Once that landed, the whole concept became simpler and more legible.',
       meta: 'Apr 12 - Concept chat'
     },
     {
       type: 'miro',
-      who: 'I reflected back',
+      who: 'Miro',
       quote: 'What you wanted was a way to make invisible thinking show up in the work.',
       context: "That line seemed to give the project a stronger center. It wasn't new from nowhere, just your thinking coming back with shape.",
       meta: 'Apr 13 - Pitch conversation'
@@ -97,8 +124,7 @@ const dashboardData = {
   insights: [
     "Your chats get more generative once you've rejected the first obvious path.",
     "When you start with a feeling instead of a plan, the conversation usually ends up somewhere more interesting.",
-    "A lot of your strongest turns happen when you stop asking for help and start naming what doesn't fit.",
-    'The richest chats seem to land between 8 and 15 turns. Long enough to shift, short enough to stay sharp.'
+    "A lot of your strongest turns happen when you stop asking for help and start naming what doesn't fit."
   ],
   portrait: {
     title: '"A thinker who finds the shape of their answer by refusing the wrong ones first."',
@@ -126,25 +152,21 @@ const dashboardData = {
       'The next time I give you a strong first draft, pause before keeping it. Rewrite one paragraph or one decision in your own words so the shape of it comes back through you.'
   },
   tabs: {
-    period: {
-      title: 'This period',
-      subtitle: 'A soft overview of the recent rhythm between you and me.'
+    overview: {
+      title: 'Overview',
+      subtitle: 'The recent rhythm between you and me, gathered into one place.'
     },
     made: {
       title: 'What we made',
       subtitle: 'The topics and moments that seemed to hold the most weight.'
     },
-    weight: {
-      title: 'Where the weight sat',
-      subtitle: 'A longer read of who tended to carry which parts of the work.'
+    task: {
+      title: 'By task',
+      subtitle: 'A cleaner look at which kinds of work leaned more toward you or me.'
     },
     style: {
       title: 'How you work with me',
       subtitle: 'More tendency than verdict. A description of the collaboration as it has felt.'
-    },
-    reflect: {
-      title: 'Reflect',
-      subtitle: 'A small place to notice the pattern and decide what you want to do with it.'
     }
   }
 };
@@ -153,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderChrome();
   renderOverview();
   renderWeightChart();
-  renderAspects();
+  renderTaskBreakdown();
   renderTopics();
   renderArc();
   renderMoments();
@@ -170,7 +192,7 @@ function renderChrome() {
   document.getElementById('chipMonths').textContent = dashboardData.months;
   document.getElementById('periodLabel').textContent = dashboardData.periodLabel;
   document.getElementById('periodMeta').textContent = dashboardData.periodMeta;
-  applyTabCopy('period');
+  applyTabCopy('overview');
 }
 
 function bindTabs() {
@@ -180,7 +202,6 @@ function bindTabs() {
   buttons.forEach((button) => {
     button.addEventListener('click', () => {
       const nextTab = button.dataset.tab;
-
       buttons.forEach((item) => item.classList.toggle('active', item === button));
       panels.forEach((panel) => panel.classList.toggle('active', panel.dataset.panel === nextTab));
       applyTabCopy(nextTab);
@@ -189,18 +210,15 @@ function bindTabs() {
 }
 
 function applyTabCopy(tabKey) {
-  const tab = dashboardData.tabs[tabKey] || dashboardData.tabs.period;
+  const tab = dashboardData.tabs[tabKey] || dashboardData.tabs.overview;
   document.getElementById('pageTitle').textContent = tab.title;
   document.getElementById('pageSubtitle').textContent = tab.subtitle;
 }
 
 function renderOverview() {
-  const { title, description, statOne, statTwo, statThree } = dashboardData.overview;
-  document.getElementById('overviewTitle').textContent = title;
-  document.getElementById('overviewDesc').textContent = description;
-  document.getElementById('overviewStatOne').textContent = statOne;
-  document.getElementById('overviewStatTwo').textContent = statTwo;
-  document.getElementById('overviewStatThree').textContent = statThree;
+  document.getElementById('overviewTitle').textContent = dashboardData.overview.title;
+  document.getElementById('overviewDesc').textContent = dashboardData.overview.description;
+  document.getElementById('overviewNote').textContent = dashboardData.overview.note;
 }
 
 function renderWeightChart() {
@@ -225,16 +243,25 @@ function renderWeightChart() {
   document.getElementById('weightSummary').textContent = dashboardData.weightSummary;
 }
 
-function renderAspects() {
-  const host = document.getElementById('aspectsList');
-  host.innerHTML = dashboardData.aspects.map(([label, miro, you, lean]) => `
-    <div class="aspect-row">
-      <div class="aspect-label">${escapeHtml(label)}</div>
-      <div class="aspect-bar">
-        <div class="aspect-bar-miro" style="width:${miro}%"></div>
-        <div class="aspect-bar-you" style="width:${you}%"></div>
+function renderTaskBreakdown() {
+  const host = document.getElementById('taskList');
+  host.innerHTML = dashboardData.taskBreakdown.map((item) => `
+    <div class="task-row">
+      <div class="task-row-top">
+        <div>
+          <div class="task-label">${escapeHtml(item.label)}</div>
+          <div class="task-note">${escapeHtml(item.note)}</div>
+        </div>
+        <div class="task-count">${item.count}</div>
       </div>
-      <div class="aspect-lean ${you > miro ? 'you-lean' : 'miro-lean'}">${escapeHtml(lean)}</div>
+      <div class="task-bar-meta">
+        <span>You ${item.you}%</span>
+        <span>Miro ${item.miro}%</span>
+      </div>
+      <div class="task-bar">
+        <div class="task-bar-you" style="width:${item.you}%"></div>
+        <div class="task-bar-miro" style="width:${item.miro}%"></div>
+      </div>
     </div>
   `).join('');
 }

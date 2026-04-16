@@ -288,12 +288,11 @@
   }
 
   function renderWeightRows(rows) {
-    return rows.map((row, index) => `
+    return rows.map((row) => `
       <button
-        class="miro-weight-row${index === 0 ? ' open' : ''}"
+        class="miro-weight-row"
         type="button"
-        data-row-index="${index}"
-        aria-expanded="${index === 0 ? 'true' : 'false'}"
+        aria-expanded="false"
       >
         <div class="miro-weight-row-top">
           <div class="miro-weight-label">${escapeHtml(row.label)}</div>
