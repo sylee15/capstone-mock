@@ -10,14 +10,8 @@
   <div class="shell">
     <aside class="sidebar ani">
       <div class="brand-block">
-        <div class="brand-mark">
-          <img src="sprites/cute.png" alt="Miro sprite" />
-        </div>
-        <div>
-          <div class="brand-kicker">Miro Dashboard</div>
-          <div class="brand-name">You and Miro</div>
-          <p class="brand-copy">A softer read of how the work has been moving between you lately.</p>
-        </div>
+        <div class="brand-kicker">Miro</div>
+        <div class="brand-name">Dashboard</div>
       </div>
 
       <nav class="tab-list" aria-label="Dashboard sections">
@@ -82,20 +76,30 @@
               <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
             </div>
           </section>
-
-          <section class="card insights-card">
-            <div class="section-kicker">Small things I've noticed</div>
-            <div class="insights-list" id="insightsList"></div>
-          </section>
         </div>
+
+        <section class="closing-band">
+          <div class="closing-card card">
+            <div>
+              <div class="section-kicker">A seed to sit with</div>
+              <div class="reflection-question" id="seedQuestion"></div>
+            </div>
+            <div class="closing-divider"></div>
+            <div>
+              <div class="section-kicker">A gentle next step</div>
+              <div class="next-step-title" id="nextStepTitle"></div>
+              <div class="next-step-copy" id="nextStepCopy"></div>
+            </div>
+          </div>
+        </section>
       </section>
 
       <section class="panel" data-panel="made">
         <div class="two-up">
           <section class="card">
             <div class="section-kicker">What we've been talking about</div>
-            <p class="section-sub">Sized by how much space each topic took up.</p>
-            <div class="topics-viz" id="topicsViz"></div>
+            <p class="section-sub">Each circle is a topic. Larger circles held more of the conversation.</p>
+            <div class="topic-bubble-stage" id="topicsViz"></div>
           </section>
 
           <section class="card">
@@ -115,33 +119,16 @@
           </section>
 
           <section class="card">
-            <div class="section-kicker">Where the weight sat over time</div>
-            <p class="section-sub">Each bar is one chat. Above the line is what I carried. Below is what you carried.</p>
-            <div class="weight-legend-row">
-              <div class="weight-legend-item"><div class="wl-swatch you-swatch"></div>What you brought</div>
-              <div class="weight-legend-item"><div class="wl-swatch miro-swatch"></div>What I brought</div>
-            </div>
-            <div class="weight-chart">
-              <div class="weight-center-line"></div>
-              <div id="weightBars" class="weight-bars"></div>
-            </div>
-            <div class="weight-axis">
-              <span>Dec</span>
-              <span>Jan</span>
-              <span>Feb</span>
-              <span>Mar</span>
-              <span>Apr</span>
-            </div>
-            <div class="weight-summary">
-              <div class="ws-note" id="weightSummary"></div>
-            </div>
+            <div class="section-kicker">Task takeaways</div>
+            <p class="section-sub">The parts of the work that leaned more toward you or me.</p>
+            <div class="takeaway-list" id="taskTakeaways"></div>
           </section>
         </div>
       </section>
 
       <section class="panel" data-panel="style">
         <div class="two-up">
-          <section class="card">
+          <section class="card style-card">
             <div class="section-kicker">You brought / I brought</div>
             <p class="section-sub">The recurring shape of the collaboration, not a scorecard.</p>
             <div class="brought-grid">
@@ -157,25 +144,10 @@
           </section>
 
           <section class="card portrait-card">
-            <div class="portrait-eyebrow">If I had to describe you lately</div>
+            <div class="portrait-eyebrow">Lately, you seem to work best when</div>
             <div class="portrait-title" id="portraitTitle"></div>
             <div class="portrait-text" id="portraitText"></div>
           </section>
-        </div>
-      </section>
-
-      <section class="closing-band">
-        <div class="closing-card card">
-          <div>
-            <div class="section-kicker">A seed to sit with</div>
-            <div class="reflection-question" id="seedQuestion"></div>
-          </div>
-          <div class="closing-divider"></div>
-          <div>
-            <div class="section-kicker">A gentle next step</div>
-            <div class="next-step-title" id="nextStepTitle"></div>
-            <div class="next-step-copy" id="nextStepCopy"></div>
-          </div>
         </div>
       </section>
     </main>
