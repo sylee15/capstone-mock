@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Miro Dashboard Mock</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <div class="review-shell">
+    <div class="review-topbar">
+      <div class="review-title">
+        <div class="label">Capstone review mock</div>
+        <h1>Dashboard</h1>
+      </div>
+      <nav class="review-nav">
+        <a href="index.html">Overview</a>
+        <a href="side-panel.html">Side panel</a>
+        <a class="active" href="dashboard.html">Dashboard</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+    <header class="dash-header ani">
+      <div class="dh-meta">Miro Dashboard</div>
+      <h1 class="dh-title">You and <em>Miro</em></h1>
+      <p class="dh-sub">A picture of how you two have been working together lately. My read, not a verdict.</p>
+      <div class="dh-chips">
+        <div class="dh-chip"><strong id="chipChats">52</strong> chats</div>
+        <div class="dh-chip"><strong id="chipMonths">4</strong> months</div>
+        <div class="dh-chip">Prototype <strong>mock</strong></div>
+      </div>
+    </header>
+
+    <section class="overview-card ani">
+      <div class="ov-slime-wrap">
+        <img id="overviewSlime" class="ov-slime-img" src="../sprites/cute.png" alt="Miro sprite" />
+      </div>
+      <div class="ov-text">
+        <div class="ov-label">This season's read</div>
+        <div id="overviewTitle" class="ov-title">Creating Together</div>
+        <div id="overviewDesc" class="ov-desc"></div>
+        <div class="ov-stats">
+          <div class="ov-stat">
+            <div id="overviewStatOne" class="os-num"></div>
+            <div class="os-label">On average</div>
+          </div>
+          <div class="ov-stat">
+            <div id="overviewStatTwo" class="os-num"></div>
+            <div class="os-label">Your contribution</div>
+          </div>
+          <div class="ov-stat">
+            <div id="overviewStatThree" class="os-num"></div>
+            <div class="os-label">Over time</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="sec-label ani">Where the weight sat, over time</div>
+    <div class="sec-sub ani">Each bar is one chat. Blue above the line is what I brought, indigo below is what you brought.</div>
+    <section class="card ani">
+      <div class="weight-legend-row">
+        <div class="weight-legend-item"><div class="wl-swatch miro-swatch"></div>What I brought</div>
+        <div class="weight-legend-item"><div class="wl-swatch you-swatch"></div>What you brought</div>
+      </div>
+      <div class="weight-chart">
+        <div class="weight-center-line"></div>
+        <div id="weightBars" class="weight-bars"></div>
+      </div>
+      <div class="weight-axis">
+        <span>Dec</span>
+        <span>Jan</span>
+        <span>Feb</span>
+        <span>Mar</span>
+        <span>Apr</span>
+      </div>
+      <div class="weight-summary">
+        <div id="weightSummary" class="ws-note"></div>
+      </div>
+    </section>
+
+    <div class="sec-label ani">Where the weight usually sits</div>
+    <div class="sec-sub ani">Across all our chats, here's roughly who tends to carry what.</div>
+    <section class="card ani">
+      <div id="aspectsList" class="aspects-list"></div>
+    </section>
+
+    <div class="sec-label ani">What we've been talking about</div>
+    <div class="sec-sub ani">Sized by how much space each topic took up.</div>
+    <section class="card ani">
+      <div id="topicsViz" class="topics-viz"></div>
+    </section>
+
+    <div class="sec-label ani">How you've changed with me</div>
+    <div class="sec-sub ani">The shape of our relationship across these four months.</div>
+    <section class="card ani">
+      <div id="arcStory" class="arc-story"></div>
+    </section>
+
+    <div class="sec-label ani">Moments that shifted things</div>
+    <div class="sec-sub ani">A few turns that changed the direction most.</div>
+    <section id="momentsGrid" class="two-col ani"></section>
+
+    <div class="sec-label ani">Every chat, at a glance</div>
+    <div class="sec-sub ani">Each square is one conversation. Color shows who carried more.</div>
+    <section class="card ani">
+      <div id="tapestryGrid" class="tapestry-grid"></div>
+      <div class="tapestry-legend">
+        <div class="leg-item"><div class="leg-swatch miro-swatch strong"></div>I carried more</div>
+        <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
+        <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
+      </div>
+    </section>
+
+    <div class="sec-label ani">Small things I've noticed</div>
+    <div class="sec-sub ani">Patterns I couldn't quite fit anywhere else.</div>
+    <section class="card ani">
+      <div id="insightsList" class="insights-list"></div>
+    </section>
+
+    <section class="card portrait-card ani">
+      <div class="portrait-eyebrow">If I had to describe you</div>
+      <div id="portraitTitle" class="portrait-title"></div>
+      <div id="portraitText" class="portrait-text"></div>
+    </section>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
