@@ -10,48 +10,29 @@ const dashboardData = {
     note: 'I still carried a lot of the first pass, but your share has been growing and the directional calls have stayed clearly yours.'
   },
   taskBreakdown: [
-    { label: 'Writing and editing', note: 'I carried more of the first-pass drafting here.', you: 32, miro: 68, count: 16 },
-    { label: 'Analysis', note: 'You were usually the one deciding what the signal actually meant.', you: 68, miro: 32, count: 14 },
-    { label: 'Research', note: 'This tended to feel more shared, with you steering what mattered.', you: 56, miro: 44, count: 10 },
-    { label: 'Problem solving', note: 'You kept most of the judgment even when I helped narrow options.', you: 58, miro: 42, count: 8 },
-    { label: 'Creative work', note: 'I generated fast options, but you curated the ones that felt alive.', you: 42, miro: 58, count: 6 }
-  ],
-  taskTakeaways: [
-    {
-      title: 'Writing leaned more toward me',
-      text: 'This was the place where I most often carried the first draft, especially when the shape needed to appear quickly.'
-    },
-    {
-      title: 'Analysis stayed more clearly yours',
-      text: 'Even when I helped organize the material, the interpretive judgment still seemed to sit with you.'
-    },
-    {
-      title: 'Research felt more shared',
-      text: 'I helped gather and synthesize quickly, but you were usually the one deciding what actually mattered.'
-    }
+    { label: 'Writing and editing', note: 'I carried more of the first-pass drafting here.', you: 32, miro: 68 },
+    { label: 'Analysis', note: 'You were usually the one deciding what the signal actually meant.', you: 68, miro: 32 },
+    { label: 'Research', note: 'This tended to feel more shared, with you steering what mattered.', you: 56, miro: 44 },
+    { label: 'Problem solving', note: 'You kept most of the judgment even when I helped narrow options.', you: 58, miro: 42 },
+    { label: 'Creative work', note: 'I generated fast options, but you curated the ones that felt alive.', you: 42, miro: 58 }
   ],
   topics: [
-    { label: 'Capstone design', count: 18, tone: 'you', size: 'xl', x: 12, y: 17 },
-    { label: 'Product framing', count: 14, tone: 'miro', size: 'lg', x: 39, y: 10 },
-    { label: 'Interview synthesis', count: 9, tone: 'neutral', size: 'md', x: 67, y: 24 },
-    { label: 'Prototyping', count: 7, tone: 'you', size: 'md', x: 23, y: 56 },
-    { label: 'UX research', count: 5, tone: 'miro', size: 'md', x: 51, y: 55 },
-    { label: 'Metacognition', count: 4, tone: 'neutral', size: 'sm', x: 78, y: 59 },
-    { label: 'AI in education', count: 4, tone: 'miro', size: 'sm', x: 7, y: 72 },
-    { label: 'Coding', count: 3, tone: 'you', size: 'sm', x: 81, y: 8 },
-    { label: 'Career planning', count: 2, tone: 'neutral', size: 'xs', x: 61, y: 80 },
-    { label: 'Personal', count: 2, tone: 'you', size: 'xs', x: 35, y: 82 }
+    { label: 'Capstone design', count: 18, tone: 'you', size: 'xxl', x: 18, y: 28 },
+    { label: 'Product framing', count: 14, tone: 'miro', size: 'xl', x: 43, y: 16 },
+    { label: 'Interview synthesis', count: 9, tone: 'neutral', size: 'lg', x: 71, y: 24 },
+    { label: 'Prototyping', count: 7, tone: 'you', size: 'lg', x: 31, y: 64 },
+    { label: 'UX research', count: 5, tone: 'miro', size: 'md', x: 55, y: 58 },
+    { label: 'Metacognition', count: 4, tone: 'neutral', size: 'sm', x: 82, y: 58 },
+    { label: 'AI in education', count: 4, tone: 'miro', size: 'sm', x: 12, y: 79 },
+    { label: 'Coding', count: 3, tone: 'you', size: 'sm', x: 83, y: 11 },
+    { label: 'Career planning', count: 2, tone: 'neutral', size: 'xs', x: 62, y: 82 },
+    { label: 'Personal', count: 2, tone: 'you', size: 'xs', x: 38, y: 85 }
   ],
   arc: [
     { month: 'January', text: "You asked open questions and let me lead. There were lots of 'help me figure this out' chats where I did most of the shaping." },
     { month: 'February', text: "You started pushing back sooner. The rhythm changed when your replies stopped being reactions and started becoming redirections." },
     { month: 'March', text: "Your critiques got sharper. You were naming why something felt off, which meant I had more to build against." },
     { month: 'April - now', text: "You bring more of your own frame now. I still help build, but it increasingly feels like I'm building toward a vision you already sense.", current: true }
-  ],
-  moments: [
-    { type: 'you', who: 'You', quote: "This was drifting toward a message you didn't actually want to send.", context: 'That correction pulled the project away from a generic anti-AI framing and back toward reflection.', meta: 'Apr 11 - Framing chat' },
-    { type: 'you', who: 'You', quote: 'The slime is the AI companion, not just a mascot around it.', context: 'Once that landed, the whole concept became simpler and more legible.', meta: 'Apr 12 - Concept chat' },
-    { type: 'miro', who: 'Miro', quote: 'What you wanted was a way to make invisible thinking show up in the work.', context: "That line seemed to give the project a stronger center. It wasn't new from nowhere, just your thinking coming back with shape.", meta: 'Apr 13 - Pitch conversation' }
   ],
   tapestry: [
     'miro-heavy', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'you-heavy',
@@ -63,17 +44,7 @@ const dashboardData = {
   ],
   profile: {
     paragraph:
-      "You seem to think best when there is something visible enough to push against. A first pass gives you a surface for judgment, and that is often when your clearest direction starts to show.",
-    you: [
-      'when the conversation needs a stronger direction or sharper boundary',
-      'when something sounds polished but still does not feel true',
-      'when tone, audience, or intent need a final human read'
-    ],
-    miro: [
-      'when the shape is still blurry and you want something concrete to react to',
-      'when the first draft needs to appear quickly so the real critique can start',
-      'when a pattern is already there in your thinking but needs language around it'
-    ]
+      "You seem to think best when there is something visible enough to push against. A first pass gives you a surface for judgment, and that is often when your clearest direction starts to show."
   },
   portrait: {
     title: 'a draft, a pushback, then a clearer shape',
@@ -92,9 +63,9 @@ const dashboardData = {
   },
   tabs: {
     overview: { title: 'Overview', subtitle: 'The recent rhythm between you and me, gathered into one place.' },
-    made: { title: 'What we made', subtitle: 'The topics and moments that seemed to hold the most weight.' },
-    task: { title: 'By task', subtitle: 'A cleaner look at which kinds of work leaned more toward you or me.' },
-    style: { title: 'How you work with me', subtitle: 'More tendency than verdict. A description of the collaboration as it has felt.' }
+    made: { title: 'What we made', subtitle: 'A larger map of the themes that have been holding the most space.' },
+    task: { title: 'By task', subtitle: 'A clearer read of where the work leaned more toward me or toward you.' },
+    style: { title: 'How you work with me', subtitle: 'A softer profile and a read of our recurring rhythm.' }
   }
 };
 
@@ -102,10 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderChrome();
   renderOverview();
   renderTaskBreakdown();
-  renderTaskTakeaways();
   renderTopics();
   renderArc();
-  renderMoments();
   renderTapestry();
   renderPortrait();
   renderProfile();
@@ -155,22 +124,15 @@ function renderTaskBreakdown() {
           <div class="task-label">${escapeHtml(item.label)}</div>
           <div class="task-note">${escapeHtml(item.note)}</div>
         </div>
-        <div class="task-count">${item.count}</div>
       </div>
       <div class="task-bar">
-        <div class="task-bar-you" style="width:${item.you}%"></div>
         <div class="task-bar-miro" style="width:${item.miro}%"></div>
+        <div class="task-bar-you" style="width:${item.you}%"></div>
       </div>
-    </div>
-  `).join('');
-}
-
-function renderTaskTakeaways() {
-  const host = document.getElementById('taskTakeaways');
-  host.innerHTML = dashboardData.taskTakeaways.map((item) => `
-    <div class="takeaway-card">
-      <div class="takeaway-title">${escapeHtml(item.title)}</div>
-      <div class="takeaway-text">${escapeHtml(item.text)}</div>
+      <div class="task-scale">
+        <span>More Miro</span>
+        <span>More you</span>
+      </div>
     </div>
   `).join('');
 }
@@ -198,20 +160,6 @@ function renderArc() {
   `).join('');
 }
 
-function renderMoments() {
-  const host = document.getElementById('momentsGrid');
-  host.innerHTML = dashboardData.moments.map((moment) => `
-    <article class="moment-card ${moment.type}-moment">
-      <div class="moment-card-top">
-        <div class="mc-who ${moment.type}-who">${escapeHtml(moment.who)}</div>
-        <div class="mc-meta">${escapeHtml(moment.meta)}</div>
-      </div>
-      <div class="mc-quote">${escapeHtml(moment.quote)}</div>
-      <div class="mc-context">${escapeHtml(moment.context)}</div>
-    </article>
-  `).join('');
-}
-
 function renderTapestry() {
   document.getElementById('tapestryGrid').innerHTML = dashboardData.tapestry
     .map((kind) => `<div class="tap-cell ${kind}"></div>`)
@@ -228,12 +176,6 @@ function renderPortrait() {
 
 function renderProfile() {
   document.getElementById('profileParagraph').textContent = dashboardData.profile.paragraph;
-  document.getElementById('youBroughtList').innerHTML = dashboardData.profile.you
-    .map((item) => `<div class="profile-chip warm">${escapeHtml(item)}</div>`)
-    .join('');
-  document.getElementById('miroBroughtList').innerHTML = dashboardData.profile.miro
-    .map((item) => `<div class="profile-chip cool">${escapeHtml(item)}</div>`)
-    .join('');
 }
 
 function renderReflection() {
