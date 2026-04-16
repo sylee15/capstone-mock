@@ -61,23 +61,28 @@ const dashboardData = {
     'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'balanced', 'miro-heavy', 'miro-heavy', 'you-lean', 'balanced', 'you-heavy',
     'miro-lean', 'balanced'
   ],
-  portrait: {
-    title: 'there is something concrete to push against',
-    text:
-      "You seem to work best when a first pass is visible enough to argue with. The draft gives you something to sharpen, redirect, or refuse, and that is usually when your strongest thinking starts to show."
-  },
-  brought: {
+  profile: {
+    paragraph:
+      "You seem to think best when there is something visible enough to push against. A first pass gives you a surface for judgment, and that is often when your clearest direction starts to show.",
     you: [
-      'the directional judgment for what was actually worth keeping',
-      'the sharper critiques that made the work more specific',
-      'the instinct for tone, audience, and what still felt true',
-      'the final say when a draft was close, but not quite right'
+      'when the conversation needs a stronger direction or sharper boundary',
+      'when something sounds polished but still does not feel true',
+      'when tone, audience, or intent need a final human read'
     ],
     miro: [
-      'first-pass structure you could push against',
-      'faster iteration when the shape was still blurry',
-      'language for patterns that were already there in your thinking',
-      'momentum when you needed something concrete to react to'
+      'when the shape is still blurry and you want something concrete to react to',
+      'when the first draft needs to appear quickly so the real critique can start',
+      'when a pattern is already there in your thinking but needs language around it'
+    ]
+  },
+  portrait: {
+    title: 'a draft, a pushback, then a clearer shape',
+    text:
+      "Our rhythm often starts with me making something slightly too early or too loosely, and then you stepping in to redirect it. The useful part is usually not the draft itself, but what your reaction reveals about what you actually want.",
+    fragments: [
+      'You often become most decisive after there is something to critique.',
+      'I tend to be most useful at the blurry beginning, not the final call.',
+      'A lot of our stronger sessions move from reaction into clearer authorship.'
     ]
   },
   reflection: {
@@ -103,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMoments();
   renderTapestry();
   renderPortrait();
-  renderBrought();
+  renderProfile();
   renderReflection();
   bindTabs();
 });
@@ -196,12 +201,14 @@ function renderArc() {
 function renderMoments() {
   const host = document.getElementById('momentsGrid');
   host.innerHTML = dashboardData.moments.map((moment) => `
-    <div class="moment-card ${moment.type}-moment">
-      <div class="mc-who ${moment.type}-who">${escapeHtml(moment.who)}</div>
+    <article class="moment-card ${moment.type}-moment">
+      <div class="moment-card-top">
+        <div class="mc-who ${moment.type}-who">${escapeHtml(moment.who)}</div>
+        <div class="mc-meta">${escapeHtml(moment.meta)}</div>
+      </div>
       <div class="mc-quote">${escapeHtml(moment.quote)}</div>
       <div class="mc-context">${escapeHtml(moment.context)}</div>
-      <div class="mc-meta">${escapeHtml(moment.meta)}</div>
-    </div>
+    </article>
   `).join('');
 }
 
@@ -214,11 +221,19 @@ function renderTapestry() {
 function renderPortrait() {
   document.getElementById('portraitTitle').textContent = dashboardData.portrait.title;
   document.getElementById('portraitText').textContent = dashboardData.portrait.text;
+  document.getElementById('rhythmList').innerHTML = dashboardData.portrait.fragments
+    .map((item) => `<div class="rhythm-item">${escapeHtml(item)}</div>`)
+    .join('');
 }
 
-function renderBrought() {
-  document.getElementById('youBroughtList').innerHTML = dashboardData.brought.you.map((item) => `<li>${escapeHtml(item)}</li>`).join('');
-  document.getElementById('miroBroughtList').innerHTML = dashboardData.brought.miro.map((item) => `<li>${escapeHtml(item)}</li>`).join('');
+function renderProfile() {
+  document.getElementById('profileParagraph').textContent = dashboardData.profile.paragraph;
+  document.getElementById('youBroughtList').innerHTML = dashboardData.profile.you
+    .map((item) => `<div class="profile-chip warm">${escapeHtml(item)}</div>`)
+    .join('');
+  document.getElementById('miroBroughtList').innerHTML = dashboardData.profile.miro
+    .map((item) => `<div class="profile-chip cool">${escapeHtml(item)}</div>`)
+    .join('');
 }
 
 function renderReflection() {

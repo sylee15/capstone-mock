@@ -119,7 +119,7 @@
           <section class="card">
             <div class="section-kicker">Moments that shifted things</div>
             <p class="section-sub">A few turns that changed the direction most.</p>
-            <div class="moments-list" id="momentsGrid"></div>
+            <div class="moments-rail" id="momentsGrid"></div>
           </section>
         </div>
       </section>
@@ -143,24 +143,31 @@
       <section class="panel" data-panel="style">
         <div class="two-up">
           <section class="card style-card">
-            <div class="section-kicker">You brought / I brought</div>
-            <p class="section-sub">The recurring shape of the collaboration, not a scorecard.</p>
-            <div class="brought-grid">
-              <div class="brought-card you">
-                <div class="brought-head you">You brought</div>
-                <ul id="youBroughtList"></ul>
+            <div class="section-kicker">A qualitative read</div>
+            <p class="section-sub">A softer profile built from the patterns that seem to recur across chats.</p>
+            <div class="profile-stack">
+              <div class="profile-card">
+                <div class="profile-label">How you tend to work</div>
+                <div class="profile-paragraph" id="profileParagraph"></div>
               </div>
-              <div class="brought-card miro">
-                <div class="brought-head miro">I brought</div>
-                <ul id="miroBroughtList"></ul>
+              <div class="profile-card split">
+                <div class="profile-column">
+                  <div class="profile-label warm">Where you step in strongest</div>
+                  <div class="profile-chip-grid" id="youBroughtList"></div>
+                </div>
+                <div class="profile-column">
+                  <div class="profile-label cool">Where I tend to help</div>
+                  <div class="profile-chip-grid" id="miroBroughtList"></div>
+                </div>
               </div>
             </div>
           </section>
 
           <section class="card portrait-card">
-            <div class="portrait-eyebrow">Lately, you seem to work best when</div>
+            <div class="portrait-eyebrow">Our rhythm</div>
             <div class="portrait-title" id="portraitTitle"></div>
             <div class="portrait-text" id="portraitText"></div>
+            <div class="rhythm-list" id="rhythmList"></div>
           </section>
         </div>
       </section>

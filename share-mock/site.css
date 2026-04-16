@@ -298,16 +298,33 @@ body::before {
   gap: 12px;
 }
 
+.mock-turning-points {
+  position: relative;
+  gap: 14px;
+}
+
+.mock-turning-points::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: rgba(227, 216, 200, 0.9);
+}
+
 .mock-turning-point {
+  position: relative;
   display: grid;
   grid-template-columns: 28px 1fr;
   gap: 12px;
   align-items: start;
-  padding: 16px 16px 16px 14px;
+  padding: 16px 16px 16px 16px;
   border: 1px solid var(--border);
   border-radius: 18px;
   background: rgba(255, 253, 250, 0.96);
   box-shadow: var(--shadow);
+  margin-left: 16px;
 }
 
 .mock-turning-index {
@@ -321,6 +338,8 @@ body::before {
   color: var(--you-dark);
   font-size: 12px;
   font-weight: 700;
+  position: relative;
+  z-index: 1;
 }
 
 .mock-weight-card { padding: 18px; }
