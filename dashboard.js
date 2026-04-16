@@ -277,12 +277,12 @@ function renderTopics() {
       ${lineMarkup.join('')}
     </svg>
     ${dashboardData.topics.map((topic) => {
-      const splitPoint = Math.max(8, Math.min(92, topic.youShare));
-      const textClass = topic.youShare >= 58 || topic.miroShare >= 58 ? 'light-text' : 'dark-text';
+      const bubbleStyle = buildTopicBubbleStyle(topic);
+      const textClass = bubbleStyle.textClass;
       return `
         <div
           class="topic-bubble ${topic.size} ${textClass}"
-          style="left:${topic.x}%; top:${topic.y}%; --topic-fill: linear-gradient(135deg, rgba(191, 115, 84, 0.96) 0%, rgba(191, 115, 84, 0.96) ${splitPoint}%, rgba(74, 178, 212, 0.96) ${splitPoint}%, rgba(74, 178, 212, 0.96) 100%);"
+          style="left:${topic.x}%; top:${topic.y}%; ${bubbleStyle.style}"
         >
           <div class="topic-bubble-label">${escapeHtml(topic.label)}</div>
           <div class="topic-bubble-count">${topic.count} chats</div>
@@ -324,6 +324,44 @@ function renderReflection() {
   document.getElementById('seedQuestion').textContent = dashboardData.reflection.seed;
   document.getElementById('nextStepTitle').textContent = dashboardData.reflection.nextTitle;
   document.getElementById('nextStepCopy').textContent = dashboardData.reflection.nextStep;
+}
+
+function buildTopicBubbleStyle(topic) {
+  const youColor = { r: 191, g: 115, b: 84 };
+  const miroColor = { r: 74, g: 178, b: 212 };
+  const youWeight = topic.youShare / 100;
+  const miroWeight = topic.miroShare / 100;
+  const dominant = youWeight >= miroWeight ? 'you' : 'miro';
+  const dominantWeight = Math.max(youWeight, miroWeight);
+  const secondaryWeight = Math.min(youWeight, miroWeight);
+  const baseRgb = mixRgb(youColor, miroColor, miroWeight);
+  const softenedBase = mixRgb(baseRgb, { r: 255, g: 250, b: 244 }, 0.12);
+  const dominantRgb = dominant === 'you' ? youColor : miroColor;
+  const secondaryRgb = dominant === 'you' ? miroColor : youColor;
+  const textClass = dominantWeight > 0.64 ? 'light-text' : 'dark-text';
+  const sheenOpacity = 0.24 + (secondaryWeight * 0.12);
+  const accentOpacity = 0.2 + (secondaryWeight * 0.28);
+  const shadowOpacity = 0.08 + (dominantWeight * 0.06);
+
+  return {
+    textClass,
+    style: [
+      `--topic-fill: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, ${sheenOpacity.toFixed(2)}) 0%, rgba(255, 255, 255, 0) 34%), radial-gradient(circle at 78% 78%, ${toRgba(secondaryRgb, accentOpacity)} 0%, ${toRgba(secondaryRgb, 0)} 52%), linear-gradient(155deg, ${toRgba(softenedBase, 0.94)} 0%, ${toRgba(baseRgb, 0.98)} 66%, ${toRgba(dominantRgb, 0.9)} 100%)`,
+      `--topic-shadow: 0 16px 34px rgba(51, 43, 36, ${shadowOpacity.toFixed(2)})`
+    ].join('; ')
+  };
+}
+
+function mixRgb(colorA, colorB, amount) {
+  return {
+    r: Math.round(colorA.r + ((colorB.r - colorA.r) * amount)),
+    g: Math.round(colorA.g + ((colorB.g - colorA.g) * amount)),
+    b: Math.round(colorA.b + ((colorB.b - colorA.b) * amount))
+  };
+}
+
+function toRgba(color, alpha) {
+  return `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha.toFixed(2)})`;
 }
 
 function escapeHtml(value) {

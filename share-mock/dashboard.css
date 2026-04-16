@@ -392,9 +392,10 @@ body::before {
   border-radius: 50%;
   padding: 14px;
   border: 1px solid rgba(255, 250, 243, 0.78);
-  box-shadow: 0 14px 30px rgba(51, 43, 36, 0.08);
+  box-shadow: var(--topic-shadow, 0 14px 30px rgba(51, 43, 36, 0.08));
   background: var(--topic-fill);
   z-index: 2;
+  isolation: isolate;
 }
 
 .topic-bubble.xxl { width: 182px; height: 182px; }
@@ -403,10 +404,20 @@ body::before {
 .topic-bubble.md { width: 104px; height: 104px; }
 .topic-bubble.sm { width: 88px; height: 88px; }
 .topic-bubble.xs { width: 74px; height: 74px; }
-.topic-bubble.light-text { color: #fffaf5; text-shadow: 0 1px 2px rgba(39, 32, 27, 0.16); }
+.topic-bubble::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.topic-bubble.light-text { color: #fffaf5; text-shadow: 0 1px 2px rgba(39, 32, 27, 0.14); }
 .topic-bubble.dark-text { color: var(--ink); }
-.topic-bubble-label { max-width: 90%; font-size: 14px; font-weight: 600; line-height: 1.2; }
-.topic-bubble-count { margin-top: 6px; font-size: 11px; opacity: 0.84; font-weight: 600; }
+.topic-bubble-label { position: relative; z-index: 1; max-width: 90%; font-size: 14px; font-weight: 600; line-height: 1.2; }
+.topic-bubble-count { position: relative; z-index: 1; margin-top: 6px; font-size: 11px; opacity: 0.84; font-weight: 600; }
 .topic-bubble.sm .topic-bubble-label, .topic-bubble.xs .topic-bubble-label { font-size: 11px; }
 .topic-bubble.xs .topic-bubble-count { font-size: 10px; }
 
