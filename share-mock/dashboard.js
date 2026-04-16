@@ -1,6 +1,8 @@
 const dashboardData = {
   chats: 52,
   months: 4,
+  periodLabel: 'December to April',
+  periodMeta: '52 chats in this prototype monthset',
   overview: {
     title: 'Creating Together',
     description:
@@ -39,15 +41,50 @@ const dashboardData = {
     ['Personal', 2, 'sm']
   ],
   arc: [
-    { month: 'January', text: "You asked open questions and let me lead. There were lots of 'help me figure this out' chats where I did most of the shaping." },
-    { month: 'February', text: "You started pushing back sooner. The rhythm changed when your replies stopped being reactions and started becoming redirections." },
-    { month: 'March', text: "Your critiques got sharper. You were naming why something felt off, which meant I had more to build against." },
-    { month: 'April - now', text: "You bring more of your own frame now. I still help build, but it increasingly feels like I'm building toward a vision you already sense.", current: true }
+    {
+      month: 'January',
+      text:
+        "You asked open questions and let me lead. There were lots of 'help me figure this out' chats where I did most of the shaping."
+    },
+    {
+      month: 'February',
+      text:
+        "You started pushing back sooner. The rhythm changed when your replies stopped being reactions and started becoming redirections."
+    },
+    {
+      month: 'March',
+      text:
+        "Your critiques got sharper. You were naming why something felt off, which meant I had more to build against."
+    },
+    {
+      month: 'April - now',
+      text:
+        "You bring more of your own frame now. I still help build, but it increasingly feels like I'm building toward a vision you already sense.",
+      current: true
+    }
   ],
   moments: [
-    { type: 'you', who: 'You noticed', quote: "This was drifting toward a message you didn't actually want to send.", context: 'That correction pulled the project away from a generic anti-AI framing and back toward reflection.', meta: 'Apr 11 - Framing chat' },
-    { type: 'you', who: 'You named', quote: 'The slime is the AI companion, not just a mascot around it.', context: 'Once that landed, the whole concept became simpler and more legible.', meta: 'Apr 12 - Concept chat' },
-    { type: 'miro', who: 'I reflected back', quote: 'What you wanted was a way to make invisible thinking show up in the work.', context: "That line seemed to give the project a stronger center. It wasn't new from nowhere, just your thinking coming back with shape.", meta: 'Apr 13 - Pitch conversation', wide: true }
+    {
+      type: 'you',
+      who: 'You noticed',
+      quote: "This was drifting toward a message you didn't actually want to send.",
+      context: 'That correction pulled the project away from a generic anti-AI framing and back toward reflection.',
+      meta: 'Apr 11 - Framing chat'
+    },
+    {
+      type: 'you',
+      who: 'You named',
+      quote: 'The slime is the AI companion, not just a mascot around it.',
+      context: 'Once that landed, the whole concept became simpler and more legible.',
+      meta: 'Apr 12 - Concept chat'
+    },
+    {
+      type: 'miro',
+      who: 'I reflected back',
+      quote: 'What you wanted was a way to make invisible thinking show up in the work.',
+      context: "That line seemed to give the project a stronger center. It wasn't new from nowhere, just your thinking coming back with shape.",
+      meta: 'Apr 13 - Pitch conversation'
+    }
   ],
   tapestry: [
     'miro-heavy', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'you-heavy',
@@ -65,40 +102,132 @@ const dashboardData = {
   ],
   portrait: {
     title: '"A thinker who finds the shape of their answer by refusing the wrong ones first."',
-    text: "You rarely arrive with a full plan. You arrive with a sense that something matters, then use me as a surface to test it against. That's not indecision. It's a way of thinking that needs something to push on. We seem to work best when I'm willing to be wrong out loud so you have something real to sharpen."
+    text:
+      "You rarely arrive with a full plan. You arrive with a sense that something matters, then use me as a surface to test it against. That's not indecision. It's a way of thinking that needs something to push on. We seem to work best when I'm willing to be wrong out loud so you have something real to sharpen."
+  },
+  brought: {
+    you: [
+      'the directional judgment for what was actually worth keeping',
+      'the sharper critiques that made the work more specific',
+      'the instinct for tone, audience, and what still felt true',
+      'the final say when a draft was close, but not quite right'
+    ],
+    miro: [
+      'first-pass structure you could push against',
+      'faster iteration when the shape was still blurry',
+      'language for patterns that were already there in your thinking',
+      'momentum when you needed something concrete to react to'
+    ]
+  },
+  reflection: {
+    seed: 'When I helped most in this stretch, was I extending your thinking or replacing the part you most wanted to own?',
+    nextTitle: 'Take back one piece',
+    nextStep:
+      'The next time I give you a strong first draft, pause before keeping it. Rewrite one paragraph or one decision in your own words so the shape of it comes back through you.'
+  },
+  tabs: {
+    period: {
+      title: 'This period',
+      subtitle: 'A soft overview of the recent rhythm between you and me.'
+    },
+    made: {
+      title: 'What we made',
+      subtitle: 'The topics and moments that seemed to hold the most weight.'
+    },
+    weight: {
+      title: 'Where the weight sat',
+      subtitle: 'A longer read of who tended to carry which parts of the work.'
+    },
+    style: {
+      title: 'How you work with me',
+      subtitle: 'More tendency than verdict. A description of the collaboration as it has felt.'
+    },
+    reflect: {
+      title: 'Reflect',
+      subtitle: 'A small place to notice the pattern and decide what you want to do with it.'
+    }
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  renderChrome();
+  renderOverview();
+  renderWeightChart();
+  renderAspects();
+  renderTopics();
+  renderArc();
+  renderMoments();
+  renderTapestry();
+  renderInsights();
+  renderPortrait();
+  renderBrought();
+  renderReflection();
+  bindTabs();
+});
+
+function renderChrome() {
   document.getElementById('chipChats').textContent = dashboardData.chats;
   document.getElementById('chipMonths').textContent = dashboardData.months;
+  document.getElementById('periodLabel').textContent = dashboardData.periodLabel;
+  document.getElementById('periodMeta').textContent = dashboardData.periodMeta;
+  applyTabCopy('period');
+}
 
-  const overview = dashboardData.overview;
-  document.getElementById('overviewTitle').textContent = overview.title;
-  document.getElementById('overviewDesc').textContent = overview.description;
-  document.getElementById('overviewStatOne').textContent = overview.statOne;
-  document.getElementById('overviewStatTwo').textContent = overview.statTwo;
-  document.getElementById('overviewStatTwo').style.color = 'var(--you-dark)';
-  document.getElementById('overviewStatThree').textContent = overview.statThree;
-  document.getElementById('overviewStatThree').style.color = 'var(--ink)';
+function bindTabs() {
+  const buttons = Array.from(document.querySelectorAll('.tab-button'));
+  const panels = Array.from(document.querySelectorAll('.panel'));
 
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const nextTab = button.dataset.tab;
+
+      buttons.forEach((item) => item.classList.toggle('active', item === button));
+      panels.forEach((panel) => panel.classList.toggle('active', panel.dataset.panel === nextTab));
+      applyTabCopy(nextTab);
+    });
+  });
+}
+
+function applyTabCopy(tabKey) {
+  const tab = dashboardData.tabs[tabKey] || dashboardData.tabs.period;
+  document.getElementById('pageTitle').textContent = tab.title;
+  document.getElementById('pageSubtitle').textContent = tab.subtitle;
+}
+
+function renderOverview() {
+  const { title, description, statOne, statTwo, statThree } = dashboardData.overview;
+  document.getElementById('overviewTitle').textContent = title;
+  document.getElementById('overviewDesc').textContent = description;
+  document.getElementById('overviewStatOne').textContent = statOne;
+  document.getElementById('overviewStatTwo').textContent = statTwo;
+  document.getElementById('overviewStatThree').textContent = statThree;
+}
+
+function renderWeightChart() {
   const weightBars = document.getElementById('weightBars');
   dashboardData.weightData.forEach(([miro, you]) => {
     const col = document.createElement('div');
     col.className = 'weight-bar-col';
+
     const miroBar = document.createElement('div');
     miroBar.className = 'weight-bar-miro';
     miroBar.style.height = `${miro}%`;
+
     const youBar = document.createElement('div');
     youBar.className = 'weight-bar-you';
     youBar.style.height = `${you}%`;
+
     col.appendChild(miroBar);
     col.appendChild(youBar);
     weightBars.appendChild(col);
   });
-  document.getElementById('weightSummary').textContent = dashboardData.weightSummary;
 
-  document.getElementById('aspectsList').innerHTML = dashboardData.aspects.map(([label, miro, you, lean]) => `
+  document.getElementById('weightSummary').textContent = dashboardData.weightSummary;
+}
+
+function renderAspects() {
+  const host = document.getElementById('aspectsList');
+  host.innerHTML = dashboardData.aspects.map(([label, miro, you, lean]) => `
     <div class="aspect-row">
       <div class="aspect-label">${escapeHtml(label)}</div>
       <div class="aspect-bar">
@@ -108,41 +237,73 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="aspect-lean ${you > miro ? 'you-lean' : 'miro-lean'}">${escapeHtml(lean)}</div>
     </div>
   `).join('');
+}
 
-  document.getElementById('topicsViz').innerHTML = dashboardData.topics.map(([topic, count, size]) => `
+function renderTopics() {
+  const host = document.getElementById('topicsViz');
+  host.innerHTML = dashboardData.topics.map(([topic, count, size]) => `
     <div class="topic-chip ${size === 'base' ? '' : size}">
       ${escapeHtml(topic)} <span class="topic-count">${count}</span>
     </div>
   `).join('');
+}
 
-  document.getElementById('arcStory').innerHTML = dashboardData.arc.map((item) => `
+function renderArc() {
+  const host = document.getElementById('arcStory');
+  host.innerHTML = dashboardData.arc.map((item) => `
     <div class="arc-chapter${item.current ? ' current' : ''}">
       <div class="arc-month">${escapeHtml(item.month)}</div>
       <div class="arc-chapter-text">${escapeHtml(item.text)}</div>
     </div>
   `).join('');
+}
 
-  document.getElementById('momentsGrid').innerHTML = dashboardData.moments.map((moment) => `
-    <div class="moment-card ${moment.type}-moment${moment.wide ? ' wide' : ''}">
+function renderMoments() {
+  const host = document.getElementById('momentsGrid');
+  host.innerHTML = dashboardData.moments.map((moment) => `
+    <div class="moment-card ${moment.type}-moment">
       <div class="mc-who ${moment.type}-who">${escapeHtml(moment.who)}</div>
       <div class="mc-quote">${escapeHtml(moment.quote)}</div>
       <div class="mc-context">${escapeHtml(moment.context)}</div>
       <div class="mc-meta">${escapeHtml(moment.meta)}</div>
     </div>
   `).join('');
+}
 
-  document.getElementById('tapestryGrid').innerHTML = dashboardData.tapestry.map((kind) => `<div class="tap-cell ${kind}"></div>`).join('');
+function renderTapestry() {
+  const host = document.getElementById('tapestryGrid');
+  host.innerHTML = dashboardData.tapestry.map((kind) => `<div class="tap-cell ${kind}"></div>`).join('');
+}
 
-  document.getElementById('insightsList').innerHTML = dashboardData.insights.map((text, index) => `
+function renderInsights() {
+  const host = document.getElementById('insightsList');
+  host.innerHTML = dashboardData.insights.map((text, index) => `
     <div class="insight-row">
       <div class="insight-icon">${String.fromCharCode(97 + index)}</div>
       <div class="insight-text">${escapeHtml(text)}</div>
     </div>
   `).join('');
+}
 
+function renderPortrait() {
   document.getElementById('portraitTitle').textContent = dashboardData.portrait.title;
   document.getElementById('portraitText').textContent = dashboardData.portrait.text;
-});
+}
+
+function renderBrought() {
+  document.getElementById('youBroughtList').innerHTML = dashboardData.brought.you
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join('');
+  document.getElementById('miroBroughtList').innerHTML = dashboardData.brought.miro
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join('');
+}
+
+function renderReflection() {
+  document.getElementById('seedQuestion').textContent = dashboardData.reflection.seed;
+  document.getElementById('nextStepTitle').textContent = dashboardData.reflection.nextTitle;
+  document.getElementById('nextStepCopy').textContent = dashboardData.reflection.nextStep;
+}
 
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, (match) => ({

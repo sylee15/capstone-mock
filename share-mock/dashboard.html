@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="dashboard.css" />
 </head>
 <body>
-  <div class="review-shell">
+  <div class="review-shell ani">
     <div class="review-topbar">
       <div class="review-title">
         <div class="label">Capstone review mock</div>
@@ -21,110 +21,195 @@
     </div>
   </div>
 
-  <div class="page">
-    <header class="dash-header ani">
-      <div class="dh-meta">Miro Dashboard</div>
-      <h1 class="dh-title">You and <em>Miro</em></h1>
-      <p class="dh-sub">A picture of how you two have been working together lately. My read, not a verdict.</p>
-      <div class="dh-chips">
-        <div class="dh-chip"><strong id="chipChats">52</strong> chats</div>
-        <div class="dh-chip"><strong id="chipMonths">4</strong> months</div>
-        <div class="dh-chip">Prototype <strong>mock</strong></div>
-      </div>
-    </header>
-
-    <section class="overview-card ani">
-      <div class="ov-slime-wrap">
-        <img id="overviewSlime" class="ov-slime-img" src="sprites/cute.png" alt="Miro sprite" />
-      </div>
-      <div class="ov-text">
-        <div class="ov-label">This season's read</div>
-        <div id="overviewTitle" class="ov-title">Creating Together</div>
-        <div id="overviewDesc" class="ov-desc"></div>
-        <div class="ov-stats">
-          <div class="ov-stat">
-            <div id="overviewStatOne" class="os-num"></div>
-            <div class="os-label">On average</div>
-          </div>
-          <div class="ov-stat">
-            <div id="overviewStatTwo" class="os-num"></div>
-            <div class="os-label">Your contribution</div>
-          </div>
-          <div class="ov-stat">
-            <div id="overviewStatThree" class="os-num"></div>
-            <div class="os-label">Over time</div>
-          </div>
+  <div class="shell">
+    <aside class="sidebar ani">
+      <div class="brand-block">
+        <div class="brand-mark">
+          <img src="sprites/cute.png" alt="Miro sprite" />
+        </div>
+        <div>
+          <div class="brand-kicker">Miro Dashboard</div>
+          <div class="brand-name">You and Miro</div>
+          <p class="brand-copy">A softer read of how the work has been moving between you lately.</p>
         </div>
       </div>
-    </section>
 
-    <div class="sec-label ani">Where the weight sat, over time</div>
-    <div class="sec-sub ani">Each bar is one chat. Blue above the line is what I brought, indigo below is what you brought.</div>
-    <section class="card ani">
-      <div class="weight-legend-row">
-        <div class="weight-legend-item"><div class="wl-swatch miro-swatch"></div>What I brought</div>
-        <div class="weight-legend-item"><div class="wl-swatch you-swatch"></div>What you brought</div>
+      <nav class="tab-list" aria-label="Dashboard sections">
+        <button class="tab-button active" data-tab="period" type="button">This period</button>
+        <button class="tab-button" data-tab="made" type="button">What we made</button>
+        <button class="tab-button" data-tab="weight" type="button">Where the weight sat</button>
+        <button class="tab-button" data-tab="style" type="button">How you work with me</button>
+        <button class="tab-button" data-tab="reflect" type="button">Reflect</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="sidebar-label">Period</div>
+        <div class="sidebar-value" id="periodLabel"></div>
+        <div class="sidebar-note" id="periodMeta"></div>
       </div>
-      <div class="weight-chart">
-        <div class="weight-center-line"></div>
-        <div id="weightBars" class="weight-bars"></div>
-      </div>
-      <div class="weight-axis">
-        <span>Dec</span>
-        <span>Jan</span>
-        <span>Feb</span>
-        <span>Mar</span>
-        <span>Apr</span>
-      </div>
-      <div class="weight-summary">
-        <div id="weightSummary" class="ws-note"></div>
-      </div>
-    </section>
+    </aside>
 
-    <div class="sec-label ani">Where the weight usually sits</div>
-    <div class="sec-sub ani">Across all our chats, here's roughly who tends to carry what.</div>
-    <section class="card ani">
-      <div id="aspectsList" class="aspects-list"></div>
-    </section>
+    <main class="dashboard ani">
+      <header class="topbar">
+        <div>
+          <div class="topbar-kicker">Prototype mock</div>
+          <h1 class="topbar-title" id="pageTitle"></h1>
+          <p class="topbar-sub" id="pageSubtitle"></p>
+        </div>
+        <div class="topbar-chip-group">
+          <div class="topbar-chip">
+            <span class="chip-label">Chats</span>
+            <strong id="chipChats"></strong>
+          </div>
+          <div class="topbar-chip">
+            <span class="chip-label">Months</span>
+            <strong id="chipMonths"></strong>
+          </div>
+        </div>
+      </header>
 
-    <div class="sec-label ani">What we've been talking about</div>
-    <div class="sec-sub ani">Sized by how much space each topic took up.</div>
-    <section class="card ani">
-      <div id="topicsViz" class="topics-viz"></div>
-    </section>
+      <section class="panel active" data-panel="period">
+        <div class="hero-card card">
+          <div class="hero-copy">
+            <div class="eyebrow">This period's read</div>
+            <div class="hero-title" id="overviewTitle"></div>
+            <p class="hero-text" id="overviewDesc"></p>
+            <div class="hero-stats">
+              <div class="stat-pill">
+                <div class="stat-value" id="overviewStatOne"></div>
+                <div class="stat-label">On average</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-value" id="overviewStatTwo"></div>
+                <div class="stat-label">Your share</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-value" id="overviewStatThree"></div>
+                <div class="stat-label">Across time</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-art">
+            <img id="overviewSlime" src="sprites/cute.png" alt="Miro sprite" />
+          </div>
+        </div>
 
-    <div class="sec-label ani">How you've changed with me</div>
-    <div class="sec-sub ani">The shape of our relationship across these four months.</div>
-    <section class="card ani">
-      <div id="arcStory" class="arc-story"></div>
-    </section>
+        <div class="period-grid">
+          <section class="card">
+            <div class="section-kicker">A quick arc</div>
+            <div class="arc-story" id="arcStory"></div>
+          </section>
 
-    <div class="sec-label ani">Moments that shifted things</div>
-    <div class="sec-sub ani">A few turns that changed the direction most.</div>
-    <section id="momentsGrid" class="two-col ani"></section>
+          <section class="card">
+            <div class="section-kicker">Small things I've noticed</div>
+            <div class="insights-list" id="insightsList"></div>
+          </section>
+        </div>
+      </section>
 
-    <div class="sec-label ani">Every chat, at a glance</div>
-    <div class="sec-sub ani">Each square is one conversation. Color shows who carried more.</div>
-    <section class="card ani">
-      <div id="tapestryGrid" class="tapestry-grid"></div>
-      <div class="tapestry-legend">
-        <div class="leg-item"><div class="leg-swatch miro-swatch strong"></div>I carried more</div>
-        <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
-        <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
-      </div>
-    </section>
+      <section class="panel" data-panel="made">
+        <div class="two-up">
+          <section class="card">
+            <div class="section-kicker">What we've been talking about</div>
+            <p class="section-sub">Sized by how much space each topic took up.</p>
+            <div class="topics-viz" id="topicsViz"></div>
+          </section>
 
-    <div class="sec-label ani">Small things I've noticed</div>
-    <div class="sec-sub ani">Patterns I couldn't quite fit anywhere else.</div>
-    <section class="card ani">
-      <div id="insightsList" class="insights-list"></div>
-    </section>
+          <section class="card">
+            <div class="section-kicker">Moments that shifted things</div>
+            <p class="section-sub">A few turns that changed the direction most.</p>
+            <div class="moments-list" id="momentsGrid"></div>
+          </section>
+        </div>
+      </section>
 
-    <section class="card portrait-card ani">
-      <div class="portrait-eyebrow">If I had to describe you</div>
-      <div id="portraitTitle" class="portrait-title"></div>
-      <div id="portraitText" class="portrait-text"></div>
-    </section>
+      <section class="panel" data-panel="weight">
+        <div class="two-up weight-layout">
+          <section class="card">
+            <div class="section-kicker">Where the weight sat over time</div>
+            <p class="section-sub">Each bar is one chat. Above the line is what I carried. Below is what you carried.</p>
+            <div class="weight-legend-row">
+              <div class="weight-legend-item"><div class="wl-swatch miro-swatch"></div>What I brought</div>
+              <div class="weight-legend-item"><div class="wl-swatch you-swatch"></div>What you brought</div>
+            </div>
+            <div class="weight-chart">
+              <div class="weight-center-line"></div>
+              <div id="weightBars" class="weight-bars"></div>
+            </div>
+            <div class="weight-axis">
+              <span>Dec</span>
+              <span>Jan</span>
+              <span>Feb</span>
+              <span>Mar</span>
+              <span>Apr</span>
+            </div>
+            <div class="weight-summary">
+              <div class="ws-note" id="weightSummary"></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="section-kicker">Where the work usually settled</div>
+            <p class="section-sub">A rough read of who tended to carry what kind of work.</p>
+            <div class="aspects-list" id="aspectsList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="style">
+        <div class="two-up">
+          <section class="card">
+            <div class="section-kicker">You brought / I brought</div>
+            <p class="section-sub">The recurring shape of the collaboration, not a scorecard.</p>
+            <div class="brought-grid">
+              <div class="brought-card you">
+                <div class="brought-head you">You brought</div>
+                <ul id="youBroughtList"></ul>
+              </div>
+              <div class="brought-card miro">
+                <div class="brought-head miro">I brought</div>
+                <ul id="miroBroughtList"></ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="card portrait-card">
+            <div class="portrait-eyebrow">If I had to describe you lately</div>
+            <div class="portrait-title" id="portraitTitle"></div>
+            <div class="portrait-text" id="portraitText"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="reflect">
+        <div class="reflect-grid">
+          <section class="card">
+            <div class="section-kicker">A seed to sit with</div>
+            <div class="reflection-card">
+              <div class="reflection-label">Something to notice</div>
+              <div class="reflection-question" id="seedQuestion"></div>
+            </div>
+
+            <div class="section-kicker section-gap">A gentle next step</div>
+            <div class="next-step-card">
+              <div class="next-step-title" id="nextStepTitle"></div>
+              <div class="next-step-copy" id="nextStepCopy"></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="section-kicker">Every chat, at a glance</div>
+            <p class="section-sub">Each square is one conversation. Color shows where the weight seemed to sit.</p>
+            <div class="tapestry-grid" id="tapestryGrid"></div>
+            <div class="tapestry-legend">
+              <div class="leg-item"><div class="leg-swatch miro-swatch strong"></div>I carried more</div>
+              <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
+              <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script src="dashboard.js"></script>
