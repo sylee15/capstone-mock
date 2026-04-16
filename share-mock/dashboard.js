@@ -17,16 +17,126 @@ const dashboardData = {
     { label: 'Creative work', note: 'I generated fast options, but you curated the ones that felt alive.', you: 42, miro: 58 }
   ],
   topics: [
-    { label: 'Capstone design', count: 18, tone: 'you', size: 'xxl', x: 18, y: 28 },
-    { label: 'Product framing', count: 14, tone: 'miro', size: 'xl', x: 43, y: 16 },
-    { label: 'Interview synthesis', count: 9, tone: 'neutral', size: 'lg', x: 71, y: 24 },
-    { label: 'Prototyping', count: 7, tone: 'you', size: 'lg', x: 31, y: 64 },
-    { label: 'UX research', count: 5, tone: 'miro', size: 'md', x: 55, y: 58 },
-    { label: 'Metacognition', count: 4, tone: 'neutral', size: 'sm', x: 82, y: 58 },
-    { label: 'AI in education', count: 4, tone: 'miro', size: 'sm', x: 12, y: 79 },
-    { label: 'Coding', count: 3, tone: 'you', size: 'sm', x: 83, y: 11 },
-    { label: 'Career planning', count: 2, tone: 'neutral', size: 'xs', x: 62, y: 82 },
-    { label: 'Personal', count: 2, tone: 'you', size: 'xs', x: 38, y: 85 }
+    {
+      id: 'capstone-design',
+      label: 'Capstone design',
+      count: 18,
+      size: 'xxl',
+      x: 23,
+      y: 34,
+      youShare: 62,
+      miroShare: 38,
+      cluster: 'build',
+      links: ['product-framing', 'prototyping', 'ux-research']
+    },
+    {
+      id: 'product-framing',
+      label: 'Product framing',
+      count: 14,
+      size: 'xl',
+      x: 42,
+      y: 20,
+      youShare: 54,
+      miroShare: 46,
+      cluster: 'build',
+      links: ['capstone-design', 'interview-synthesis', 'coding']
+    },
+    {
+      id: 'interview-synthesis',
+      label: 'Interview synthesis',
+      count: 9,
+      size: 'lg',
+      x: 66,
+      y: 26,
+      youShare: 43,
+      miroShare: 57,
+      cluster: 'research',
+      links: ['product-framing', 'ux-research', 'metacognition']
+    },
+    {
+      id: 'prototyping',
+      label: 'Prototyping',
+      count: 7,
+      size: 'lg',
+      x: 35,
+      y: 60,
+      youShare: 58,
+      miroShare: 42,
+      cluster: 'build',
+      links: ['capstone-design', 'ux-research', 'personal']
+    },
+    {
+      id: 'ux-research',
+      label: 'UX research',
+      count: 5,
+      size: 'md',
+      x: 56,
+      y: 56,
+      youShare: 52,
+      miroShare: 48,
+      cluster: 'research',
+      links: ['capstone-design', 'prototyping', 'interview-synthesis', 'career-planning']
+    },
+    {
+      id: 'metacognition',
+      label: 'Metacognition',
+      count: 4,
+      size: 'sm',
+      x: 81,
+      y: 52,
+      youShare: 49,
+      miroShare: 51,
+      cluster: 'reflection',
+      links: ['interview-synthesis', 'ai-in-education']
+    },
+    {
+      id: 'ai-in-education',
+      label: 'AI in education',
+      count: 4,
+      size: 'sm',
+      x: 74,
+      y: 71,
+      youShare: 37,
+      miroShare: 63,
+      cluster: 'reflection',
+      links: ['metacognition']
+    },
+    {
+      id: 'coding',
+      label: 'Coding',
+      count: 3,
+      size: 'sm',
+      x: 60,
+      y: 10,
+      youShare: 10,
+      miroShare: 90,
+      cluster: 'build',
+      links: ['product-framing']
+    },
+    {
+      id: 'career-planning',
+      label: 'Career planning',
+      count: 2,
+      size: 'xs',
+      x: 18,
+      y: 76,
+      youShare: 65,
+      miroShare: 35,
+      cluster: 'life',
+      links: ['ux-research', 'personal']
+    },
+    {
+      id: 'personal',
+      label: 'Personal',
+      count: 2,
+      size: 'xs',
+      x: 33,
+      y: 82,
+      youShare: 71,
+      miroShare: 29,
+      cluster: 'life',
+      links: ['prototyping', 'career-planning']
+    }
   ],
   arc: [
     { month: 'January', text: "You asked open questions and let me lead. There were lots of 'help me figure this out' chats where I did most of the shaping." },
@@ -139,15 +249,47 @@ function renderTaskBreakdown() {
 
 function renderTopics() {
   const host = document.getElementById('topicsViz');
-  host.innerHTML = dashboardData.topics.map((topic) => `
-    <div
-      class="topic-bubble ${topic.size} ${topic.tone}"
-      style="left:${topic.x}%; top:${topic.y}%;"
-    >
-      <div class="topic-bubble-label">${escapeHtml(topic.label)}</div>
-      <div class="topic-bubble-count">${topic.count}</div>
-    </div>
-  `).join('');
+  const topicMap = new Map(dashboardData.topics.map((topic) => [topic.id, topic]));
+  const lineMarkup = [];
+  const lineSeen = new Set();
+
+  dashboardData.topics.forEach((topic) => {
+    (topic.links || []).forEach((targetId) => {
+      const target = topicMap.get(targetId);
+      if (!target) return;
+      const pairKey = [topic.id, targetId].sort().join(':');
+      if (lineSeen.has(pairKey)) return;
+      lineSeen.add(pairKey);
+      lineMarkup.push(`
+        <line
+          class="topic-link"
+          x1="${topic.x}%"
+          y1="${topic.y}%"
+          x2="${target.x}%"
+          y2="${target.y}%"
+        ></line>
+      `);
+    });
+  });
+
+  host.innerHTML = `
+    <svg class="topic-link-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      ${lineMarkup.join('')}
+    </svg>
+    ${dashboardData.topics.map((topic) => {
+      const splitPoint = Math.max(8, Math.min(92, topic.youShare));
+      const textClass = topic.youShare >= 58 || topic.miroShare >= 58 ? 'light-text' : 'dark-text';
+      return `
+        <div
+          class="topic-bubble ${topic.size} ${textClass}"
+          style="left:${topic.x}%; top:${topic.y}%; --topic-fill: linear-gradient(135deg, rgba(191, 115, 84, 0.96) 0%, rgba(191, 115, 84, 0.96) ${splitPoint}%, rgba(74, 178, 212, 0.96) ${splitPoint}%, rgba(74, 178, 212, 0.96) 100%);"
+        >
+          <div class="topic-bubble-label">${escapeHtml(topic.label)}</div>
+          <div class="topic-bubble-count">${topic.count} chats</div>
+        </div>
+      `;
+    }).join('')}
+  `;
 }
 
 function renderArc() {

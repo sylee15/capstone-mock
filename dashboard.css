@@ -341,19 +341,44 @@ body::before {
 
 .made-stage-card { padding: 24px; }
 
+.map-helper {
+  margin: 8px 0 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-mid);
+}
+
 .topic-bubble-stage {
   position: relative;
-  min-height: 520px;
+  min-height: 560px;
   border-radius: 26px;
   background:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.42), transparent 70%),
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.46), transparent 34%),
+    radial-gradient(circle at 72% 68%, rgba(74, 178, 212, 0.08), transparent 28%),
+    radial-gradient(circle at 18% 78%, rgba(191, 115, 84, 0.08), transparent 24%),
     #f8f2e8;
   border: 1px solid var(--border-soft);
   overflow: hidden;
 }
 
 .topic-bubble-stage.full {
-  min-height: 560px;
+  min-height: 620px;
+}
+
+.topic-link-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.topic-link {
+  stroke: rgba(125, 114, 102, 0.24);
+  stroke-width: 0.38;
+  stroke-linecap: round;
+  stroke-dasharray: 1.1 1.35;
 }
 
 .topic-bubble {
@@ -366,22 +391,24 @@ body::before {
   text-align: center;
   border-radius: 50%;
   padding: 14px;
-  border: 1px solid rgba(51, 43, 36, 0.08);
-  box-shadow: 0 14px 28px rgba(51, 43, 36, 0.06);
+  border: 1px solid rgba(255, 250, 243, 0.78);
+  box-shadow: 0 14px 30px rgba(51, 43, 36, 0.08);
+  background: var(--topic-fill);
+  z-index: 2;
 }
 
-.topic-bubble.you { background: rgba(191, 115, 84, 0.8); color: #fffaf5; }
-.topic-bubble.miro { background: rgba(74, 178, 212, 0.8); color: #f7feff; }
-.topic-bubble.neutral { background: rgba(207, 198, 187, 0.78); color: var(--ink); }
 .topic-bubble.xxl { width: 182px; height: 182px; }
-.topic-bubble.xl { width: 152px; height: 152px; }
-.topic-bubble.lg { width: 124px; height: 124px; }
-.topic-bubble.md { width: 102px; height: 102px; }
-.topic-bubble.sm { width: 84px; height: 84px; }
-.topic-bubble.xs { width: 68px; height: 68px; }
+.topic-bubble.xl { width: 156px; height: 156px; }
+.topic-bubble.lg { width: 128px; height: 128px; }
+.topic-bubble.md { width: 104px; height: 104px; }
+.topic-bubble.sm { width: 88px; height: 88px; }
+.topic-bubble.xs { width: 74px; height: 74px; }
+.topic-bubble.light-text { color: #fffaf5; text-shadow: 0 1px 2px rgba(39, 32, 27, 0.16); }
+.topic-bubble.dark-text { color: var(--ink); }
 .topic-bubble-label { max-width: 90%; font-size: 14px; font-weight: 600; line-height: 1.2; }
-.topic-bubble-count { margin-top: 6px; font-size: 11px; opacity: 0.82; font-weight: 600; }
+.topic-bubble-count { margin-top: 6px; font-size: 11px; opacity: 0.84; font-weight: 600; }
 .topic-bubble.sm .topic-bubble-label, .topic-bubble.xs .topic-bubble-label { font-size: 11px; }
+.topic-bubble.xs .topic-bubble-count { font-size: 10px; }
 
 .task-stage-card { padding: 24px; }
 .task-list { display: flex; flex-direction: column; gap: 14px; }
@@ -555,5 +582,5 @@ body::before {
   .topbar-title { font-size: 34px; }
   .hero-title, .portrait-title, .next-step-title, .reflection-question { font-size: 24px; }
   .topic-bubble-stage,
-  .topic-bubble-stage.full { min-height: 420px; }
+  .topic-bubble-stage.full { min-height: 500px; }
 }
