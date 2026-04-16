@@ -305,7 +305,7 @@ function renderTopics() {
       const bubbleStyle = buildTopicBubbleStyle(topic);
       return `
         <div
-          class="topic-bubble ${topic.size} ${bubbleStyle.textClass}"
+          class="topic-bubble ${topic.size}"
           style="left:${topic.x}%; top:${topic.y}%; ${bubbleStyle.style}"
         >
           <div class="topic-bubble-label">${escapeHtml(topic.label)}</div>
@@ -342,13 +342,28 @@ function buildTopicBubbleStyle(topic) {
   const dominantColor = topic.youShare >= topic.miroShare ? youColor : miroColor;
   const secondaryColor = topic.youShare >= topic.miroShare ? miroColor : youColor;
   const secondaryShare = Math.min(topic.youShare, topic.miroShare) / 100;
-  const patchSize = 20 + (secondaryShare * 34);
-  const lightText = Math.max(topic.youShare, topic.miroShare) >= 62;
+  const arcOne = 14 + (secondaryShare * 22);
+  const arcTwo = secondaryShare > 0.18 ? 10 + (secondaryShare * 16) : 0;
+  const arcThree = secondaryShare > 0.34 ? 8 + (secondaryShare * 12) : 0;
+  const arcLayers = [
+    `radial-gradient(circle at 102% 78%, ${toRgba(secondaryColor, 0.98)} 0%, ${toRgba(secondaryColor, 0.98)} ${arcOne.toFixed(1)}%, ${toRgba(secondaryColor, 0)} ${(arcOne + 4).toFixed(1)}%)`
+  ];
+
+  if (arcTwo) {
+    arcLayers.push(
+      `radial-gradient(circle at 16% 104%, ${toRgba(secondaryColor, 0.94)} 0%, ${toRgba(secondaryColor, 0.94)} ${arcTwo.toFixed(1)}%, ${toRgba(secondaryColor, 0)} ${(arcTwo + 4).toFixed(1)}%)`
+    );
+  }
+
+  if (arcThree) {
+    arcLayers.push(
+      `radial-gradient(circle at 92% 14%, ${toRgba(secondaryColor, 0.9)} 0%, ${toRgba(secondaryColor, 0.9)} ${arcThree.toFixed(1)}%, ${toRgba(secondaryColor, 0)} ${(arcThree + 4).toFixed(1)}%)`
+    );
+  }
 
   return {
-    textClass: lightText ? 'light-text' : 'dark-text',
     style: [
-      `--topic-fill: radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.14) 26%, rgba(255, 255, 255, 0) 42%), radial-gradient(circle at 76% 74%, ${toRgba(secondaryColor, 0.98)} 0%, ${toRgba(secondaryColor, 0.98)} ${patchSize.toFixed(1)}%, ${toRgba(secondaryColor, 0)} ${(patchSize + 6).toFixed(1)}%), linear-gradient(165deg, ${toRgba(dominantColor, 0.98)} 0%, ${toRgba(dominantColor, 0.98)} 100%)`,
+      `--topic-fill: radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.14) 26%, rgba(255, 255, 255, 0) 42%), ${arcLayers.join(', ')}, linear-gradient(165deg, ${toRgba(dominantColor, 0.98)} 0%, ${toRgba(dominantColor, 0.98)} 100%)`,
       `--topic-shadow: 0 18px 36px ${toRgba(dominantColor, 0.22)}, 0 8px 24px rgba(51, 43, 36, 0.12)`
     ].join('; ')
   };

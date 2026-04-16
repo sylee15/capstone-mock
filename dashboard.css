@@ -397,8 +397,7 @@ body::before {
 .topic-bubble.md { width: 112px; height: 112px; }
 .topic-bubble.sm { width: 92px; height: 92px; }
 .topic-bubble.xs { width: 76px; height: 76px; }
-.topic-bubble.light-text { color: #fffaf5; text-shadow: 0 1px 2px rgba(51, 43, 36, 0.14); }
-.topic-bubble.dark-text { color: var(--ink); }
+.topic-bubble { color: #fffaf5; text-shadow: 0 1px 2px rgba(51, 43, 36, 0.16); }
 .topic-bubble-label,
 .topic-bubble-count {
   position: relative;
