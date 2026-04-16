@@ -6,6 +6,7 @@
   const POLL_INTERVAL_MS = 2500;
   const MAX_MESSAGES = 24;
   const STALE_ASSISTANT_GROWTH = 220;
+  const MAX_ANALYSIS_INSTANCES = 12;
 
   const state = {
     panelOpen: false,
@@ -15,7 +16,9 @@
     messages: [],
     analyzedMessages: [],
     observer: null,
-    stale: false
+    stale: false,
+    sessionKey: getSessionKey(),
+    analysisInstances: []
   };
 
   const SPRITES = {
@@ -26,6 +29,7 @@
   };
 
   injectUI();
+  hydrateSessionState();
   watchConversation();
   pollConversation();
   setInterval(pollConversation, POLL_INTERVAL_MS);
@@ -136,12 +140,10 @@
     renderLoading();
 
     try {
+      const payload = buildAnalysisPayload();
       const response = await chrome.runtime.sendMessage({
         type: 'MIRO_ANALYZE_CHAT',
-        payload: {
-          conversation: state.messages.map(({ role, content }) => ({ role, content })),
-          pageTitle: document.title
-        }
+        payload
       });
 
       if (!response?.ok) {
@@ -151,6 +153,19 @@
       state.latestAnalysis = normalizeAnalysis(response.result);
       state.convoHash = newHash;
       state.analyzedMessages = cloneMessages(state.messages);
+      state.analysisInstances = appendAnalysisInstance(state.analysisInstances, {
+        analyzed_at: new Date().toISOString(),
+        message_count: state.messages.length,
+        new_message_count: payload.conversation.length,
+        analysis_mode: payload.analysisMode,
+        state_mode: state.latestAnalysis.state_mode,
+        state_title: state.latestAnalysis.state_title,
+        weight_rows: state.latestAnalysis.weight_rows.map((row) => ({
+          key: row.key,
+          position: row.position
+        }))
+      });
+      persistSessionState();
       state.stale = false;
       renderPanel(state.latestAnalysis);
     } catch (error) {
@@ -478,6 +493,91 @@
     window.open(chrome.runtime.getURL('dashboard.html'), '_blank');
   }
 
+  async function hydrateSessionState() {
+    try {
+      const stored = await chrome.storage.local.get([getSessionStorageKey()]);
+      const snapshot = stored[getSessionStorageKey()];
+
+      if (!snapshot || typeof snapshot !== 'object') {
+        return;
+      }
+
+      state.latestAnalysis = snapshot.lastAnalysis ? normalizeAnalysis(snapshot.lastAnalysis) : null;
+      state.convoHash = cleanText(snapshot.convoHash, '');
+      state.analyzedMessages = normalizeStoredMessages(snapshot.analyzedMessages);
+      state.analysisInstances = Array.isArray(snapshot.analysisInstances)
+        ? snapshot.analysisInstances.slice(-MAX_ANALYSIS_INSTANCES)
+        : [];
+      state.stale = state.latestAnalysis && hasMeaningfulChange(state.messages, state.analyzedMessages);
+      updatePetSprite();
+    } catch (error) {
+      console.warn('Miro could not restore session memory.', error);
+    }
+  }
+
+  function buildAnalysisPayload() {
+    const conversation = cloneMessages(state.messages);
+    const priorMessages = normalizeStoredMessages(state.analyzedMessages);
+    const canUseIncremental =
+      state.latestAnalysis &&
+      priorMessages.length >= MIN_TURNS &&
+      conversation.length >= priorMessages.length;
+
+    if (!canUseIncremental) {
+      return {
+        analysisMode: 'full',
+        conversation,
+        pageTitle: document.title,
+        sessionKey: state.sessionKey,
+        previousMessageCount: 0,
+        fullMessageCount: conversation.length
+      };
+    }
+
+    const newMessages = conversation.slice(priorMessages.length);
+    const hasFreshTail = newMessages.some((message) => message.content.trim().length > 0);
+
+    if (!hasFreshTail) {
+      return {
+        analysisMode: 'full',
+        conversation,
+        pageTitle: document.title,
+        sessionKey: state.sessionKey,
+        previousMessageCount: 0,
+        fullMessageCount: conversation.length
+      };
+    }
+
+    return {
+      analysisMode: 'incremental',
+      conversation: newMessages,
+      pageTitle: document.title,
+      sessionKey: state.sessionKey,
+      previousReflection: state.latestAnalysis,
+      previousMessageCount: priorMessages.length,
+      fullMessageCount: conversation.length
+    };
+  }
+
+  async function persistSessionState() {
+    const storageKey = getSessionStorageKey();
+    const snapshot = {
+      sessionKey: state.sessionKey,
+      pageTitle: document.title,
+      lastAnalysis: state.latestAnalysis,
+      convoHash: state.convoHash,
+      analyzedMessages: cloneMessages(state.analyzedMessages),
+      analysisInstances: state.analysisInstances.slice(-MAX_ANALYSIS_INSTANCES),
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      await chrome.storage.local.set({ [storageKey]: snapshot });
+    } catch (error) {
+      console.warn('Miro could not save session memory.', error);
+    }
+  }
+
   function scrapeConversation() {
     const messageNodes = Array.from(document.querySelectorAll('[data-message-author-role], article'));
     const messages = [];
@@ -512,8 +612,32 @@
     return messages.map((message) => `${message.role}:${message.content.slice(0, 160)}`).join('|');
   }
 
+  function getSessionKey() {
+    return `${location.origin}${location.pathname}`;
+  }
+
+  function getSessionStorageKey() {
+    return `miro_session:${state.sessionKey}`;
+  }
+
   function cloneMessages(messages) {
     return messages.map((message) => ({ role: message.role, content: message.content }));
+  }
+
+  function normalizeStoredMessages(messages) {
+    return Array.isArray(messages)
+      ? messages
+          .map((message) => ({
+            role: message?.role === 'assistant' ? 'assistant' : 'user',
+            content: cleanText(message?.content, '')
+          }))
+          .filter((message) => message.content)
+          .slice(-MAX_MESSAGES)
+      : [];
+  }
+
+  function appendAnalysisInstance(instances, nextInstance) {
+    return [...(Array.isArray(instances) ? instances : []), nextInstance].slice(-MAX_ANALYSIS_INSTANCES);
   }
 
   function hasMeaningfulChange(current, analyzed) {

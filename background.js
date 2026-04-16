@@ -113,7 +113,16 @@ async function handleAnalyze(payload) {
 }
 
 function buildMessages(payload) {
-  const { conversation = [], pageTitle } = payload || {};
+  const {
+    conversation = [],
+    pageTitle,
+    analysisMode = 'full',
+    previousReflection = null,
+    previousMessageCount = 0,
+    fullMessageCount = conversation.length
+  } = payload || {};
+  const hasPreviousReflection = Boolean(previousReflection && typeof previousReflection === 'object');
+  const isIncremental = analysisMode === 'incremental' && hasPreviousReflection;
   const system = [
     'You are Miro, a soft reflective companion living inside a student\'s ChatGPT chat.',
     'Your job is to notice how the work moved between you and the student in this one session.',
@@ -135,22 +144,86 @@ function buildMessages(payload) {
     '- seed_to_sit_with should be one sharp reflective question about ownership, judgment, learning, or reliance.',
     '- gentle_next_step_title should be short and action-oriented.',
     '- gentle_next_step should suggest one small, useful next move based on this session.',
-    '- Avoid numbers, scoring language, or overclaiming certainty.'
+    '- Avoid numbers, scoring language, or overclaiming certainty.',
+    isIncremental
+      ? '- You may receive a previous structured reflection plus only the new messages since I was last opened. Update the reflection from that prior read instead of starting from zero.'
+      : '- Read this session as a fresh full-session reflection.'
   ].join('\n');
 
   const user = {
     role: 'user',
-    content: [
-      `Page title: ${pageTitle || 'Untitled chat'}`,
-      'Conversation:',
-      ...conversation.map((message, index) => `${index + 1}. ${normalizeRole(message.role)}: ${sanitize(message.content)}`)
-    ].join('\n')
+    content: buildUserMessage({
+      pageTitle,
+      conversation,
+      isIncremental,
+      previousReflection,
+      previousMessageCount,
+      fullMessageCount
+    })
   };
 
   return [
     { role: 'system', content: system },
     user
   ];
+}
+
+function buildUserMessage({
+  pageTitle,
+  conversation,
+  isIncremental,
+  previousReflection,
+  previousMessageCount,
+  fullMessageCount
+}) {
+  const lines = [`Page title: ${pageTitle || 'Untitled chat'}`];
+
+  if (isIncremental) {
+    lines.push(`This is an incremental reread of the same session.`);
+    lines.push(`The previous reflection covered about ${previousMessageCount} messages.`);
+    lines.push(`The session now has about ${fullMessageCount} visible messages.`);
+    lines.push('Previous reflection snapshot:');
+    lines.push(JSON.stringify(compactPreviousReflection(previousReflection)));
+    lines.push('');
+    lines.push('Only the new messages since that last reflection are below:');
+  } else {
+    lines.push('This is a fresh full-session read.');
+    lines.push('Conversation:');
+  }
+
+  lines.push(
+    ...conversation.map((message, index) => `${index + 1}. ${normalizeRole(message.role)}: ${sanitize(message.content)}`)
+  );
+
+  return lines.join('\n');
+}
+
+function compactPreviousReflection(reflection) {
+  return {
+    state_mode: reflection?.state_mode,
+    state_title: sanitize(reflection?.state_title),
+    state_description: sanitize(reflection?.state_description),
+    turning_points: Array.isArray(reflection?.turning_points)
+      ? reflection.turning_points.map((item) => sanitize(item)).slice(0, 4)
+      : [],
+    weight_rows: Array.isArray(reflection?.weight_rows)
+      ? reflection.weight_rows.slice(0, 6).map((row) => ({
+          key: sanitize(row?.key),
+          label: sanitize(row?.label),
+          position: Number.isFinite(Number(row?.position)) ? Number(row.position) : 50,
+          reason: sanitize(row?.reason)
+        }))
+      : [],
+    you_brought: Array.isArray(reflection?.you_brought)
+      ? reflection.you_brought.map((item) => sanitize(item)).slice(0, 4)
+      : [],
+    miro_brought: Array.isArray(reflection?.miro_brought)
+      ? reflection.miro_brought.map((item) => sanitize(item)).slice(0, 4)
+      : [],
+    seed_to_sit_with: sanitize(reflection?.seed_to_sit_with),
+    gentle_next_step_title: sanitize(reflection?.gentle_next_step_title),
+    gentle_next_step: sanitize(reflection?.gentle_next_step)
+  };
 }
 
 function normalizeRole(role) {

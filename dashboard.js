@@ -1,6 +1,8 @@
 const dashboardData = {
   chats: 52,
   months: 4,
+  periodLabel: 'December to April',
+  periodMeta: '52 chats in this prototype monthset',
   overview: {
     title: 'Creating Together',
     description:
@@ -81,8 +83,7 @@ const dashboardData = {
       who: 'I reflected back',
       quote: 'What you wanted was a way to make invisible thinking show up in the work.',
       context: "That line seemed to give the project a stronger center. It wasn't new from nowhere, just your thinking coming back with shape.",
-      meta: 'Apr 13 - Pitch conversation',
-      wide: true
+      meta: 'Apr 13 - Pitch conversation'
     }
   ],
   tapestry: [
@@ -103,11 +104,53 @@ const dashboardData = {
     title: '"A thinker who finds the shape of their answer by refusing the wrong ones first."',
     text:
       "You rarely arrive with a full plan. You arrive with a sense that something matters, then use me as a surface to test it against. That's not indecision. It's a way of thinking that needs something to push on. We seem to work best when I'm willing to be wrong out loud so you have something real to sharpen."
+  },
+  brought: {
+    you: [
+      'the directional judgment for what was actually worth keeping',
+      'the sharper critiques that made the work more specific',
+      'the instinct for tone, audience, and what still felt true',
+      'the final say when a draft was close, but not quite right'
+    ],
+    miro: [
+      'first-pass structure you could push against',
+      'faster iteration when the shape was still blurry',
+      'language for patterns that were already there in your thinking',
+      'momentum when you needed something concrete to react to'
+    ]
+  },
+  reflection: {
+    seed: 'When I helped most in this stretch, was I extending your thinking or replacing the part you most wanted to own?',
+    nextTitle: 'Take back one piece',
+    nextStep:
+      'The next time I give you a strong first draft, pause before keeping it. Rewrite one paragraph or one decision in your own words so the shape of it comes back through you.'
+  },
+  tabs: {
+    period: {
+      title: 'This period',
+      subtitle: 'A soft overview of the recent rhythm between you and me.'
+    },
+    made: {
+      title: 'What we made',
+      subtitle: 'The topics and moments that seemed to hold the most weight.'
+    },
+    weight: {
+      title: 'Where the weight sat',
+      subtitle: 'A longer read of who tended to carry which parts of the work.'
+    },
+    style: {
+      title: 'How you work with me',
+      subtitle: 'More tendency than verdict. A description of the collaboration as it has felt.'
+    },
+    reflect: {
+      title: 'Reflect',
+      subtitle: 'A small place to notice the pattern and decide what you want to do with it.'
+    }
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderHeader();
+  renderChrome();
   renderOverview();
   renderWeightChart();
   renderAspects();
@@ -117,11 +160,38 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTapestry();
   renderInsights();
   renderPortrait();
+  renderBrought();
+  renderReflection();
+  bindTabs();
 });
 
-function renderHeader() {
+function renderChrome() {
   document.getElementById('chipChats').textContent = dashboardData.chats;
   document.getElementById('chipMonths').textContent = dashboardData.months;
+  document.getElementById('periodLabel').textContent = dashboardData.periodLabel;
+  document.getElementById('periodMeta').textContent = dashboardData.periodMeta;
+  applyTabCopy('period');
+}
+
+function bindTabs() {
+  const buttons = Array.from(document.querySelectorAll('.tab-button'));
+  const panels = Array.from(document.querySelectorAll('.panel'));
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const nextTab = button.dataset.tab;
+
+      buttons.forEach((item) => item.classList.toggle('active', item === button));
+      panels.forEach((panel) => panel.classList.toggle('active', panel.dataset.panel === nextTab));
+      applyTabCopy(nextTab);
+    });
+  });
+}
+
+function applyTabCopy(tabKey) {
+  const tab = dashboardData.tabs[tabKey] || dashboardData.tabs.period;
+  document.getElementById('pageTitle').textContent = tab.title;
+  document.getElementById('pageSubtitle').textContent = tab.subtitle;
 }
 
 function renderOverview() {
@@ -130,9 +200,7 @@ function renderOverview() {
   document.getElementById('overviewDesc').textContent = description;
   document.getElementById('overviewStatOne').textContent = statOne;
   document.getElementById('overviewStatTwo').textContent = statTwo;
-  document.getElementById('overviewStatTwo').style.color = 'var(--you-dark)';
   document.getElementById('overviewStatThree').textContent = statThree;
-  document.getElementById('overviewStatThree').style.color = 'var(--ink)';
 }
 
 function renderWeightChart() {
@@ -193,7 +261,7 @@ function renderArc() {
 function renderMoments() {
   const host = document.getElementById('momentsGrid');
   host.innerHTML = dashboardData.moments.map((moment) => `
-    <div class="moment-card ${moment.type}-moment${moment.wide ? ' wide' : ''}">
+    <div class="moment-card ${moment.type}-moment">
       <div class="mc-who ${moment.type}-who">${escapeHtml(moment.who)}</div>
       <div class="mc-quote">${escapeHtml(moment.quote)}</div>
       <div class="mc-context">${escapeHtml(moment.context)}</div>
@@ -220,6 +288,21 @@ function renderInsights() {
 function renderPortrait() {
   document.getElementById('portraitTitle').textContent = dashboardData.portrait.title;
   document.getElementById('portraitText').textContent = dashboardData.portrait.text;
+}
+
+function renderBrought() {
+  document.getElementById('youBroughtList').innerHTML = dashboardData.brought.you
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join('');
+  document.getElementById('miroBroughtList').innerHTML = dashboardData.brought.miro
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join('');
+}
+
+function renderReflection() {
+  document.getElementById('seedQuestion').textContent = dashboardData.reflection.seed;
+  document.getElementById('nextStepTitle').textContent = dashboardData.reflection.nextTitle;
+  document.getElementById('nextStepCopy').textContent = dashboardData.reflection.nextStep;
 }
 
 function escapeHtml(value) {
