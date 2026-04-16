@@ -39,6 +39,7 @@ body::before {
   position: relative;
   z-index: 1;
   width: min(960px, calc(100vw - 32px));
+  margin: 0 auto;
 }
 
 .landing-page { padding: 56px 0 80px; }
