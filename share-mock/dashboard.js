@@ -9,7 +9,7 @@ const dashboardData = {
       "We've been in a build-and-critique rhythm. I draft, you reshape, I rebuild. Most of your strongest ideas seem to arrive when you're pushing back on something I made first.",
       "The essay on climate policy? That conclusion was distinctly yours. I gave you frameworks, but you built something I wouldn't have written."
     ],
-    signoff: 'Miro · April 14'
+    signoff: 'Miro - April 14'
   },
   arc: [
     { month: 'January', text: "You asked open questions and let me lead. There were lots of 'help me figure this out' chats where I did most of the shaping." },
@@ -63,106 +63,16 @@ const dashboardData = {
     }
   ],
   topics: [
-    {
-      id: 'capstone-design',
-      label: 'Capstone design',
-      count: 18,
-      size: 'xxl',
-      x: 28,
-      y: 34,
-      youShare: 64,
-      miroShare: 36
-    },
-    {
-      id: 'product-framing',
-      label: 'Product framing',
-      count: 14,
-      size: 'xl',
-      x: 42,
-      y: 25,
-      youShare: 57,
-      miroShare: 43
-    },
-    {
-      id: 'coding',
-      label: 'Coding',
-      count: 6,
-      size: 'md',
-      x: 54,
-      y: 16,
-      youShare: 18,
-      miroShare: 82
-    },
-    {
-      id: 'interview-synthesis',
-      label: 'Interview synthesis',
-      count: 9,
-      size: 'lg',
-      x: 66,
-      y: 33,
-      youShare: 41,
-      miroShare: 59
-    },
-    {
-      id: 'ux-research',
-      label: 'UX research',
-      count: 5,
-      size: 'md',
-      x: 57,
-      y: 49,
-      youShare: 54,
-      miroShare: 46
-    },
-    {
-      id: 'prototyping',
-      label: 'Prototyping',
-      count: 7,
-      size: 'lg',
-      x: 39,
-      y: 58,
-      youShare: 61,
-      miroShare: 39
-    },
-    {
-      id: 'metacognition',
-      label: 'Metacognition',
-      count: 4,
-      size: 'sm',
-      x: 77,
-      y: 56,
-      youShare: 46,
-      miroShare: 54
-    },
-    {
-      id: 'AI in education',
-      label: 'AI in education',
-      count: 4,
-      size: 'sm',
-      x: 73,
-      y: 70,
-      youShare: 34,
-      miroShare: 66
-    },
-    {
-      id: 'career-planning',
-      label: 'Career planning',
-      count: 3,
-      size: 'xs',
-      x: 18,
-      y: 76,
-      youShare: 68,
-      miroShare: 32
-    },
-    {
-      id: 'personal',
-      label: 'Personal',
-      count: 2,
-      size: 'xs',
-      x: 30,
-      y: 82,
-      youShare: 73,
-      miroShare: 27
-    }
+    { id: 'capstone-design', label: 'Capstone design', count: 18, size: 'xxl', x: 28, y: 34, youShare: 64, miroShare: 36 },
+    { id: 'product-framing', label: 'Product framing', count: 14, size: 'xl', x: 42, y: 25, youShare: 57, miroShare: 43 },
+    { id: 'coding', label: 'Coding', count: 6, size: 'md', x: 54, y: 16, youShare: 18, miroShare: 82 },
+    { id: 'interview-synthesis', label: 'Interview synthesis', count: 9, size: 'lg', x: 66, y: 33, youShare: 41, miroShare: 59 },
+    { id: 'ux-research', label: 'UX research', count: 5, size: 'md', x: 57, y: 49, youShare: 54, miroShare: 46 },
+    { id: 'prototyping', label: 'Prototyping', count: 7, size: 'lg', x: 39, y: 58, youShare: 61, miroShare: 39 },
+    { id: 'metacognition', label: 'Metacognition', count: 4, size: 'sm', x: 77, y: 56, youShare: 46, miroShare: 54 },
+    { id: 'AI in education', label: 'AI in education', count: 4, size: 'sm', x: 73, y: 70, youShare: 34, miroShare: 66 },
+    { id: 'career-planning', label: 'Career planning', count: 3, size: 'xs', x: 18, y: 76, youShare: 68, miroShare: 32 },
+    { id: 'personal', label: 'Personal', count: 2, size: 'xs', x: 30, y: 82, youShare: 73, miroShare: 27 }
   ],
   style: {
     title: 'How you work with me',
@@ -337,8 +247,8 @@ function renderStyle() {
 }
 
 function buildTopicBubbleStyle(topic) {
-  const youColor = { r: 196, g: 126, b: 102 };
-  const miroColor = { r: 103, g: 183, b: 214 };
+  const youColor = { r: 201, g: 122, b: 92 };
+  const miroColor = { r: 74, g: 178, b: 212 };
   const dominantColor = topic.youShare >= topic.miroShare ? youColor : miroColor;
   const secondaryColor = topic.youShare >= topic.miroShare ? miroColor : youColor;
   const secondaryShare = Math.min(topic.youShare, topic.miroShare) / 100;

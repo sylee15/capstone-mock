@@ -213,6 +213,7 @@
   function renderPanel(rawData) {
     const data = normalizeAnalysis(rawData);
     const meta = stateMeta(data);
+    const stateChip = stateChipMeta(data.state_mode);
 
     const body = document.getElementById('miro-panel-body');
     const headerIcon = document.getElementById('miro-header-icon');
@@ -220,9 +221,15 @@
 
     body.innerHTML = `
       <section class="miro-state-card ${meta.stateClass}">
-        <img class="miro-state-sprite" src="${meta.sprite}" alt="${escapeAttr(data.state_title)}" />
+        <div class="miro-state-pet">
+          <img class="miro-state-sprite" src="${meta.sprite}" alt="${escapeAttr(data.state_title)}" />
+        </div>
         <div>
+          <div class="miro-state-kicker">I'd call this one</div>
           <div class="miro-state-name">${escapeHtml(data.state_title)}</div>
+          <div class="miro-state-meta">
+            <span class="miro-state-chip ${stateChip.tone}">${escapeHtml(stateChip.label)}</span>
+          </div>
           <div class="miro-state-desc">${escapeHtml(data.state_description)}</div>
         </div>
       </section>
@@ -288,7 +295,9 @@
   }
 
   function renderWeightRows(rows) {
-    return rows.map((row) => `
+    return rows.map((row) => {
+      const verdict = weightVerdict(row.position);
+      return `
       <button
         class="miro-weight-row"
         type="button"
@@ -296,7 +305,10 @@
       >
         <div class="miro-weight-row-top">
           <div class="miro-weight-label">${escapeHtml(row.label)}</div>
-          <div class="miro-weight-chevron">+</div>
+          <div class="miro-weight-row-right">
+            <div class="miro-weight-verdict ${verdict.tone}">${escapeHtml(verdict.label)}</div>
+            <div class="miro-weight-chevron">+</div>
+          </div>
         </div>
         <div class="miro-weight-scale-labels"><span>Miro</span><span>You</span></div>
         <div class="miro-weight-track">
@@ -306,7 +318,8 @@
         </div>
         <div class="miro-weight-reason">${escapeHtml(row.reason)}</div>
       </button>
-    `).join('');
+    `;
+    }).join('');
   }
 
   function bindWeightRows() {
@@ -450,6 +463,36 @@
       return { sprite: SPRITES.tired, stateClass: 'tired' };
     }
     return { sprite: SPRITES.shared, stateClass: 'shared' };
+  }
+
+  function stateChipMeta(mode) {
+    const safeMode = sanitizeStateMode(mode);
+    if (safeMode === 'builder') {
+      return { label: 'I scaffolded more', tone: 'miro' };
+    }
+    if (safeMode === 'thoughtful') {
+      return { label: 'We were sorting it out', tone: 'gold' };
+    }
+    if (safeMode === 'tired') {
+      return { label: 'I carried more weight', tone: 'miro' };
+    }
+    return { label: 'This one felt shared', tone: 'shared' };
+  }
+
+  function weightVerdict(position) {
+    if (position <= 34) {
+      return { label: 'Leaned to me', tone: 'miro' };
+    }
+    if (position <= 46) {
+      return { label: 'A bit to me', tone: 'miro' };
+    }
+    if (position < 58) {
+      return { label: 'Shared', tone: 'shared' };
+    }
+    if (position < 78) {
+      return { label: 'Mostly you', tone: 'you' };
+    }
+    return { label: 'Clearly you', tone: 'you' };
   }
 
   function updatePetSprite() {

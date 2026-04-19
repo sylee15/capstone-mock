@@ -7,16 +7,16 @@
   --ink: #3a312b;
   --ink-mid: #75695f;
   --ink-light: #ab9d8d;
-  --miro: #67b7d6;
-  --miro-dark: #3c84a6;
-  --miro-deep: #2f6d8b;
-  --you: #c47e66;
-  --you-dark: #a65f49;
+  --miro: #4ab2d4;
+  --miro-dark: #2a8ca9;
+  --miro-deep: #1d647b;
+  --you: #c97a5c;
+  --you-dark: #8f533b;
   --gold: #c8a566;
   --shadow: 0 18px 44px rgba(51, 43, 36, 0.08);
   --radius: 24px;
-  --sans: "Outfit", "Segoe UI", sans-serif;
-  --serif: "Newsreader", Georgia, serif;
+  --sans: "Inter Tight", "Outfit", "Segoe UI", sans-serif;
+  --serif: "Instrument Serif", "Newsreader", Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -83,8 +83,8 @@ body::before {
 
 .review-nav a.active {
   color: var(--miro-deep);
-  border-color: rgba(103, 183, 214, 0.26);
-  background: rgba(103, 183, 214, 0.1);
+  border-color: rgba(74, 178, 212, 0.26);
+  background: rgba(74, 178, 212, 0.1);
 }
 
 .shell {
@@ -143,7 +143,7 @@ body::before {
 .tab-button.active {
   color: var(--ink);
   background: rgba(255, 253, 250, 0.96);
-  border-color: rgba(103, 183, 214, 0.22);
+  border-color: rgba(74, 178, 212, 0.22);
   box-shadow: 0 10px 20px rgba(51, 43, 36, 0.05);
 }
 
@@ -224,7 +224,7 @@ body::before {
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(103, 183, 214, 0.16) 0%, rgba(103, 183, 214, 0) 68%);
+  background: radial-gradient(circle, rgba(74, 178, 212, 0.16) 0%, rgba(74, 178, 212, 0) 68%);
   pointer-events: none;
 }
 
@@ -270,7 +270,7 @@ body::before {
   width: 86px;
   height: 86px;
   object-fit: contain;
-  filter: drop-shadow(0 16px 22px rgba(103, 183, 214, 0.18));
+  filter: drop-shadow(0 16px 22px rgba(74, 178, 212, 0.18));
   animation: bob 3s ease-in-out infinite;
 }
 
@@ -316,7 +316,7 @@ body::before {
   bottom: 18px;
   width: 2px;
   border-radius: 999px;
-  background: linear-gradient(to bottom, rgba(230, 217, 200, 1), rgba(103, 183, 214, 0.8));
+  background: linear-gradient(to bottom, rgba(230, 217, 200, 1), rgba(74, 178, 212, 0.8));
 }
 
 .arc-chapter { position: relative; padding: 16px 0 16px 44px; }
@@ -335,7 +335,7 @@ body::before {
 .arc-chapter.current::before {
   background: var(--miro);
   border-color: var(--miro);
-  box-shadow: 0 0 0 4px rgba(103, 183, 214, 0.14);
+  box-shadow: 0 0 0 4px rgba(74, 178, 212, 0.14);
 }
 
 .arc-month {
@@ -355,11 +355,11 @@ body::before {
   min-height: 620px;
   border-radius: 30px;
   background:
-    radial-gradient(circle at 24% 34%, rgba(196, 126, 102, 0.12), transparent 20%),
-    radial-gradient(circle at 40% 54%, rgba(196, 126, 102, 0.08), transparent 22%),
-    radial-gradient(circle at 64% 33%, rgba(103, 183, 214, 0.12), transparent 20%),
-    radial-gradient(circle at 76% 60%, rgba(103, 183, 214, 0.09), transparent 20%),
-    radial-gradient(circle at 26% 78%, rgba(196, 126, 102, 0.1), transparent 16%),
+    radial-gradient(circle at 24% 34%, rgba(201, 122, 92, 0.12), transparent 20%),
+    radial-gradient(circle at 40% 54%, rgba(201, 122, 92, 0.08), transparent 22%),
+    radial-gradient(circle at 64% 33%, rgba(74, 178, 212, 0.12), transparent 20%),
+    radial-gradient(circle at 76% 60%, rgba(74, 178, 212, 0.09), transparent 20%),
+    radial-gradient(circle at 26% 78%, rgba(201, 122, 92, 0.1), transparent 16%),
     radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.52), transparent 18%),
     linear-gradient(180deg, #fbf7f0 0%, #f6efe4 100%);
   border: 1px solid var(--border-soft);
@@ -433,19 +433,19 @@ body::before {
 }
 
 .tap-cell { aspect-ratio: 1; border-radius: 4px; background: var(--border-soft); }
-.tap-cell.miro-heavy { background: rgba(103, 183, 214, 0.84); }
-.tap-cell.miro-lean { background: rgba(103, 183, 214, 0.48); }
-.tap-cell.balanced { background: linear-gradient(135deg, rgba(103, 183, 214, 0.76) 50%, rgba(196, 126, 102, 0.64) 50%); }
-.tap-cell.you-lean { background: rgba(196, 126, 102, 0.44); }
-.tap-cell.you-heavy { background: rgba(196, 126, 102, 0.8); }
+.tap-cell.miro-heavy { background: rgba(74, 178, 212, 0.84); }
+.tap-cell.miro-lean { background: rgba(74, 178, 212, 0.48); }
+.tap-cell.balanced { background: linear-gradient(135deg, rgba(74, 178, 212, 0.76) 50%, rgba(201, 122, 92, 0.64) 50%); }
+.tap-cell.you-lean { background: rgba(201, 122, 92, 0.44); }
+.tap-cell.you-heavy { background: rgba(201, 122, 92, 0.8); }
 
 .leg-item, .tapestry-legend { display: flex; align-items: center; }
 .tapestry-legend { gap: 18px; font-size: 11px; font-weight: 600; color: var(--ink-mid); }
 .leg-item { gap: 6px; }
 .leg-swatch { width: 10px; height: 10px; border-radius: 3px; }
-.miro-swatch { background: rgba(103, 183, 214, 0.88); }
-.you-swatch { background: rgba(196, 126, 102, 0.88); }
-.shared-swatch { background: linear-gradient(135deg, rgba(103, 183, 214, 0.76) 50%, rgba(196, 126, 102, 0.64) 50%); }
+.miro-swatch { background: rgba(74, 178, 212, 0.88); }
+.you-swatch { background: rgba(201, 122, 92, 0.88); }
+.shared-swatch { background: linear-gradient(135deg, rgba(74, 178, 212, 0.76) 50%, rgba(201, 122, 92, 0.64) 50%); }
 .strong { opacity: 0.94; }
 
 .closing-band { margin-top: 18px; }
@@ -526,7 +526,7 @@ body::before {
   position: relative;
   height: 14px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(103, 183, 214, 0.82) 0%, rgba(194, 126, 102, 0.82) 100%);
+  background: linear-gradient(90deg, rgba(74, 178, 212, 0.82) 0%, rgba(201, 122, 92, 0.82) 100%);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.42);
 }
 

@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Miro Side Panel Mock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="site.css" />
 </head>
 <body>
@@ -48,21 +51,28 @@
       <aside class="mock-panel">
         <div class="mock-panel-header">
           <div class="mock-panel-brand">
+            <div class="mock-panel-avatar">
+              <img src="sprites/cute.png" alt="Miro" />
+            </div>
             <div>
               <div class="mock-panel-kicker">This chat</div>
               <h2>Miro</h2>
             </div>
           </div>
-          <div class="mock-close">&times;</div>
+          <div class="mock-close" aria-hidden="true">&times;</div>
         </div>
 
         <div class="mock-panel-body">
           <section class="mock-state-card">
-            <img class="mock-state-sprite" src="sprites/builder.png" alt="Miro sprite" />
+            <div class="mock-state-pet">
+              <img class="mock-state-sprite" src="sprites/builder.png" alt="Miro sprite" />
+            </div>
             <div>
-              <div class="mock-state-name">Crafting Together</div>
+              <div class="mock-state-kicker">I'd call this one</div>
+              <div class="mock-state-name">Crafting together</div>
               <div class="mock-state-desc">
-                This session felt like a collaborative brainstorming pass, with you guiding the vision and me supporting the structure. We moved through ideas and prototypes, shaping the direction together.
+                This session felt like a collaborative brainstorming pass, with you guiding the vision and me supporting the structure.
+                We moved through ideas and prototypes, shaping the direction together.
               </div>
             </div>
           </section>
@@ -91,17 +101,18 @@
             <div class="mock-section-subhead">My read of where the work seemed to sit. Not a verdict, just a place to start.</div>
             <div class="mock-weight-card">
               <div class="mock-weight-rows">
-                <div class="mock-weight-row">
+                <div class="mock-weight-row open">
                   <div class="mock-weight-row-top">
                     <div class="mock-weight-label">Coming up with ideas</div>
-                    <div class="mock-weight-chevron">+</div>
+                    <div class="mock-weight-verdict you">Mostly you</div>
                   </div>
                   <div class="mock-weight-scale">
                     <span>Miro</span>
                     <span>You</span>
                   </div>
                   <div class="mock-weight-track">
-                    <div class="mock-weight-track-fill"></div>
+                    <div class="mock-weight-track-left"></div>
+                    <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 72%;"></div>
                   </div>
                   <div class="mock-weight-reason">You were the one pulling the concepts toward what mattered. I helped surface options, but you kept deciding which ones felt alive.</div>
@@ -109,14 +120,15 @@
                 <div class="mock-weight-row">
                   <div class="mock-weight-row-top">
                     <div class="mock-weight-label">Deciding the direction</div>
-                    <div class="mock-weight-chevron">+</div>
+                    <div class="mock-weight-verdict you">Clearly you</div>
                   </div>
                   <div class="mock-weight-scale">
                     <span>Miro</span>
                     <span>You</span>
                   </div>
                   <div class="mock-weight-track">
-                    <div class="mock-weight-track-fill"></div>
+                    <div class="mock-weight-track-left"></div>
+                    <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 84%;"></div>
                   </div>
                   <div class="mock-weight-reason">The stronger directional calls stayed with you. I could sketch paths, but you kept deciding which one felt true to the project.</div>
@@ -124,14 +136,15 @@
                 <div class="mock-weight-row">
                   <div class="mock-weight-row-top">
                     <div class="mock-weight-label">Doing the research</div>
-                    <div class="mock-weight-chevron">+</div>
+                    <div class="mock-weight-verdict shared">Shared</div>
                   </div>
                   <div class="mock-weight-scale">
                     <span>Miro</span>
                     <span>You</span>
                   </div>
                   <div class="mock-weight-track">
-                    <div class="mock-weight-track-fill"></div>
+                    <div class="mock-weight-track-left"></div>
+                    <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 44%;"></div>
                   </div>
                   <div class="mock-weight-reason">I carried a little more of the fast gathering here, while you shaped what was actually worth keeping in view.</div>
@@ -139,14 +152,15 @@
                 <div class="mock-weight-row">
                   <div class="mock-weight-row-top">
                     <div class="mock-weight-label">Building the thing</div>
-                    <div class="mock-weight-chevron">+</div>
+                    <div class="mock-weight-verdict miro">Leaned to me</div>
                   </div>
                   <div class="mock-weight-scale">
                     <span>Miro</span>
                     <span>You</span>
                   </div>
                   <div class="mock-weight-track">
-                    <div class="mock-weight-track-fill"></div>
+                    <div class="mock-weight-track-left"></div>
+                    <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 31%;"></div>
                   </div>
                   <div class="mock-weight-reason">I carried more of the first-pass structure and wording here, especially once the direction got concrete enough to draft against.</div>
@@ -154,14 +168,15 @@
                 <div class="mock-weight-row">
                   <div class="mock-weight-row-top">
                     <div class="mock-weight-label">Catching problems</div>
-                    <div class="mock-weight-chevron">+</div>
+                    <div class="mock-weight-verdict you">Mostly you</div>
                   </div>
                   <div class="mock-weight-scale">
                     <span>Miro</span>
                     <span>You</span>
                   </div>
                   <div class="mock-weight-track">
-                    <div class="mock-weight-track-fill"></div>
+                    <div class="mock-weight-track-left"></div>
+                    <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 78%;"></div>
                   </div>
                   <div class="mock-weight-reason">A lot of the important corrections came from you noticing when something looked polished but still felt off.</div>
@@ -169,14 +184,15 @@
                 <div class="mock-weight-row">
                   <div class="mock-weight-row-top">
                     <div class="mock-weight-label">Making the final call</div>
-                    <div class="mock-weight-chevron">+</div>
+                    <div class="mock-weight-verdict you">Clearly you</div>
                   </div>
                   <div class="mock-weight-scale">
                     <span>Miro</span>
                     <span>You</span>
                   </div>
                   <div class="mock-weight-track">
-                    <div class="mock-weight-track-fill"></div>
+                    <div class="mock-weight-track-left"></div>
+                    <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 91%;"></div>
                   </div>
                   <div class="mock-weight-reason">Where we landed still felt clearly yours. I could help narrow, draft, and reframe, but not choose for you.</div>
@@ -223,7 +239,7 @@
             </div>
           </section>
 
-          <div class="mock-dashboard-link">View full dashboard</div>
+          <a class="mock-dashboard-link" href="dashboard.html">View full dashboard</a>
         </div>
       </aside>
     </section>
