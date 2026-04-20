@@ -7,6 +7,21 @@
   const MAX_MESSAGES = 24;
   const STALE_ASSISTANT_GROWTH = 220;
   const MAX_ANALYSIS_INSTANCES = 12;
+  const UNREADABLE_THREAD_MESSAGE = "I couldn't read this thread reliably yet. Try again once the conversation is fully visible.";
+  const SCRAPE_UI_LINES = new Set([
+    'copy',
+    'edit',
+    'read aloud',
+    'good response',
+    'bad response',
+    'share',
+    'retry',
+    'regenerate',
+    'continue generating',
+    'saved memory updated',
+    'chatgpt said:',
+    'you said:'
+  ]);
   const TASK_TYPES = [
     'Information seeking',
     'Content generation',
@@ -20,20 +35,20 @@
     {
       key: 'ideas',
       label: 'Coming up with ideas',
-      position: 42,
-      reason: 'I helped surface options, but you were still the one steering which ideas felt worth keeping.'
+      position: 38,
+      reason: 'I carried more of the option-making here, while you were still setting what the work needed to be about.'
     },
     {
       key: 'direction',
       label: 'Deciding the direction',
-      position: 82,
-      reason: 'The stronger directional calls seemed to stay with you, even when I suggested different paths.'
+      position: 54,
+      reason: 'The direction felt shared here. You set the task, but I also carried a fair bit of the shaping.'
     },
     {
       key: 'research',
       label: 'Doing the research',
-      position: 48,
-      reason: 'I carried a bit more of the gathering and organizing here, while you shaped what actually mattered.'
+      position: 40,
+      reason: 'I carried more of the gathering and synthesis in this session, even when you supplied some of the material.'
     },
     {
       key: 'building',
@@ -44,14 +59,14 @@
     {
       key: 'problems',
       label: 'Catching problems',
-      position: 76,
-      reason: 'Your judgment mattered a lot when something felt off and needed to be adjusted.'
+      position: 56,
+      reason: 'Some of the corrections came from you, but a lot of the checking still sat between us.'
     },
     {
       key: 'final_call',
       label: 'Making the final call',
-      position: 90,
-      reason: 'Where we landed still felt clearly yours. I could narrow options, but not choose for you.'
+      position: 58,
+      reason: 'The ending felt somewhat shared. You set the assignment, but I carried more of the shaping than a strong final judgment from you.'
     }
   ];
   const DEFAULT_BEHAVIORAL_NOTE = "You started this chat with 'can you help me find' - an open delegation. But by the third message you were directing: 'how would I actually apply that.' You shifted from asking me to find things to asking me to build toward your vision.";
@@ -66,7 +81,11 @@
     observer: null,
     stale: false,
     sessionKey: getSessionKey(),
-    analysisInstances: []
+    analysisInstances: [],
+    chatFingerprint: '',
+    currentFingerprint: '',
+    scrapeReliable: false,
+    scrapeIssue: ''
   };
 
   const SPRITES = {
@@ -148,15 +167,19 @@
   }
 
   function pollConversation() {
-    const messages = scrapeConversation();
-    state.messages = messages;
+    const scrapeResult = scrapeConversation();
+    state.messages = scrapeResult.messages;
+    state.currentFingerprint = scrapeResult.fingerprint;
+    state.scrapeReliable = scrapeResult.reliable;
+    state.scrapeIssue = scrapeResult.reason;
 
     const badge = document.getElementById('miro-badge');
     if (badge) {
-      badge.style.display = messages.length >= MIN_TURNS ? 'flex' : 'none';
+      badge.style.display = state.scrapeReliable && state.messages.length >= MIN_TURNS ? 'flex' : 'none';
     }
 
-    const meaningfulChange = state.latestAnalysis && hasMeaningfulChange(messages, state.analyzedMessages);
+    const meaningfulChange = state.latestAnalysis && state.scrapeReliable
+      && hasMeaningfulChange(state.messages, state.analyzedMessages, state.currentFingerprint, state.chatFingerprint);
     state.stale = Boolean(meaningfulChange);
 
     updatePetSprite();
@@ -169,15 +192,21 @@
   async function analyzeIfNeeded(force = false) {
     if (state.analyzing) return;
 
+    if (!state.scrapeReliable) {
+      renderStatus(state.scrapeIssue || UNREADABLE_THREAD_MESSAGE, false);
+      return;
+    }
+
     if (state.messages.length < MIN_TURNS) {
       renderStatus('I need a little more back-and-forth before I can read this.', false);
       return;
     }
 
-    const newHash = hashConversation(state.messages);
-    const meaningfulChange = hasMeaningfulChange(state.messages, state.analyzedMessages);
+    const currentMessages = cloneMessages(state.messages);
+    const newFingerprint = state.currentFingerprint || fingerprintConversation(currentMessages);
+    const meaningfulChange = hasMeaningfulChange(currentMessages, state.analyzedMessages, newFingerprint, state.chatFingerprint);
 
-    if (!force && state.latestAnalysis && newHash === state.convoHash && !meaningfulChange) {
+    if (!force && state.latestAnalysis && newFingerprint === state.chatFingerprint && !meaningfulChange) {
       renderPanel(state.latestAnalysis);
       return;
     }
@@ -188,7 +217,13 @@
     renderLoading();
 
     try {
-      const payload = buildAnalysisPayload();
+      const cached = await readCachedReflection(newFingerprint);
+      if (cached?.reflection) {
+        await applyAnalysisResult(cached.reflection, currentMessages, newFingerprint, 'cached');
+        return;
+      }
+
+      const payload = buildAnalysisPayload(currentMessages, newFingerprint);
       const response = await chrome.runtime.sendMessage({
         type: 'MIRO_ANALYZE_CHAT',
         payload
@@ -198,24 +233,7 @@
         throw new Error(response?.error || 'Could not analyze this chat.');
       }
 
-      state.latestAnalysis = normalizeAnalysis(response.result);
-      state.convoHash = newHash;
-      state.analyzedMessages = cloneMessages(state.messages);
-      state.analysisInstances = appendAnalysisInstance(state.analysisInstances, {
-        analyzed_at: new Date().toISOString(),
-        message_count: state.messages.length,
-        new_message_count: payload.conversation.length,
-        analysis_mode: payload.analysisMode,
-        state_mode: state.latestAnalysis.state_mode,
-        state_title: state.latestAnalysis.state_title,
-        weight_rows: state.latestAnalysis.weight_rows.map((row) => ({
-          key: row.key,
-          position: row.position
-        }))
-      });
-      persistSessionState();
-      state.stale = false;
-      renderPanel(state.latestAnalysis);
+      await applyAnalysisResult(response.result, currentMessages, newFingerprint, payload.analysisMode || 'full');
     } catch (error) {
       renderError(error.message || 'Could not analyze this chat.');
     } finally {
@@ -415,12 +433,12 @@
     const fallbackTurningPoints = [
       'You began by trying to define what kind of help you actually wanted from me.',
       'The chat shifted once the work became more concrete and we started shaping a real direction.',
-      'By the end, I was helping hold structure while you kept the final say over what felt right.'
+      'By the end, I was still holding a fair bit of the structure, even as the task itself had become clearer.'
     ];
     const fallbackYouBrought = [
-      { tag: 'judgment', text: 'The directional call on what was worth keeping.' },
-      { tag: 'direction', text: 'The sense of where this conversation needed to end up.' },
-      { tag: 'critique', text: 'The corrections that made the rougher parts sharper.' }
+      { tag: 'research', text: 'The source material or constraints the chat was working from.' },
+      { tag: 'direction', text: 'The task this conversation needed to help with.' },
+      { tag: 'critique', text: 'A few corrections about what did or did not feel right.' }
     ];
     const fallbackMiroBrought = [
       { tag: 'structure', text: 'First-pass structure you could push against.' },
@@ -433,14 +451,14 @@
       state_title: cleanText(data?.state_title, 'Shared mode'),
       state_description: cleanText(
         data?.state_description,
-        'This chat felt shared. I helped carry parts of it, but your direction still shaped where we landed.'
+        'I carried a fair bit of the structure in this one, while you set the task I was working toward.'
       ),
       task_type: normalizeTaskType(data?.task_type),
       turning_points: normalizeStringList(data?.turning_points, fallbackTurningPoints, 3, 4),
       weight_rows: normalizeWeightRows(data?.weight_rows),
       you_brought: normalizeStringList(
         data?.you_brought,
-        ['the direction you cared about', 'the judgment for what felt right'],
+        ['the task and material the chat was working from', 'a few corrections about what mattered'],
         2,
         4
       ),
@@ -478,6 +496,10 @@
         'Pick one part I carried for you and rewrite it in your own words before you leave this chat.'
       )
     };
+  }
+
+  function finalizeAnalysis(data, messages) {
+    return applyEvidenceAdjustments(normalizeAnalysis(data), buildConversationEvidence(messages));
   }
 
   function normalizeWeightRows(rows) {
@@ -659,6 +681,7 @@
   }
 
   function getHoverText() {
+    if (!state.scrapeReliable) return "I can't read this thread reliably yet.";
     if (state.analyzing) return "I'm reading this chat.";
     if (state.messages.length < MIN_TURNS) return 'I need a little more chat first.';
     if (state.stale) return 'I should reread this.';
@@ -684,8 +707,11 @@
         return;
       }
 
-      state.latestAnalysis = snapshot.lastAnalysis ? normalizeAnalysis(snapshot.lastAnalysis) : null;
-      state.convoHash = cleanText(snapshot.convoHash, '');
+      state.latestAnalysis = snapshot.lastAnalysis
+        ? finalizeAnalysis(snapshot.lastAnalysis, normalizeStoredMessages(snapshot.analyzedMessages))
+        : null;
+      state.chatFingerprint = cleanText(snapshot.chatFingerprint || snapshot.convoHash, '');
+      state.convoHash = state.chatFingerprint;
       state.analyzedMessages = normalizeStoredMessages(snapshot.analyzedMessages);
       state.analysisInstances = Array.isArray(snapshot.analysisInstances)
         ? snapshot.analysisInstances.slice(-MAX_ANALYSIS_INSTANCES)
@@ -697,46 +723,14 @@
     }
   }
 
-  function buildAnalysisPayload() {
-    const conversation = cloneMessages(state.messages);
-    const priorMessages = normalizeStoredMessages(state.analyzedMessages);
-    const canUseIncremental =
-      state.latestAnalysis &&
-      priorMessages.length >= MIN_TURNS &&
-      conversation.length >= priorMessages.length;
-
-    if (!canUseIncremental) {
-      return {
-        analysisMode: 'full',
-        conversation,
-        pageTitle: document.title,
-        sessionKey: state.sessionKey,
-        previousMessageCount: 0,
-        fullMessageCount: conversation.length
-      };
-    }
-
-    const newMessages = conversation.slice(priorMessages.length);
-    const hasFreshTail = newMessages.some((message) => message.content.trim().length > 0);
-
-    if (!hasFreshTail) {
-      return {
-        analysisMode: 'full',
-        conversation,
-        pageTitle: document.title,
-        sessionKey: state.sessionKey,
-        previousMessageCount: 0,
-        fullMessageCount: conversation.length
-      };
-    }
-
+  function buildAnalysisPayload(conversation, chatFingerprint) {
     return {
-      analysisMode: 'incremental',
-      conversation: newMessages,
+      analysisMode: 'full',
+      conversation: cloneMessages(conversation),
       pageTitle: document.title,
       sessionKey: state.sessionKey,
-      previousReflection: state.latestAnalysis,
-      previousMessageCount: priorMessages.length,
+      chatFingerprint,
+      previousMessageCount: 0,
       fullMessageCount: conversation.length
     };
   }
@@ -747,7 +741,8 @@
       sessionKey: state.sessionKey,
       pageTitle: document.title,
       lastAnalysis: state.latestAnalysis,
-      convoHash: state.convoHash,
+      chatFingerprint: state.chatFingerprint,
+      convoHash: state.chatFingerprint,
       analyzedMessages: cloneMessages(state.analyzedMessages),
       analysisInstances: state.analysisInstances.slice(-MAX_ANALYSIS_INSTANCES),
       updatedAt: new Date().toISOString()
@@ -761,18 +756,23 @@
   }
 
   function scrapeConversation() {
-    const messageNodes = Array.from(document.querySelectorAll('[data-message-author-role], article'));
+    const messageNodes = Array.from(document.querySelectorAll('[data-message-author-role="user"], [data-message-author-role="assistant"]'));
     const messages = [];
 
-    messageNodes.forEach((node, index) => {
-      const content = (node.innerText || '').replace(/\s+/g, ' ').trim();
+    if (!messageNodes.length) {
+      return {
+        messages: [],
+        fingerprint: '',
+        reliable: false,
+        reason: UNREADABLE_THREAD_MESSAGE
+      };
+    }
+
+    messageNodes.forEach((node) => {
+      const content = extractMessageText(node);
       if (!content || content.length < 2) return;
 
       let role = node.getAttribute('data-message-author-role');
-      if (!role) {
-        role = index % 2 === 0 ? 'assistant' : 'user';
-      }
-
       role = role === 'assistant' ? 'assistant' : 'user';
 
       const last = messages[messages.length - 1];
@@ -783,23 +783,44 @@
       messages.push({ role, content });
     });
 
-    return messages.slice(-MAX_MESSAGES);
+    const normalizedMessages = messages.slice(-MAX_MESSAGES);
+
+    if (!normalizedMessages.length) {
+      return {
+        messages: [],
+        fingerprint: '',
+        reliable: false,
+        reason: UNREADABLE_THREAD_MESSAGE
+      };
+    }
+
+    return {
+      messages: normalizedMessages,
+      fingerprint: fingerprintConversation(normalizedMessages),
+      reliable: true,
+      reason: ''
+    };
   }
 
   function findConversationContainer() {
     return document.querySelector('main') || document.querySelector('[role="main"]');
   }
 
-  function hashConversation(messages) {
-    return messages.map((message) => `${message.role}:${message.content.slice(0, 160)}`).join('|');
+  function fingerprintConversation(messages) {
+    return hashText(messages.map((message) => `${message.role}\u241f${message.content}`).join('\u241e'));
   }
 
   function getSessionKey() {
-    return `${location.origin}${location.pathname}`;
+    const pathname = (location.pathname || '/').replace(/\/+$/, '');
+    return pathname || '/';
   }
 
   function getSessionStorageKey() {
     return `miro_session:${state.sessionKey}`;
+  }
+
+  function getReflectionCacheKey() {
+    return `miro_reflection:${hashText(state.sessionKey)}`;
   }
 
   function cloneMessages(messages) {
@@ -822,9 +843,10 @@
     return [...(Array.isArray(instances) ? instances : []), nextInstance].slice(-MAX_ANALYSIS_INSTANCES);
   }
 
-  function hasMeaningfulChange(current, analyzed) {
+  function hasMeaningfulChange(current, analyzed, currentFingerprint, analyzedFingerprint) {
     if (!Array.isArray(analyzed) || analyzed.length === 0) return false;
     if (!Array.isArray(current) || current.length === 0) return false;
+    if (currentFingerprint && analyzedFingerprint && currentFingerprint === analyzedFingerprint) return false;
 
     if (current.length > analyzed.length) {
       const newTail = current.slice(analyzed.length);
@@ -852,6 +874,255 @@
     }
 
     return Math.abs(currentLast.content.length - analyzedLast.content.length) > 120;
+  }
+
+  function extractMessageText(node) {
+    const rawLines = String(node?.innerText || '')
+      .split(/\n+/)
+      .map((line) => normalizeScrapedLine(line))
+      .filter(Boolean)
+      .filter((line) => shouldKeepScrapedLine(line));
+
+    const dedupedLines = rawLines.filter((line, index) => rawLines.indexOf(line) === index);
+    return dedupedLines.join(' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function normalizeScrapedLine(value) {
+    return String(value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function shouldKeepScrapedLine(line) {
+    const normalized = normalizeScrapedLine(line).toLowerCase();
+    if (!normalized) return false;
+    if (SCRAPE_UI_LINES.has(normalized)) return false;
+    if (/^\d+\s*\/\s*\d+$/.test(normalized)) return false;
+    if (/^chatgpt can make mistakes/i.test(normalized)) return false;
+    return true;
+  }
+
+  function buildConversationEvidence(messages) {
+    const userMessages = (Array.isArray(messages) ? messages : []).filter((message) => message.role === 'user');
+    const joined = userMessages.map((message) => message.content.toLowerCase());
+    const countMatches = (patterns) => joined.reduce(
+      (count, text) => count + (patterns.some((pattern) => pattern.test(text)) ? 1 : 0),
+      0
+    );
+
+    const sourceSignals = countMatches([/\bsource\b/, /\barticle\b/, /\bpaper\b/, /\blink\b/, /\bpdf\b/, /\breading\b/, /\bjournal\b/]);
+    const synthesisSignals = countMatches([/\bsummar/i, /\bdiscussion questions?\b/, /\boutline\b/, /\bfirst draft\b/, /\bgenerate\b/, /\bwrite\b/, /\bmake\b/, /\bcreate\b/]);
+    const delegationSignals = countMatches([/\bcan you\b/, /\bhelp me\b/, /\bsummar/i, /\bdiscussion questions?\b/, /\bdraft\b/, /\bwrite\b/, /\bgenerate\b/, /\bmake\b/, /\bcreate\b/]);
+    const critiqueSignals = countMatches([/\binstead\b/, /\bchange\b/, /\brevise\b/, /\brewrite\b/, /\bpush back\b/, /\bfix\b/, /\badjust\b/, /\bcut\b/, /\bcloser to\b/, /\bnot like\b/]);
+    const selectionSignals = countMatches([/\bchoose\b/, /\bpick\b/, /\bgo with\b/, /\bkeep\b/, /\bfinal\b/, /\buse this\b/]);
+    const rewriteSignals = countMatches([/\brewrite\b/, /\breword\b/, /\bin my own words\b/, /\bmake it sound\b/, /\btone\b/]);
+    const directionSignals = countMatches([/\bi want\b/, /\bi need\b/, /\blet'?s\b/, /\bmake it\b/, /\bthe goal\b/, /\bdirection\b/]);
+    const judgmentSignals = critiqueSignals + selectionSignals + rewriteSignals;
+
+    return {
+      userMessages: userMessages.length,
+      sourceSignals,
+      synthesisSignals,
+      delegationSignals,
+      critiqueSignals,
+      selectionSignals,
+      rewriteSignals,
+      directionSignals,
+      judgmentSignals,
+      heavyDelegation: delegationSignals >= Math.max(2, Math.ceil(userMessages.length * 0.45)) && judgmentSignals < 2,
+      sourceDrivenSynthesis: sourceSignals >= 1 && synthesisSignals >= 1 && judgmentSignals < 2,
+      clearJudgment: judgmentSignals >= 2 || rewriteSignals >= 1 || selectionSignals >= 1
+    };
+  }
+
+  function applyEvidenceAdjustments(data, evidence) {
+    const next = {
+      ...data,
+      weight_rows: Array.isArray(data?.weight_rows)
+        ? data.weight_rows.map((row) => ({ ...row }))
+        : [],
+      you_brought_tagged: Array.isArray(data?.you_brought_tagged)
+        ? data.you_brought_tagged.map((item) => ({ ...item }))
+        : [],
+      miro_brought_tagged: Array.isArray(data?.miro_brought_tagged)
+        ? data.miro_brought_tagged.map((item) => ({ ...item }))
+        : []
+    };
+
+    if (evidence.heavyDelegation) {
+      capWeightRow(next.weight_rows, 'direction', 52, 'I carried more of the shaping here. You set the task, but not many of the directional turns landed with you.');
+      capWeightRow(next.weight_rows, 'final_call', 56, 'You set what this work was for, but I carried more of the shaping than a strong final judgment from you.');
+    }
+
+    if (evidence.sourceDrivenSynthesis) {
+      capWeightRow(next.weight_rows, 'research', 46, 'You brought source material, but I carried more of the gathering, reading across it, and synthesis.');
+      capWeightRow(next.weight_rows, 'building', 34, 'Once the materials were there, I carried more of the first-pass making in this chat.');
+    }
+
+    next.you_brought_tagged = next.you_brought_tagged
+      .map((item) => sanitizeUserContributionTag(item, evidence))
+      .filter(Boolean);
+
+    const fallbackUserItems = [
+      {
+        tag: evidence.sourceDrivenSynthesis ? 'research' : 'direction',
+        text: evidence.sourceDrivenSynthesis
+          ? 'The source material and constraints this chat was working from.'
+          : 'The task this conversation needed to help with.'
+      },
+      { tag: 'critique', text: 'A few corrections about what did or did not feel right.' }
+    ];
+
+    if (next.you_brought_tagged.length < 2) {
+      fallbackUserItems.forEach((item) => {
+        const alreadyPresent = next.you_brought_tagged.some((entry) => entry.tag === item.tag && entry.text === item.text);
+        if (!alreadyPresent && next.you_brought_tagged.length < 2) {
+          next.you_brought_tagged.push(item);
+        }
+      });
+    }
+
+    next.you_brought = next.you_brought_tagged.map((item) => item.text).slice(0, 4);
+    next.miro_brought = next.miro_brought_tagged.map((item) => item.text).slice(0, 4);
+
+    return next;
+  }
+
+  function capWeightRow(rows, key, maxPosition, fallbackReason) {
+    const row = Array.isArray(rows) ? rows.find((item) => item.key === key) : null;
+    if (!row) return;
+    if (row.position > maxPosition) {
+      row.position = maxPosition;
+      row.reason = fallbackReason;
+    }
+  }
+
+  function sanitizeUserContributionTag(item, evidence) {
+    if (!item?.text) return null;
+
+    if (item.tag === 'judgment' && !evidence.clearJudgment) {
+      if (evidence.sourceDrivenSynthesis) {
+        return { tag: 'research', text: 'The source material and constraints this chat was working from.' };
+      }
+      return { tag: 'critique', text: item.text };
+    }
+
+    if (item.tag === 'direction' && evidence.heavyDelegation && evidence.directionSignals < 2) {
+      return {
+        tag: evidence.sourceDrivenSynthesis ? 'research' : 'ideas',
+        text: evidence.sourceDrivenSynthesis
+          ? 'The source material and constraints this chat was working from.'
+          : 'The task or topic this conversation needed to respond to.'
+      };
+    }
+
+    return item;
+  }
+
+  async function applyAnalysisResult(result, messages, chatFingerprint, analysisMode) {
+    const finalAnalysis = finalizeAnalysis(result, messages);
+    state.latestAnalysis = finalAnalysis;
+    state.chatFingerprint = chatFingerprint;
+    state.convoHash = chatFingerprint;
+    state.analyzedMessages = cloneMessages(messages);
+    state.analysisInstances = appendAnalysisInstance(state.analysisInstances, {
+      analyzed_at: new Date().toISOString(),
+      message_count: messages.length,
+      new_message_count: messages.length,
+      analysis_mode: analysisMode,
+      chat_fingerprint: chatFingerprint,
+      state_mode: finalAnalysis.state_mode,
+      state_title: finalAnalysis.state_title,
+      weight_rows: finalAnalysis.weight_rows.map((row) => ({
+        key: row.key,
+        position: row.position
+      }))
+    });
+    state.stale = false;
+    await persistReflectionCache(finalAnalysis, chatFingerprint);
+    await persistSessionState();
+    renderPanel(finalAnalysis);
+  }
+
+  async function readCachedReflection(chatFingerprint) {
+    const cacheKey = getReflectionCacheKey();
+
+    try {
+      const synced = await chrome.storage.sync.get([cacheKey]);
+      const syncedEntry = normalizeCachedReflectionEntry(synced[cacheKey]);
+      if (syncedEntry && syncedEntry.chatFingerprint === chatFingerprint) {
+        return syncedEntry;
+      }
+    } catch (error) {
+      console.warn('Miro could not read synced reflection cache.', error);
+    }
+
+    try {
+      const local = await chrome.storage.local.get([cacheKey, getSessionStorageKey()]);
+      const localEntry = normalizeCachedReflectionEntry(local[cacheKey])
+        || normalizeCachedReflectionEntry(snapshotToCacheEntry(local[getSessionStorageKey()]));
+      if (localEntry && localEntry.chatFingerprint === chatFingerprint) {
+        return localEntry;
+      }
+    } catch (error) {
+      console.warn('Miro could not read local reflection cache.', error);
+    }
+
+    return null;
+  }
+
+  async function persistReflectionCache(reflection, chatFingerprint) {
+    const cacheKey = getReflectionCacheKey();
+    const entry = {
+      sessionKey: state.sessionKey,
+      pageTitle: document.title,
+      chatFingerprint,
+      reflection,
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      await chrome.storage.sync.set({ [cacheKey]: entry });
+    } catch (error) {
+      console.warn('Miro could not save synced reflection cache.', error);
+    }
+
+    try {
+      await chrome.storage.local.set({ [cacheKey]: entry });
+    } catch (error) {
+      console.warn('Miro could not save local reflection cache.', error);
+    }
+  }
+
+  function normalizeCachedReflectionEntry(entry) {
+    if (!entry || typeof entry !== 'object') return null;
+    if (!entry.chatFingerprint) return null;
+    if (!entry.reflection || typeof entry.reflection !== 'object') return null;
+
+    return {
+      chatFingerprint: cleanText(entry.chatFingerprint, ''),
+      reflection: entry.reflection
+    };
+  }
+
+  function snapshotToCacheEntry(snapshot) {
+    if (!snapshot || typeof snapshot !== 'object') return null;
+    if (!snapshot.lastAnalysis || !snapshot.chatFingerprint && !snapshot.convoHash) return null;
+
+    return {
+      chatFingerprint: snapshot.chatFingerprint || snapshot.convoHash,
+      reflection: snapshot.lastAnalysis
+    };
+  }
+
+  function hashText(value) {
+    let hash = 2166136261;
+    const input = String(value || '');
+
+    for (let index = 0; index < input.length; index += 1) {
+      hash ^= input.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+
+    return `fp_${(hash >>> 0).toString(16).padStart(8, '0')}`;
   }
 
   function cleanText(value, fallback) {

@@ -158,7 +158,7 @@ async function handleAnalyze(payload) {
     body: JSON.stringify({
       model: MODEL,
       messages,
-      temperature: 0.45,
+      temperature: 0,
       response_format: {
         type: 'json_schema',
         json_schema: reflectionSchema
@@ -179,6 +179,7 @@ function buildMessages(payload) {
   const {
     conversation = [],
     pageTitle,
+    chatFingerprint = '',
     analysisMode = 'full',
     previousReflection = null,
     previousMessageCount = 0,
@@ -196,6 +197,7 @@ function buildMessages(payload) {
     '- Stay gentle, thoughtful, slightly playful, and emotionally intelligent.',
     '- Never sound like a judge, warning system, cheating detector, therapist, or analytics dashboard.',
     '- Focus on ownership, authorship, learning, collaboration, and how the work was shared.',
+    '- When the evidence is ambiguous, resolve toward shared or me-led rather than automatically crediting you with ownership.',
     '- Ground everything in the actual chat. Be concrete enough that the student can recognize the moments.',
     '- Do not use direct quotes from the conversation.',
     '- turning_points should tell the arc of the session, not isolated fragments.',
@@ -203,6 +205,10 @@ function buildMessages(payload) {
     '- weight_rows must always use these exact six labels: Coming up with ideas, Deciding the direction, Doing the research, Building the thing, Catching problems, Making the final call.',
     '- position is 0 to 100 where 0 means I carried more of that work and 100 means you carried more.',
     '- reason should sound like my read, not a verdict.',
+    '- Supplying source articles, files, links, or raw materials is not by itself evidence that you owned the thinking or final judgment.',
+    '- Asking me for summaries, discussion questions, outlines, or first drafts is delegation unless the later turns clearly show you redirecting, rejecting, selecting, rewriting, or making a strong final decision.',
+    '- Do not infer judgment, direction, or a strong final call from brief approvals or task setup alone.',
+    '- If evidence for judgment is thin, do not force judgment language into the reflection or contribution tags.',
     '- you_brought_tagged and miro_brought_tagged should each have 2-4 concise items with one tag from: judgment, direction, ideas, critique, execution, structure, research, momentum.',
     '- Also include plain you_brought and miro_brought string arrays that match those tagged contributions in simpler language.',
     '- behavioral_note_label should usually be PROMPT PATTERN or BEHAVIORAL NOTE.',
@@ -222,6 +228,7 @@ function buildMessages(payload) {
     role: 'user',
     content: buildUserMessage({
       pageTitle,
+      chatFingerprint,
       conversation,
       isIncremental,
       previousReflection,
@@ -238,6 +245,7 @@ function buildMessages(payload) {
 
 function buildUserMessage({
   pageTitle,
+  chatFingerprint,
   conversation,
   isIncremental,
   previousReflection,
@@ -245,6 +253,9 @@ function buildUserMessage({
   fullMessageCount
 }) {
   const lines = [`Page title: ${pageTitle || 'Untitled chat'}`];
+  if (typeof chatFingerprint === 'string' && chatFingerprint) {
+    lines.push(`Chat fingerprint: ${chatFingerprint}`);
+  }
 
   if (isIncremental) {
     lines.push(`This is an incremental reread of the same session.`);
