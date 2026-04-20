@@ -1,21 +1,21 @@
 const dashboardData = {
-  periodLabel: 'This past season',
-  periodMeta: 'Patterns from your recent stretch of chats with me.',
+  periodLabel: 'Dec - Apr',
+  periodMeta: '52 conversations across 4 months',
   overview: {
     title: 'Your story with Miro',
     subtitle: 'The recent rhythm between you and me, gathered into one place.',
     letter: [
-      "Hey. It's been a good week between us.",
-      "We've been in a build-and-critique rhythm. I draft, you reshape, I rebuild. Most of your strongest ideas seem to arrive when you're pushing back on something I made first.",
-      "The essay on climate policy? That conclusion was distinctly yours. I gave you frameworks, but you built something I wouldn't have written."
+      "Hey. This stretch with us has felt more directional than it used to.",
+      "You still come to me for momentum and structure, but more and more of the strong turns seem to happen when you redirect me. I draft, you reshape, I rebuild.",
+      "What stands out is not just that we worked together. It's that the shape of your asks changed. You started bringing clearer judgment into the room."
     ],
-    signoff: 'Miro - April 14'
+    signoff: '52 conversations - Dec to Apr'
   },
   arc: [
-    { month: 'January', text: "You asked open questions and let me lead. There were lots of 'help me figure this out' chats where I did most of the shaping." },
-    { month: 'February', text: "You started pushing back sooner. The rhythm changed when your replies stopped being reactions and started becoming redirections." },
-    { month: 'March', text: "Your critiques got sharper. You were naming why something felt off, which meant I had more to build against." },
-    { month: 'April - now', text: "You bring more of your own frame now. I still help build, but it increasingly feels like I'm building toward a vision you already sense.", current: true }
+    { month: 'December', text: "You often opened with context first. I was helping you gather, sort, and get started." },
+    { month: 'January', text: "The work started to move faster. You leaned on me for more structure, but you were still narrating what mattered." },
+    { month: 'March', text: "Your redirects got sharper. You gave less context, but your judgments landed more precisely." },
+    { month: 'April, now', text: "You often start with a directive now. I still help build, but the frame increasingly feels like yours.", current: true }
   ],
   tapestry: [
     'miro-heavy', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'you-heavy',
@@ -25,41 +25,74 @@ const dashboardData = {
     'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'balanced', 'miro-heavy', 'miro-heavy', 'you-lean', 'balanced', 'you-heavy',
     'miro-lean', 'balanced'
   ],
-  reflection: {
-    seed: 'When I helped most in this stretch, was I extending your thinking or replacing the part you most wanted to own?',
-    nextTitle: 'Take back one piece',
-    nextStep: 'The next time I give you a strong first draft, pause before keeping it. Rewrite one paragraph or one decision in your own words so the shape of it comes back through you.'
-  },
-  taskBreakdown: [
+  broughtTaskBreakdown: [
     {
-      label: 'Writing and editing',
-      note: 'I carried more of the first-pass drafting here.',
-      lean: 28,
+      label: 'Content generation',
+      note: 'I often carried more of the first-pass drafting here, while you kept the final tone and direction.',
+      lean: 34,
       verdict: 'Leaned toward me'
     },
     {
-      label: 'Analysis',
-      note: 'You were usually the one deciding what the signal actually meant.',
-      lean: 72,
+      label: 'Sense-making',
+      note: 'You usually held the judgment in these chats, especially when deciding what the signal meant.',
+      lean: 74,
       verdict: 'Leaned toward you'
     },
     {
-      label: 'Research',
-      note: 'This tended to feel more shared, with you steering what mattered.',
+      label: 'Information seeking',
+      note: 'This work felt more shared. I surfaced options quickly, but you kept deciding what actually mattered.',
       lean: 52,
       verdict: 'Shared'
     },
     {
-      label: 'Problem solving',
-      note: 'You kept most of the judgment even when I helped narrow options.',
-      lean: 71,
+      label: 'Working through problems',
+      note: 'You tended to keep the stronger calls, even when I helped narrow the options.',
+      lean: 70,
       verdict: 'Leaned toward you'
     },
     {
-      label: 'Creative work',
-      note: 'I generated fast options, but you curated the ones that felt alive.',
-      lean: 46,
-      verdict: 'Moved back and forth'
+      label: 'Creative & ideation',
+      note: 'This moved back and forth. I helped expand possibilities, but you often picked what felt alive.',
+      lean: 48,
+      verdict: 'Shared'
+    }
+  ],
+  aspectBreakdown: [
+    {
+      label: 'Coming up with ideas',
+      note: 'You often shaped which ideas were actually worth keeping, even when I generated options.',
+      lean: 68,
+      verdict: 'Leaned toward you'
+    },
+    {
+      label: 'Deciding the direction',
+      note: 'The bigger directional calls still felt clearly yours across most sessions.',
+      lean: 84,
+      verdict: 'Leaned toward you'
+    },
+    {
+      label: 'Doing the research',
+      note: 'This tended to be more shared. I moved faster at gathering, while you set the filter.',
+      lean: 50,
+      verdict: 'Shared'
+    },
+    {
+      label: 'Building the thing',
+      note: 'I carried more of the first-pass building and prototyping once the goal was clear enough.',
+      lean: 30,
+      verdict: 'Leaned toward me'
+    },
+    {
+      label: 'Catching problems',
+      note: 'A lot of the meaningful corrections came from your sense that something still felt off.',
+      lean: 76,
+      verdict: 'Leaned toward you'
+    },
+    {
+      label: 'Making the final call',
+      note: 'Even when I narrowed or drafted, the final judgment still lived more with you.',
+      lean: 91,
+      verdict: 'Leaned toward you'
     }
   ],
   topics: [
@@ -74,46 +107,91 @@ const dashboardData = {
     { id: 'career-planning', label: 'Career planning', count: 3, size: 'xs', x: 18, y: 76, youShare: 68, miroShare: 32 },
     { id: 'personal', label: 'Personal', count: 2, size: 'xs', x: 30, y: 82, youShare: 73, miroShare: 27 }
   ],
+  shifts: [
+    {
+      label: 'Your opening prompts changed',
+      before: "In January you started chats with context - 'I'm working on X for my capstone, here's where I am so far.'",
+      after: "By March most opening messages were shorter and more directive - 'prototype this' or 'critique this design.'",
+      evidence: "You stopped explaining your thinking and started assuming I already understood. That might be trust, or it might be shorthand - you'd know better."
+    },
+    {
+      label: 'Your follow-ups changed',
+      before: 'Early chats averaged 8 follow-ups. You pushed back, redirected, asked why.',
+      after: 'Recent chats average 4 - but each redirect is sharper. You say less, but each turn carries more.',
+      evidence: "You're not asking fewer questions. You're asking better ones. But you're also letting more of my first drafts through."
+    },
+    {
+      label: 'What you delegate expanded',
+      before: 'In January you delegated research and formatting. You wrote your own outlines and first drafts.',
+      after: "By April you're delegating full prototypes, pitch language, and argument structure.",
+      evidence: 'You still make the final call. But the raw material is increasingly mine.'
+    },
+    {
+      label: 'Your voice in the output',
+      before: 'Your early writing had short, direct sentences. Conversational tone. Your rhythm.',
+      after: "Recent work uses longer constructions and more hedging - 'it is worth noting,' 'this suggests that.'",
+      evidence: 'Three phrases that appear in your recent work but never in your January writing. Those are my patterns, not yours.'
+    }
+  ],
+  reflection: {
+    seed: 'What part of this still feels most like yours, even when I help you move faster?',
+    nextTitle: 'Take back one starting point',
+    nextStep: 'Pick one kind of task you now tend to hand me first. Next time, make your own rough first pass before you ask for help, just to notice what changes.'
+  },
   style: {
-    title: 'How you work with me',
-    subtitle: 'A softer profile and a read of our recurring rhythm.',
-    rhythmTitle: 'A patient critic with a clear hand.',
+    rhythmTitle: 'A clearer hand, with more delegation at the start.',
     rhythmCopy:
-      'Our rhythm often starts with me making something slightly too early or too loosely, and then you stepping in to redirect it. The useful part is usually not the draft itself, but what your reaction reveals about what you actually want.',
+      'Our rhythm now often starts with you asking me to build the first pass, especially when the work is moving quickly. The useful part is still your judgment, but the opening move changed.',
     quote:
-      '<strong>You</strong> often become most decisive after there&apos;s something to critique.<br><span class="miro-line">I</span> tend to be most useful at the blurry beginning, not the final call.<br>A lot of our stronger sessions move from reaction into clearer authorship.',
+      '<strong>You</strong> still shape what matters most.<br><span class="miro-line">I</span> increasingly shape the first structure you respond to.<br>That shift is worth noticing, even if it still feels collaborative.',
     patterns: [
       {
-        title: 'You sketch, I sharpen',
+        title: 'You sharpen by reacting',
         label: 'Where you lead',
         tone: 'you',
-        body: 'You usually arrive with a rough idea and ask me to tighten it, rather than asking me to start from scratch.'
+        body: 'A lot of our stronger sessions begin once there is something concrete for you to push back on.'
       },
       {
-        title: 'Critique-first reader',
+        title: 'Judgment stayed with you',
         label: 'Where you lead',
         tone: 'you',
-        body: "You're quick to push back on my first pass. The strongest work tends to come after that pushback."
+        body: 'Even when I draft, summarize, or scaffold, the stronger directional call still tends to be yours.'
       },
       {
-        title: 'Selective borrower',
-        label: 'Where we move together',
+        title: 'First drafts are shifting',
+        label: 'Worth noticing',
         tone: 'shared',
-        body: 'When I generate options, you take pieces, a phrase here, a structure there, instead of using a draft whole.'
+        body: 'In your earlier chats, you wrote your own first drafts and asked me to react. Lately, you ask me to write the first draft and then you edit. The quality is similar, but the starting point changed.'
       },
       {
-        title: 'Late-night leaner',
+        title: 'I carry momentum when time is tight',
         label: 'Where I tend to step in',
         tone: 'miro',
-        body: "When you're tired, you let me carry more of the structure. Worth noticing, not worth judging."
+        body: 'When the work needs to move quickly, I often hold the early structure so you can react faster.'
       }
     ]
   },
   tabs: {
-    overview: { title: 'Your story with Miro', subtitle: 'The recent rhythm between you and me, gathered into one place.' },
-    made: { title: 'What we made', subtitle: 'A larger map of the themes that have been holding the most space between us.' },
-    task: { title: 'By task', subtitle: 'A clearer read of where the work leaned more toward me or toward you.' },
-    style: { title: 'How you work with me', subtitle: 'A softer profile and a read of our recurring rhythm.' }
+    overview: {
+      title: 'The story so far',
+      subtitle: 'A softer read of how the recent stretch between you and me has been unfolding.'
+    },
+    brought: {
+      title: 'What you brought to me',
+      subtitle: 'The kinds of cognitive work you have been bringing into these chats, from topic clusters to task types.'
+    },
+    task: {
+      title: 'By task',
+      subtitle: 'A fixed six-part read of where the weight usually seemed to sit across the work.'
+    },
+    shifted: {
+      title: 'What shifted',
+      subtitle: 'Concrete places where your way of using me appears to have changed over time.'
+    },
+    style: {
+      title: 'How you work with me',
+      subtitle: 'A softer portrait of the patterns, judgments, and delegation habits that keep showing up.'
+    }
   }
 };
 
@@ -122,9 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
   renderOverview();
   renderArc();
   renderTapestry();
-  renderReflection();
-  renderTaskBreakdown();
+  renderBroughtTaskBreakdown();
+  renderAspectBreakdown();
   renderTopics();
+  renderShifts();
+  renderReflection();
   renderStyle();
   bindTabs();
 });
@@ -166,9 +246,33 @@ function renderOverview() {
   document.getElementById('overviewSignoff').textContent = dashboardData.overview.signoff;
 }
 
-function renderTaskBreakdown() {
-  const host = document.getElementById('taskList');
-  host.innerHTML = dashboardData.taskBreakdown
+function renderArc() {
+  const host = document.getElementById('arcStory');
+  host.innerHTML = dashboardData.arc.map((item) => `
+    <div class="arc-chapter${item.current ? ' current' : ''}">
+      <div class="arc-month">${escapeHtml(item.month)}</div>
+      <div class="arc-chapter-text">${escapeHtml(item.text)}</div>
+    </div>
+  `).join('');
+}
+
+function renderTapestry() {
+  document.getElementById('tapestryGrid').innerHTML = dashboardData.tapestry
+    .map((kind) => `<div class="tap-cell ${kind}"></div>`)
+    .join('');
+}
+
+function renderBroughtTaskBreakdown() {
+  renderTaskRows('broughtTaskList', dashboardData.broughtTaskBreakdown);
+}
+
+function renderAspectBreakdown() {
+  renderTaskRows('aspectList', dashboardData.aspectBreakdown);
+}
+
+function renderTaskRows(hostId, rows) {
+  const host = document.getElementById(hostId);
+  host.innerHTML = rows
     .map((item, index) => `
       <div class="task-row">
         <div class="task-lead">
@@ -193,28 +297,6 @@ function renderTaskBreakdown() {
     .join('');
 }
 
-function renderArc() {
-  const host = document.getElementById('arcStory');
-  host.innerHTML = dashboardData.arc.map((item) => `
-    <div class="arc-chapter${item.current ? ' current' : ''}">
-      <div class="arc-month">${escapeHtml(item.month)}</div>
-      <div class="arc-chapter-text">${escapeHtml(item.text)}</div>
-    </div>
-  `).join('');
-}
-
-function renderTapestry() {
-  document.getElementById('tapestryGrid').innerHTML = dashboardData.tapestry
-    .map((kind) => `<div class="tap-cell ${kind}"></div>`)
-    .join('');
-}
-
-function renderReflection() {
-  document.getElementById('seedQuestion').textContent = dashboardData.reflection.seed;
-  document.getElementById('nextStepTitle').textContent = dashboardData.reflection.nextTitle;
-  document.getElementById('nextStepCopy').textContent = dashboardData.reflection.nextStep;
-}
-
 function renderTopics() {
   const host = document.getElementById('topicsViz');
   host.innerHTML = dashboardData.topics
@@ -231,6 +313,20 @@ function renderTopics() {
       `;
     })
     .join('');
+}
+
+function renderShifts() {
+  const host = document.getElementById('shiftList');
+  host.innerHTML = dashboardData.shifts.map((item) => `
+    <article class="card shift-card">
+      <div class="shift-card-label">${escapeHtml(item.label)}</div>
+      <div class="shift-phase-label">Before</div>
+      <p class="shift-paragraph shift-before">${escapeHtml(item.before)}</p>
+      <div class="shift-phase-label">After</div>
+      <p class="shift-paragraph shift-after">${escapeHtml(item.after)}</p>
+      <div class="shift-evidence">${escapeHtml(item.evidence)}</div>
+    </article>
+  `).join('');
 }
 
 function renderStyle() {
@@ -253,18 +349,25 @@ function renderStyle() {
     .join('');
 }
 
+function renderReflection() {
+  document.getElementById('seedQuestion').textContent = dashboardData.reflection.seed;
+  document.getElementById('nextStepTitle').textContent = dashboardData.reflection.nextTitle;
+  document.getElementById('nextStepCopy').textContent = dashboardData.reflection.nextStep;
+}
+
 function buildTopicBubbleStyle(topic) {
-  const youColor = { r: 201, g: 122, b: 92 };
   const miroColor = { r: 74, g: 178, b: 212 };
-  const dominantColor = topic.youShare >= topic.miroShare ? youColor : miroColor;
-  const secondaryColor = topic.youShare >= topic.miroShare ? miroColor : youColor;
-  const secondaryShare = Math.min(topic.youShare, topic.miroShare) / 100;
-  const arcSize = 16 + (secondaryShare * 34);
+  const youColor = { r: 201, g: 122, b: 92 };
+  const sharedColor = { r: 201, g: 161, b: 100 };
+  const difference = Math.abs((topic.youShare || 0) - (topic.miroShare || 0));
+  const toneColor = difference <= 14
+    ? sharedColor
+    : (topic.youShare >= topic.miroShare ? youColor : miroColor);
 
   return {
     style: [
-      `--topic-fill: radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.14) 26%, rgba(255, 255, 255, 0) 42%), radial-gradient(circle at 102% 78%, ${toRgba(secondaryColor, 0.98)} 0%, ${toRgba(secondaryColor, 0.98)} ${arcSize.toFixed(1)}%, ${toRgba(secondaryColor, 0)} ${(arcSize + 4).toFixed(1)}%), linear-gradient(165deg, ${toRgba(dominantColor, 0.98)} 0%, ${toRgba(dominantColor, 0.98)} 100%)`,
-      `--topic-shadow: 0 18px 36px ${toRgba(dominantColor, 0.22)}, 0 8px 24px rgba(51, 43, 36, 0.12)`
+      `--topic-fill: radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.16) 24%, rgba(255, 255, 255, 0) 42%), linear-gradient(165deg, ${toRgba(toneColor, 0.98)} 0%, ${toRgba(toneColor, 0.92)} 100%)`,
+      `--topic-shadow: 0 18px 36px ${toRgba(toneColor, 0.2)}, 0 8px 24px rgba(51, 43, 36, 0.12)`
     ].join('; ')
   };
 }
@@ -288,4 +391,3 @@ function escapeHtml(value) {
     "'": '&#39;'
   }[match]));
 }
-

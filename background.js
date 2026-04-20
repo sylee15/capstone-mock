@@ -1,5 +1,23 @@
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 const MODEL = 'gpt-4o-mini';
+const TASK_TYPES = [
+  'Information seeking',
+  'Content generation',
+  'Sense-making',
+  'Problem solving',
+  'Creative work',
+  'Language refinement'
+];
+const CONTRIBUTION_TAGS = [
+  'judgment',
+  'direction',
+  'ideas',
+  'critique',
+  'execution',
+  'structure',
+  'research',
+  'momentum'
+];
 
 const reflectionSchema = {
   name: 'miro_session_reflection',
@@ -19,9 +37,13 @@ const reflectionSchema = {
         maxItems: 4,
         items: { type: 'string' }
       },
+      task_type: {
+        type: 'string',
+        enum: TASK_TYPES
+      },
       weight_rows: {
         type: 'array',
-        minItems: 4,
+        minItems: 6,
         maxItems: 6,
         items: {
           type: 'object',
@@ -35,6 +57,42 @@ const reflectionSchema = {
           required: ['key', 'label', 'position', 'reason']
         }
       },
+      you_brought_tagged: {
+        type: 'array',
+        minItems: 2,
+        maxItems: 4,
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            tag: {
+              type: 'string',
+              enum: CONTRIBUTION_TAGS
+            },
+            text: { type: 'string' }
+          },
+          required: ['tag', 'text']
+        }
+      },
+      miro_brought_tagged: {
+        type: 'array',
+        minItems: 2,
+        maxItems: 4,
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            tag: {
+              type: 'string',
+              enum: CONTRIBUTION_TAGS
+            },
+            text: { type: 'string' }
+          },
+          required: ['tag', 'text']
+        }
+      },
+      behavioral_note_label: { type: 'string' },
+      behavioral_note_text: { type: 'string' },
       you_brought: {
         type: 'array',
         minItems: 2,
@@ -56,7 +114,12 @@ const reflectionSchema = {
       'state_title',
       'state_description',
       'turning_points',
+      'task_type',
       'weight_rows',
+      'you_brought_tagged',
+      'miro_brought_tagged',
+      'behavioral_note_label',
+      'behavioral_note_text',
       'you_brought',
       'miro_brought',
       'seed_to_sit_with',
@@ -136,9 +199,14 @@ function buildMessages(payload) {
     '- Ground everything in the actual chat. Be concrete enough that the student can recognize the moments.',
     '- Do not use direct quotes from the conversation.',
     '- turning_points should tell the arc of the session, not isolated fragments.',
-    '- weight_rows should use intuitive work dimensions such as Coming up with ideas, Deciding the direction, Doing the research, Building the thing, Catching problems, Making the final call.',
+    '- task_type must be exactly one of: Information seeking, Content generation, Sense-making, Problem solving, Creative work, Language refinement.',
+    '- weight_rows must always use these exact six labels: Coming up with ideas, Deciding the direction, Doing the research, Building the thing, Catching problems, Making the final call.',
     '- position is 0 to 100 where 0 means I carried more of that work and 100 means you carried more.',
     '- reason should sound like my read, not a verdict.',
+    '- you_brought_tagged and miro_brought_tagged should each have 2-4 concise items with one tag from: judgment, direction, ideas, critique, execution, structure, research, momentum.',
+    '- Also include plain you_brought and miro_brought string arrays that match those tagged contributions in simpler language.',
+    '- behavioral_note_label should usually be PROMPT PATTERN or BEHAVIORAL NOTE.',
+    '- behavioral_note_text should be 2-3 sentences noticing one specific behavior shift or pattern in this chat.',
     '- state_title should be short, warm, and match the state_mode.',
     '- state_description should sound like me describing how this session felt.',
     '- seed_to_sit_with should be one sharp reflective question about ownership, judgment, learning, or reliance.',
@@ -214,12 +282,27 @@ function compactPreviousReflection(reflection) {
           reason: sanitize(row?.reason)
         }))
       : [],
+    task_type: sanitize(reflection?.task_type),
+    you_brought_tagged: Array.isArray(reflection?.you_brought_tagged)
+      ? reflection.you_brought_tagged.slice(0, 4).map((item) => ({
+          tag: sanitize(item?.tag),
+          text: sanitize(item?.text)
+        }))
+      : [],
+    miro_brought_tagged: Array.isArray(reflection?.miro_brought_tagged)
+      ? reflection.miro_brought_tagged.slice(0, 4).map((item) => ({
+          tag: sanitize(item?.tag),
+          text: sanitize(item?.text)
+        }))
+      : [],
     you_brought: Array.isArray(reflection?.you_brought)
       ? reflection.you_brought.map((item) => sanitize(item)).slice(0, 4)
       : [],
     miro_brought: Array.isArray(reflection?.miro_brought)
       ? reflection.miro_brought.map((item) => sanitize(item)).slice(0, 4)
       : [],
+    behavioral_note_label: sanitize(reflection?.behavioral_note_label),
+    behavioral_note_text: sanitize(reflection?.behavioral_note_text),
     seed_to_sit_with: sanitize(reflection?.seed_to_sit_with),
     gentle_next_step_title: sanitize(reflection?.gentle_next_step_title),
     gentle_next_step: sanitize(reflection?.gentle_next_step)

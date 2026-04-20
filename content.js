@@ -7,6 +7,54 @@
   const MAX_MESSAGES = 24;
   const STALE_ASSISTANT_GROWTH = 220;
   const MAX_ANALYSIS_INSTANCES = 12;
+  const TASK_TYPES = [
+    'Information seeking',
+    'Content generation',
+    'Sense-making',
+    'Problem solving',
+    'Creative work',
+    'Language refinement'
+  ];
+  const CONTRIBUTION_TAGS = ['judgment', 'direction', 'ideas', 'critique', 'execution', 'structure', 'research', 'momentum'];
+  const STANDARD_WEIGHT_ROWS = [
+    {
+      key: 'ideas',
+      label: 'Coming up with ideas',
+      position: 42,
+      reason: 'I helped surface options, but you were still the one steering which ideas felt worth keeping.'
+    },
+    {
+      key: 'direction',
+      label: 'Deciding the direction',
+      position: 82,
+      reason: 'The stronger directional calls seemed to stay with you, even when I suggested different paths.'
+    },
+    {
+      key: 'research',
+      label: 'Doing the research',
+      position: 48,
+      reason: 'I carried a bit more of the gathering and organizing here, while you shaped what actually mattered.'
+    },
+    {
+      key: 'building',
+      label: 'Building the thing',
+      position: 28,
+      reason: 'I carried more of the first-pass making in this session, even while you kept the goal in view.'
+    },
+    {
+      key: 'problems',
+      label: 'Catching problems',
+      position: 76,
+      reason: 'Your judgment mattered a lot when something felt off and needed to be adjusted.'
+    },
+    {
+      key: 'final_call',
+      label: 'Making the final call',
+      position: 90,
+      reason: 'Where we landed still felt clearly yours. I could narrow options, but not choose for you.'
+    }
+  ];
+  const DEFAULT_BEHAVIORAL_NOTE = "You started this chat with 'can you help me find' - an open delegation. But by the third message you were directing: 'how would I actually apply that.' You shifted from asking me to find things to asking me to build toward your vision.";
 
   const state = {
     panelOpen: false,
@@ -229,6 +277,7 @@
           <div class="miro-state-name">${escapeHtml(data.state_title)}</div>
           <div class="miro-state-meta">
             <span class="miro-state-chip ${stateChip.tone}">${escapeHtml(stateChip.label)}</span>
+            <span class="miro-state-chip task">${escapeHtml(data.task_type)}</span>
           </div>
           <div class="miro-state-desc">${escapeHtml(data.state_description)}</div>
         </div>
@@ -262,12 +311,20 @@
         <div class="miro-brought-grid">
           <div class="miro-brought-card you">
             <div class="miro-brought-head you">You brought</div>
-            <ul>${data.you_brought.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+            <ul>${renderTaggedContributionItems(data.you_brought_tagged)}</ul>
           </div>
           <div class="miro-brought-card miro">
             <div class="miro-brought-head miro">I brought</div>
-            <ul>${data.miro_brought.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+            <ul>${renderTaggedContributionItems(data.miro_brought_tagged)}</ul>
           </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="miro-section-label">Something I noticed</div>
+        <div class="miro-noticed-card">
+          <div class="miro-noticed-eyebrow">${escapeHtml(data.behavioral_note_label)}</div>
+          <div class="miro-noticed-copy">${escapeHtml(data.behavioral_note_text)}</div>
         </div>
       </section>
 
@@ -298,6 +355,15 @@
 
     bindWeightRows();
     document.getElementById('miro-open-dashboard')?.addEventListener('click', openMockDashboard);
+  }
+
+  function renderTaggedContributionItems(items) {
+    return items.map((item) => `
+      <li>
+        <span class="miro-contribution-tag">${escapeHtml(item.tag.toUpperCase())}</span>
+        <span class="miro-contribution-copy">${escapeHtml(item.text)}</span>
+      </li>
+    `).join('');
   }
 
   function renderWeightRows(rows) {
@@ -351,44 +417,15 @@
       'The chat shifted once the work became more concrete and we started shaping a real direction.',
       'By the end, I was helping hold structure while you kept the final say over what felt right.'
     ];
-
-    const fallbackWeightRows = [
-      {
-        key: 'ideas',
-        label: 'Coming up with ideas',
-        position: 42,
-        reason: 'I helped surface options, but you were still the one steering which ideas felt worth keeping.'
-      },
-      {
-        key: 'direction',
-        label: 'Deciding the direction',
-        position: 82,
-        reason: 'The stronger directional calls seemed to stay with you, even when I suggested different paths.'
-      },
-      {
-        key: 'research',
-        label: 'Doing the research',
-        position: 48,
-        reason: 'I carried a bit more of the gathering and organizing here, while you shaped what actually mattered.'
-      },
-      {
-        key: 'building',
-        label: 'Building the thing',
-        position: 28,
-        reason: 'I carried more of the first-pass making in this session, even while you kept the goal in view.'
-      },
-      {
-        key: 'problems',
-        label: 'Catching problems',
-        position: 76,
-        reason: 'Your judgment mattered a lot when something felt off and needed to be adjusted.'
-      },
-      {
-        key: 'final_call',
-        label: 'Making the final call',
-        position: 90,
-        reason: 'Where we landed still felt clearly yours. I could narrow options, but not choose for you.'
-      }
+    const fallbackYouBrought = [
+      { tag: 'judgment', text: 'The directional call on what was worth keeping.' },
+      { tag: 'direction', text: 'The sense of where this conversation needed to end up.' },
+      { tag: 'critique', text: 'The corrections that made the rougher parts sharper.' }
+    ];
+    const fallbackMiroBrought = [
+      { tag: 'structure', text: 'First-pass structure you could push against.' },
+      { tag: 'execution', text: 'A drafty version of the thing while the shape was still forming.' },
+      { tag: 'momentum', text: 'Forward motion when the next step was still blurry.' }
     ];
 
     return {
@@ -398,8 +435,9 @@
         data?.state_description,
         'This chat felt shared. I helped carry parts of it, but your direction still shaped where we landed.'
       ),
+      task_type: normalizeTaskType(data?.task_type),
       turning_points: normalizeStringList(data?.turning_points, fallbackTurningPoints, 3, 4),
-      weight_rows: normalizeWeightRows(data?.weight_rows, fallbackWeightRows),
+      weight_rows: normalizeWeightRows(data?.weight_rows),
       you_brought: normalizeStringList(
         data?.you_brought,
         ['the direction you cared about', 'the judgment for what felt right'],
@@ -411,6 +449,21 @@
         ['structure to work against', 'a first pass you could react to'],
         2,
         4
+      ),
+      you_brought_tagged: normalizeTaggedContributionList(
+        data?.you_brought_tagged,
+        data?.you_brought,
+        fallbackYouBrought
+      ),
+      miro_brought_tagged: normalizeTaggedContributionList(
+        data?.miro_brought_tagged,
+        data?.miro_brought || data?.slime_brought,
+        fallbackMiroBrought
+      ),
+      behavioral_note_label: cleanText(data?.behavioral_note_label, 'PROMPT PATTERN').toUpperCase(),
+      behavioral_note_text: cleanText(
+        data?.behavioral_note_text,
+        DEFAULT_BEHAVIORAL_NOTE
       ),
       seed_to_sit_with: cleanText(
         data?.seed_to_sit_with || data?.reflection,
@@ -427,17 +480,25 @@
     };
   }
 
-  function normalizeWeightRows(rows, fallback) {
-    if (!Array.isArray(rows) || rows.length === 0) {
-      return fallback;
-    }
+  function normalizeWeightRows(rows) {
+    const candidates = Array.isArray(rows) ? rows : [];
+    const byKey = new Map();
 
-    return rows.slice(0, 6).map((row, index) => ({
-      key: cleanText(row?.key, fallback[index]?.key || `row_${index + 1}`),
-      label: cleanText(row?.label, fallback[index]?.label || `Row ${index + 1}`),
-      position: clamp(Number(row?.position), 0, 100, fallback[index]?.position || 50),
-      reason: cleanText(row?.reason, fallback[index]?.reason || '')
-    }));
+    candidates.forEach((row, index) => {
+      const key = normalizeWeightRowKey(row?.key, row?.label, STANDARD_WEIGHT_ROWS[index]?.key);
+      if (!key) return;
+      byKey.set(key, row);
+    });
+
+    return STANDARD_WEIGHT_ROWS.map((fallbackRow) => {
+      const source = byKey.get(fallbackRow.key) || {};
+      return {
+        key: fallbackRow.key,
+        label: fallbackRow.label,
+        position: clamp(Number(source?.position), 0, 100, fallbackRow.position),
+        reason: cleanText(source?.reason, fallbackRow.reason)
+      };
+    });
   }
 
   function normalizeStringList(value, fallback, minItems, maxItems) {
@@ -454,6 +515,79 @@
 
   function sanitizeStateMode(mode) {
     return ['builder', 'thoughtful', 'shared', 'tired'].includes(mode) ? mode : 'shared';
+  }
+
+  function normalizeTaskType(taskType) {
+    const cleaned = cleanText(taskType, '');
+    const normalized = cleaned.toLowerCase();
+    const match = TASK_TYPES.find((item) => item.toLowerCase() === normalized);
+    return match || 'Sense-making';
+  }
+
+  function normalizeWeightRowKey(key, label, fallbackKey) {
+    const normalized = `${key || ''} ${label || ''}`.toLowerCase();
+    if (normalized.includes('idea')) return 'ideas';
+    if (normalized.includes('direction') || normalized.includes('decid')) return 'direction';
+    if (normalized.includes('research') || normalized.includes('finding')) return 'research';
+    if (normalized.includes('build') || normalized.includes('draft') || normalized.includes('execution')) return 'building';
+    if (normalized.includes('problem') || normalized.includes('catch') || normalized.includes('issue')) return 'problems';
+    if (normalized.includes('final') || normalized.includes('call') || normalized.includes('choose')) return 'final_call';
+    return fallbackKey || '';
+  }
+
+  function normalizeTaggedContributionList(value, legacyList, fallback) {
+    const tagged = Array.isArray(value)
+      ? value
+          .map((item, index) => ({
+            tag: normalizeContributionTag(item?.tag, fallback[index]?.tag || 'ideas'),
+            text: cleanText(item?.text, '')
+          }))
+          .filter((item) => item.text)
+      : [];
+
+    if (tagged.length >= 2) {
+      return tagged.slice(0, 4);
+    }
+
+    const legacy = Array.isArray(legacyList)
+      ? legacy
+          .map((item, index) => {
+            const text = cleanText(item, '');
+            if (!text) return null;
+            return {
+              tag: inferContributionTag(text, fallback[index]?.tag || 'ideas'),
+              text
+            };
+          })
+          .filter(Boolean)
+      : [];
+
+    if (legacy.length >= 2) {
+      return legacy.slice(0, 4);
+    }
+
+    return fallback.slice(0, 4).map((item) => ({
+      tag: normalizeContributionTag(item.tag, 'ideas'),
+      text: cleanText(item.text, '')
+    }));
+  }
+
+  function normalizeContributionTag(tag, fallback) {
+    const normalized = cleanText(tag, fallback).toLowerCase();
+    return CONTRIBUTION_TAGS.includes(normalized) ? normalized : fallback;
+  }
+
+  function inferContributionTag(text, fallback) {
+    const normalized = text.toLowerCase();
+    if (normalized.includes('judg')) return 'judgment';
+    if (normalized.includes('direction') || normalized.includes('decid')) return 'direction';
+    if (normalized.includes('idea') || normalized.includes('concept')) return 'ideas';
+    if (normalized.includes('critique') || normalized.includes('push back') || normalized.includes('correction')) return 'critique';
+    if (normalized.includes('draft') || normalized.includes('build') || normalized.includes('make')) return 'execution';
+    if (normalized.includes('structure') || normalized.includes('frame')) return 'structure';
+    if (normalized.includes('research') || normalized.includes('find') || normalized.includes('gather')) return 'research';
+    if (normalized.includes('momentum') || normalized.includes('move') || normalized.includes('next step')) return 'momentum';
+    return fallback;
   }
 
   function stateMeta(data) {

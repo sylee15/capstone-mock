@@ -348,6 +348,12 @@
   border-color: rgba(74, 178, 212, 0.24);
 }
 
+.miro-state-chip.task {
+  color: var(--miro-text);
+  background: rgba(255, 252, 247, 0.9);
+  border-color: rgba(230, 217, 200, 0.9);
+}
+
 .miro-state-desc,
 .miro-turning-copy,
 .miro-weight-reason,
@@ -590,7 +596,7 @@
 
 .miro-brought-card li {
   position: relative;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   padding-left: 14px;
 }
 
@@ -617,6 +623,45 @@
 .miro-brought-card.miro li::before {
   border-radius: 999px;
   background: var(--miro-blue);
+}
+
+.miro-contribution-tag {
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--miro-soft);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  vertical-align: baseline;
+}
+
+.miro-contribution-copy {
+  color: var(--miro-text);
+}
+
+.miro-noticed-card {
+  position: relative;
+  padding: 20px 18px 18px;
+  border: 1px solid rgba(201, 161, 100, 0.28);
+  border-radius: 24px;
+  background: #f7ecd4;
+  box-shadow: var(--miro-shadow);
+}
+
+.miro-noticed-eyebrow {
+  margin-bottom: 10px;
+  color: var(--miro-gold-deep);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.miro-noticed-copy {
+  color: var(--miro-text);
+  font-size: 14px;
+  line-height: 1.65;
 }
 
 .miro-reflection-card {

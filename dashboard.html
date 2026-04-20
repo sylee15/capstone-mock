@@ -33,14 +33,14 @@
           </span>
           <span>The story so far</span>
         </button>
-        <button class="tab-button" data-tab="made" type="button">
+        <button class="tab-button" data-tab="brought" type="button">
           <span class="tab-ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="7.5" cy="9" r="3.5"></circle>
               <circle cx="16" cy="15" r="4.5"></circle>
             </svg>
           </span>
-          <span>What we made</span>
+          <span>What you brought to me</span>
         </button>
         <button class="tab-button" data-tab="task" type="button">
           <span class="tab-ico" aria-hidden="true">
@@ -55,6 +55,17 @@
           </span>
           <span>By task</span>
         </button>
+        <button class="tab-button" data-tab="shifted" type="button">
+          <span class="tab-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 18V6"></path>
+              <path d="M12 18V10"></path>
+              <path d="M19 18V13"></path>
+              <path d="M4 18h16"></path>
+            </svg>
+          </span>
+          <span>What shifted</span>
+        </button>
         <button class="tab-button" data-tab="style" type="button">
           <span class="tab-ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -67,7 +78,7 @@
       </nav>
 
       <div class="sidebar-foot">
-        <div class="sidebar-foot-kicker">Looking back at</div>
+        <div class="sidebar-foot-kicker">Based on</div>
         <div class="sidebar-foot-value" id="periodLabel"></div>
         <div class="sidebar-foot-note" id="periodMeta"></div>
       </div>
@@ -75,7 +86,7 @@
 
     <main class="dashboard ani">
       <header class="topbar">
-        <div class="topbar-kicker" id="pageKicker">Dashboard - Overview</div>
+        <div class="topbar-kicker" id="pageKicker">Dashboard - The story so far</div>
         <h1 class="topbar-title" id="pageTitle"></h1>
         <p class="topbar-sub" id="pageSubtitle"></p>
       </header>
@@ -115,36 +126,34 @@
             </div>
           </article>
         </div>
-
-        <section class="closing-band">
-          <article class="card seed-card">
-            <div class="section-kicker">A seed to sit with</div>
-            <div class="reflection-question" id="seedQuestion"></div>
-            <div class="seed-mark">?</div>
-          </article>
-
-          <article class="card next-card">
-            <div class="section-kicker">A gentle next step</div>
-            <div class="next-step-title" id="nextStepTitle"></div>
-            <div class="next-step-copy" id="nextStepCopy"></div>
-          </article>
-        </section>
       </section>
 
-      <section class="panel" data-panel="made">
-        <section class="card made-stage-card">
-          <div class="section-kicker">What we have been talking about</div>
-          <p class="section-sub">Bigger bubbles held more space. Blue and terracotta show the general lean of the work.</p>
-          <div class="topic-bubble-stage" id="topicsViz"></div>
-        </section>
+      <section class="panel" data-panel="brought">
+        <div class="brought-tab-grid">
+          <section class="card made-stage-card">
+            <div class="section-kicker">What you have been bringing here</div>
+            <p class="section-sub">Bigger bubbles held more space. Each bubble shows a topic area that kept resurfacing across chats.</p>
+            <div class="topic-bubble-stage" id="topicsViz"></div>
+          </section>
+
+          <section class="card task-card">
+            <div class="section-kicker">Task type breakdown</div>
+            <p class="section-sub">A mocked read of the cognitive work you have been bringing to AI, with a soft sense of who carried each one more.</p>
+            <div class="task-list" id="broughtTaskList"></div>
+          </section>
+        </div>
       </section>
 
       <section class="panel" data-panel="task">
         <section class="card task-card">
-          <div class="section-kicker">Task breakdown</div>
-          <p class="section-sub">A rough read of who tended to carry each kind of work. Not a score, just a sense.</p>
-          <div class="task-list" id="taskList"></div>
+          <div class="section-kicker">Where the weight usually sits</div>
+          <p class="section-sub">These six aspects stay fixed so you can compare how the work tends to get shared, even as the topic changes.</p>
+          <div class="task-list" id="aspectList"></div>
         </section>
+      </section>
+
+      <section class="panel" data-panel="shifted">
+        <div class="shift-list" id="shiftList"></div>
       </section>
 
       <section class="panel" data-panel="style">
@@ -163,6 +172,20 @@
           <div class="section-kicker">Patterns I keep noticing</div>
           <div class="pattern-list" id="rhythmList"></div>
         </section>
+
+        <section class="closing-band">
+          <article class="card seed-card">
+            <div class="section-kicker">A seed to sit with</div>
+            <div class="reflection-question" id="seedQuestion"></div>
+            <div class="seed-mark">?</div>
+          </article>
+
+          <article class="card next-card">
+            <div class="section-kicker">A gentle next step</div>
+            <div class="next-step-title" id="nextStepTitle"></div>
+            <div class="next-step-copy" id="nextStepCopy"></div>
+          </article>
+        </section>
       </section>
     </main>
   </div>
@@ -170,4 +193,3 @@
   <script src="dashboard.js"></script>
 </body>
 </html>
-

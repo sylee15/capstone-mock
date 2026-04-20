@@ -434,6 +434,12 @@ body::before {
   gap: 20px;
 }
 
+.brought-tab-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 20px;
+}
+
 .arc-card,
 .tapestry-card,
 .made-stage-card,
@@ -781,6 +787,56 @@ body::before {
 .you-text { color: var(--you-deep); }
 .shared-text { color: var(--gold-deep); }
 
+.shift-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shift-card {
+  padding: 22px 24px;
+  border-left: 4px solid var(--gold);
+  background: rgba(255, 252, 247, 0.96);
+}
+
+.shift-card-label {
+  margin-bottom: 12px;
+  color: var(--gold-deep);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.shift-phase-label {
+  margin-bottom: 6px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.shift-paragraph {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.shift-after {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.shift-evidence {
+  color: var(--ink-2);
+  font-family: var(--serif);
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.55;
+}
+
 .style-hero-card {
   margin-bottom: 20px;
   background: linear-gradient(180deg, #fffaf0 0%, #f8eecf 100%);
@@ -913,6 +969,7 @@ body::before {
 
 @media (max-width: 1120px) {
   .overview-grid,
+  .brought-tab-grid,
   .closing-band,
   .style-hero-grid,
   .pattern-list,
