@@ -1,6 +1,10 @@
 (() => {
-  if (window.__miroInjected) return;
-  window.__miroInjected = true;
+  if (document.getElementById('miro-root')) {
+    window.__miroInjected = true;
+    return;
+  }
+  if (window.__miroInjected || window.__miroBooting) return;
+  window.__miroBooting = true;
 
   const MIN_TURNS = 4;
   const POLL_INTERVAL_MS = 2500;
@@ -95,13 +99,38 @@
     tired: chrome.runtime.getURL('sprites/tired.png')
   };
 
-  injectUI();
-  hydrateSessionState();
-  watchConversation();
-  pollConversation();
-  setInterval(pollConversation, POLL_INTERVAL_MS);
+  startMiro();
+
+  function startMiro() {
+    if (document.getElementById('miro-root')) {
+      window.__miroInjected = true;
+      window.__miroBooting = false;
+      return;
+    }
+
+    if (!document.documentElement) {
+      setTimeout(startMiro, 50);
+      return;
+    }
+
+    try {
+      injectUI();
+      hydrateSessionState();
+      watchConversation();
+      pollConversation();
+      setInterval(pollConversation, POLL_INTERVAL_MS);
+      window.__miroInjected = true;
+    } catch (error) {
+      console.error('Miro failed to start.', error);
+      window.__miroInjected = false;
+    } finally {
+      window.__miroBooting = false;
+    }
+  }
 
   function injectUI() {
+    if (document.getElementById('miro-root')) return;
+
     const root = document.createElement('div');
     root.id = 'miro-root';
     root.innerHTML = `
@@ -130,7 +159,7 @@
       </aside>
     `;
 
-    document.body.appendChild(root);
+    (document.documentElement || document.body).appendChild(root);
 
     const pet = root.querySelector('#miro-pet');
     const petImage = root.querySelector('#miro-pet-image');
@@ -167,6 +196,8 @@
   }
 
   function pollConversation() {
+    ensureUiMounted();
+
     const scrapeResult = scrapeConversation();
     state.messages = scrapeResult.messages;
     state.currentFingerprint = scrapeResult.fingerprint;
@@ -696,6 +727,26 @@
 
   function openMockDashboard() {
     window.open(chrome.runtime.getURL('dashboard.html'), '_blank');
+  }
+
+  function ensureUiMounted() {
+    const existingRoot = document.getElementById('miro-root');
+    if (existingRoot) return;
+
+    try {
+      injectUI();
+      updatePetSprite();
+
+      if (state.panelOpen) {
+        document.getElementById('miro-panel')?.classList.remove('miro-hidden');
+      }
+
+      if (state.latestAnalysis && state.panelOpen) {
+        renderPanel(state.latestAnalysis);
+      }
+    } catch (error) {
+      console.warn('Miro could not remount after a page rerender.', error);
+    }
   }
 
   async function hydrateSessionState() {
