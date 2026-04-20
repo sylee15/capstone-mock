@@ -150,6 +150,10 @@ function bindTabs() {
 
 function applyTabCopy(tabKey) {
   const tab = dashboardData.tabs[tabKey] || dashboardData.tabs.overview;
+  const kicker = document.getElementById('pageKicker');
+  if (kicker) {
+    kicker.textContent = `Dashboard - ${tab.title}`;
+  }
   document.getElementById('pageTitle').textContent = tab.title;
   document.getElementById('pageSubtitle').textContent = tab.subtitle;
 }
@@ -165,13 +169,16 @@ function renderOverview() {
 function renderTaskBreakdown() {
   const host = document.getElementById('taskList');
   host.innerHTML = dashboardData.taskBreakdown
-    .map((item) => `
+    .map((item, index) => `
       <div class="task-row">
-        <div class="task-copy">
-          <div class="task-label">${escapeHtml(item.label)}</div>
-          <div class="task-note">${escapeHtml(item.note)}</div>
+        <div class="task-lead">
+          <div class="task-num">${index + 1}</div>
+          <div class="task-copy">
+            <div class="task-label">${escapeHtml(item.label)}</div>
+            <div class="task-note">${escapeHtml(item.note)}</div>
+          </div>
         </div>
-        <div class="task-meter">
+        <div class="task-meter-wrap">
           <div class="task-meter-labels">
             <span class="miro-text">Miro</span>
             <span class="you-text">You</span>
@@ -179,7 +186,7 @@ function renderTaskBreakdown() {
           <div class="task-track">
             <div class="task-thumb" style="left:${item.lean}%;"></div>
           </div>
-          <div class="task-verdict ${verdictTone(item.verdict)}">${escapeHtml(item.verdict)}</div>
+          <div class="task-verdict ${verdictTone(item.verdict)}"><span class="dot"></span>${escapeHtml(item.verdict)}</div>
         </div>
       </div>
     `)
@@ -281,3 +288,4 @@ function escapeHtml(value) {
     "'": '&#39;'
   }[match]));
 }
+

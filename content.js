@@ -282,12 +282,18 @@
       <section>
         <div class="miro-section-label">A gentle next step</div>
         <div class="miro-next-step-card">
-          <div class="miro-next-step-title">${escapeHtml(data.gentle_next_step_title)}</div>
-          <div class="miro-next-step-copy">${escapeHtml(data.gentle_next_step)}</div>
+          <div class="miro-next-step-glyph" aria-hidden="true">&#8594;</div>
+          <div>
+            <div class="miro-next-step-title">${escapeHtml(data.gentle_next_step_title)}</div>
+            <div class="miro-next-step-copy">${escapeHtml(data.gentle_next_step)}</div>
+          </div>
         </div>
       </section>
 
-      <button class="miro-dashboard-link" id="miro-open-dashboard">View full dashboard</button>
+      <div class="miro-panel-foot">
+        <div class="miro-panel-meta">${state.messages.length} messages in this chat</div>
+        <button class="miro-dashboard-link" id="miro-open-dashboard">View full dashboard</button>
+      </div>
     `;
 
     bindWeightRows();

@@ -556,8 +556,9 @@
 }
 
 .miro-brought-card {
-  padding: 16px;
-  background: rgba(255, 253, 250, 0.97);
+  padding: 16px 14px 16px;
+  position: relative;
+  overflow: hidden;
 }
 
 .miro-brought-head {
@@ -570,6 +571,16 @@
 
 .miro-brought-head.you { color: var(--miro-you-dark); }
 .miro-brought-head.miro { color: var(--miro-blue-deep); }
+
+.miro-brought-card.you {
+  background: linear-gradient(180deg, #fff1f2 0%, #f7e3dd 100%);
+  border-color: #efc3c9;
+}
+
+.miro-brought-card.miro {
+  background: linear-gradient(180deg, #e8f3f7 0%, #d7e9ef 100%);
+  border-color: #b9d6df;
+}
 
 .miro-brought-card ul {
   margin: 0;
@@ -587,42 +598,113 @@
   margin-bottom: 0;
 }
 
-.miro-brought-card li::before {
-  content: "*";
+.miro-brought-card.you li::before,
+.miro-brought-card.miro li::before {
+  content: "";
   position: absolute;
   left: 0;
-  color: var(--miro-soft);
+  top: 8px;
+  width: 8px;
+  height: 8px;
+}
+
+.miro-brought-card.you li::before {
+  border-radius: 2px;
+  background: var(--miro-you);
+  transform: rotate(45deg);
+}
+
+.miro-brought-card.miro li::before {
+  border-radius: 999px;
+  background: var(--miro-blue);
 }
 
 .miro-reflection-card {
-  padding: 22px 20px;
+  position: relative;
+  overflow: hidden;
+  padding: 24px 20px 22px;
   text-align: center;
-  background: linear-gradient(180deg, #fffaf0 0%, #f8f0df 100%);
+  background:
+    radial-gradient(240px 160px at 50% 0%, rgba(201, 161, 100, 0.18), transparent 70%),
+    linear-gradient(180deg, #fffaf0 0%, #fbf5e7 100%);
+}
+
+.miro-reflection-card::before,
+.miro-reflection-card::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, rgba(201, 161, 100, 0.4) 0 4px, transparent 4px 10px);
+}
+
+.miro-reflection-card::before {
+  top: 10px;
+}
+
+.miro-reflection-card::after {
+  bottom: 10px;
 }
 
 .miro-reflection-question {
   color: var(--miro-text);
   font-family: "Instrument Serif", "Newsreader", Georgia, serif;
-  font-size: 17px;
-  line-height: 1.62;
+  font-size: 19px;
+  line-height: 1.45;
   font-style: italic;
+  max-width: 32ch;
+  margin: 0 auto;
 }
 
 .miro-next-step-card {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  align-items: start;
   padding: 18px;
+  background: rgba(255, 253, 250, 0.97);
+}
+
+.miro-next-step-glyph {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(74, 178, 212, 0.12);
+  border: 1px solid rgba(74, 178, 212, 0.22);
+  color: var(--miro-blue-deep);
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .miro-next-step-title {
-  margin-bottom: 9px;
+  margin: 0 0 6px;
   color: var(--miro-blue-deep);
-  font-family: "Instrument Serif", "Newsreader", Georgia, serif;
-  font-size: 23px;
-  font-weight: 400;
-  font-style: italic;
+  font-size: 16px;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.miro-panel-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0 0;
+  border-top: 1px solid rgba(230, 217, 200, 0.72);
+}
+
+.miro-panel-meta {
+  color: var(--miro-soft);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .miro-dashboard-link {
-  width: 100%;
+  width: auto;
   padding: 16px 18px;
   border-radius: 999px;
   border: 1px solid var(--miro-border);
@@ -634,6 +716,10 @@
   cursor: pointer;
   box-shadow: var(--miro-shadow-soft);
   transition: border-color 0.16s ease, transform 0.16s ease;
+}
+
+.miro-panel-foot .miro-dashboard-link {
+  margin-left: auto;
 }
 
 .miro-dashboard-link:hover {

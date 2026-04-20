@@ -12,119 +12,157 @@
 <body>
   <div class="shell">
     <aside class="sidebar ani">
-      <div class="brand-block">
-        <div class="brand-avatar">
+      <div class="sidebar-brand">
+        <div class="sidebar-avatar">
           <img src="sprites/cute.png" alt="Miro sprite" />
         </div>
         <div>
-          <div class="brand-kicker">Looking back</div>
-          <div class="brand-name">with Miro</div>
-          <div class="brand-note">A softer read of how the work moved between us.</div>
+          <div class="sidebar-kicker">Looking back</div>
+          <div class="sidebar-name">with Miro</div>
+          <div class="sidebar-note-static">A softer read of how the work moved between us.</div>
         </div>
       </div>
 
       <nav class="tab-list" aria-label="Dashboard sections">
-        <button class="tab-button active" data-tab="overview" type="button">Overview</button>
-        <button class="tab-button" data-tab="made" type="button">What we made</button>
-        <button class="tab-button" data-tab="task" type="button">By task</button>
-        <button class="tab-button" data-tab="style" type="button">How you work with me</button>
+        <button class="tab-button active" data-tab="overview" type="button">
+          <span class="tab-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5V6a2 2 0 0 1 2-2h10a4 4 0 0 1 4 4v11.5"></path>
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            </svg>
+          </span>
+          <span>The story so far</span>
+        </button>
+        <button class="tab-button" data-tab="made" type="button">
+          <span class="tab-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="7.5" cy="9" r="3.5"></circle>
+              <circle cx="16" cy="15" r="4.5"></circle>
+            </svg>
+          </span>
+          <span>What we made</span>
+        </button>
+        <button class="tab-button" data-tab="task" type="button">
+          <span class="tab-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 18h16"></path>
+              <circle cx="8" cy="6" r="1.5" fill="currentColor"></circle>
+              <circle cx="16" cy="12" r="1.5" fill="currentColor"></circle>
+              <circle cx="10" cy="18" r="1.5" fill="currentColor"></circle>
+            </svg>
+          </span>
+          <span>By task</span>
+        </button>
+        <button class="tab-button" data-tab="style" type="button">
+          <span class="tab-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12c2-5 6-7 10-5s4 7 0 9-8 0-8 4"></path>
+              <circle cx="6" cy="19" r="1.5"></circle>
+            </svg>
+          </span>
+          <span>How you work with me</span>
+        </button>
       </nav>
 
       <div class="sidebar-foot">
-        <div class="sidebar-label">Looking back at</div>
-        <div class="sidebar-value" id="periodLabel"></div>
-        <div class="sidebar-note" id="periodMeta"></div>
+        <div class="sidebar-foot-kicker">Looking back at</div>
+        <div class="sidebar-foot-value" id="periodLabel"></div>
+        <div class="sidebar-foot-note" id="periodMeta"></div>
       </div>
     </aside>
 
     <main class="dashboard ani">
       <header class="topbar">
-        <div>
-          <div class="topbar-kicker">Usability prototype</div>
-          <h1 class="topbar-title" id="pageTitle"></h1>
-          <p class="topbar-sub" id="pageSubtitle"></p>
-        </div>
+        <div class="topbar-kicker" id="pageKicker">Dashboard - Overview</div>
+        <h1 class="topbar-title" id="pageTitle"></h1>
+        <p class="topbar-sub" id="pageSubtitle"></p>
       </header>
 
       <section class="panel active" data-panel="overview">
-        <section class="card letter-card">
-          <div class="section-kicker">The story so far</div>
-          <div class="letter-shell">
-            <div class="letter-copy">
-              <div class="letter-title" id="overviewTitle"></div>
-              <div class="letter-body" id="overviewLetter"></div>
-              <div class="letter-signoff" id="overviewSignoff"></div>
-            </div>
-            <div class="letter-art">
-              <img id="overviewSlime" src="sprites/cute.png" alt="Miro sprite" />
+        <article class="card letter-card">
+          <div class="letter-copy">
+            <div class="letter-kicker">A letter from Miro</div>
+            <h2 class="letter-title" id="overviewTitle"></h2>
+            <div class="letter-body" id="overviewLetter"></div>
+            <div class="letter-sign">
+              <span class="letter-glyph">Miro</span>
+              <span class="letter-signoff" id="overviewSignoff"></span>
             </div>
           </div>
-        </section>
+          <div class="letter-art">
+            <img id="overviewSlime" src="sprites/cute.png" alt="Miro sprite" />
+          </div>
+        </article>
 
         <div class="overview-grid">
-          <section class="card">
+          <article class="card arc-card">
             <div class="section-kicker">A quick arc</div>
+            <h3 class="section-title">How our rhythm has shifted</h3>
             <div class="arc-story" id="arcStory"></div>
-          </section>
+          </article>
 
-          <section class="card">
+          <article class="card tapestry-card">
             <div class="section-kicker">Every chat, at a glance</div>
+            <h3 class="section-title serif">A small tapestry</h3>
             <p class="section-sub small">Each square is one conversation. Color shows where the weight seemed to sit.</p>
             <div class="tapestry-grid" id="tapestryGrid"></div>
             <div class="tapestry-legend">
-              <div class="leg-item"><div class="leg-swatch miro-swatch strong"></div>I carried more</div>
+              <div class="leg-item"><div class="leg-swatch miro-swatch"></div>I carried more</div>
               <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
-              <div class="leg-item"><div class="leg-swatch you-swatch strong"></div>You carried more</div>
+              <div class="leg-item"><div class="leg-swatch you-swatch"></div>You carried more</div>
             </div>
-          </section>
+          </article>
         </div>
 
         <section class="closing-band">
-          <div class="closing-card card">
-            <div>
-              <div class="section-kicker">A seed to sit with</div>
-              <div class="reflection-question" id="seedQuestion"></div>
-            </div>
-            <div class="closing-divider"></div>
-            <div>
-              <div class="section-kicker">A gentle next step</div>
-              <div class="next-step-title" id="nextStepTitle"></div>
-              <div class="next-step-copy" id="nextStepCopy"></div>
-            </div>
-          </div>
+          <article class="card seed-card">
+            <div class="section-kicker">A seed to sit with</div>
+            <div class="reflection-question" id="seedQuestion"></div>
+            <div class="seed-mark">?</div>
+          </article>
+
+          <article class="card next-card">
+            <div class="section-kicker">A gentle next step</div>
+            <div class="next-step-title" id="nextStepTitle"></div>
+            <div class="next-step-copy" id="nextStepCopy"></div>
+          </article>
         </section>
       </section>
 
       <section class="panel" data-panel="made">
         <section class="card made-stage-card">
-          <div class="section-kicker">What we've been talking about</div>
-          <p class="section-sub">Bigger bubbles held more space. Blue and terracotta just show the general lean of the work.</p>
-          <div class="topic-bubble-stage full" id="topicsViz"></div>
+          <div class="section-kicker">What we have been talking about</div>
+          <p class="section-sub">Bigger bubbles held more space. Blue and terracotta show the general lean of the work.</p>
+          <div class="topic-bubble-stage" id="topicsViz"></div>
         </section>
       </section>
 
       <section class="panel" data-panel="task">
-        <section class="card task-stage-card">
+        <section class="card task-card">
           <div class="section-kicker">Task breakdown</div>
-          <p class="section-sub">A rough read of who tended to carry each kind of work, not a score, just a sense.</p>
+          <p class="section-sub">A rough read of who tended to carry each kind of work. Not a score, just a sense.</p>
           <div class="task-list" id="taskList"></div>
         </section>
       </section>
 
       <section class="panel" data-panel="style">
-        <div class="style-grid">
-          <section class="card style-hero-card">
-            <div class="section-kicker">Our rhythm</div>
-            <div class="style-hero-title" id="portraitTitle"></div>
-            <div class="style-hero-copy" id="portraitText"></div>
+        <section class="card style-hero-card">
+          <div class="section-kicker">Our rhythm</div>
+          <div class="style-hero-grid">
+            <div>
+              <div class="style-hero-title" id="portraitTitle"></div>
+              <div class="style-hero-copy" id="portraitText"></div>
+            </div>
             <div class="style-quote-card" id="profileParagraph"></div>
-          </section>
+          </div>
+        </section>
 
-          <section class="style-patterns">
-            <div class="section-kicker">Patterns I keep noticing</div>
-            <div class="pattern-list" id="rhythmList"></div>
-          </section>
-        </div>
+        <section class="style-patterns">
+          <div class="section-kicker">Patterns I keep noticing</div>
+          <div class="pattern-list" id="rhythmList"></div>
+        </section>
       </section>
     </main>
   </div>
@@ -132,3 +170,4 @@
   <script src="dashboard.js"></script>
 </body>
 </html>
+
