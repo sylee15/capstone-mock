@@ -141,6 +141,13 @@ body::before {
   border-color: #d4c6b4;
 }
 
+.btn-pill:focus-visible,
+.review-nav a:focus-visible,
+.mock-dashboard-link:focus-visible {
+  outline: 2px solid rgba(74, 178, 212, 0.34);
+  outline-offset: 2px;
+}
+
 .btn-pill.primary {
   background: var(--ink);
   border-color: var(--ink);
