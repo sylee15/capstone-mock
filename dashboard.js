@@ -1,196 +1,183 @@
-const dashboardData = {
+const D = {
   periodLabel: 'Dec - Apr',
-  periodMeta: '52 conversations across 4 months',
+  periodMeta: '52 chats over 4 months',
+
   overview: {
-    title: 'Your story with Miro',
-    subtitle: 'The recent rhythm between you and me, gathered into one place.',
+    title: 'Your story so far',
     letter: [
-      "Hey. This stretch with us has felt more directional than it used to.",
-      "You still come to me for momentum and structure, but more and more of the strong turns seem to happen when you redirect me. I draft, you reshape, I rebuild.",
-      "What stands out is not just that we worked together. It's that the shape of your asks changed. You started bringing clearer judgment into the room."
+      'This stretch has felt more directional than it used to.',
+      'You still come to me for momentum and structure, but the strong turns happen when you redirect me. I draft, you reshape, I rebuild.',
+      'The shape of your asks changed. You started bringing clearer judgment into the room.'
     ],
     signoff: '52 conversations - Dec to Apr'
   },
+
   arc: [
-    { month: 'December', text: "You often opened with context first. I was helping you gather, sort, and get started." },
-    { month: 'January', text: "The work started to move faster. You leaned on me for more structure, but you were still narrating what mattered." },
-    { month: 'March', text: "Your redirects got sharper. You gave less context, but your judgments landed more precisely." },
-    { month: 'April, now', text: "You often start with a directive now. I still help build, but the frame increasingly feels like yours.", current: true }
+    { month: 'December', text: 'You opened with context. I helped you gather and get started.' },
+    { month: 'January', text: 'Work moved faster. You leaned on me for structure but still narrated what mattered.' },
+    { month: 'March', text: 'Your redirects got sharper. Less context, more precise judgment.' },
+    { month: 'April', text: 'You start with directives now. I build, but the frame is yours.', current: true }
   ],
+
   tapestry: [
-    'miro-heavy', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'you-heavy',
-    'miro-heavy', 'balanced', 'miro-heavy', 'you-lean', 'you-heavy', 'balanced', 'miro-lean', 'miro-heavy', 'you-lean', 'balanced',
-    'miro-heavy', 'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'miro-heavy', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean',
-    'balanced', 'you-lean', 'you-heavy', 'miro-heavy', 'balanced', 'miro-lean', 'you-heavy', 'balanced', 'you-lean', 'miro-heavy',
-    'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'balanced', 'miro-heavy', 'miro-heavy', 'you-lean', 'balanced', 'you-heavy',
-    'miro-lean', 'balanced'
+    'miro-heavy', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean', 'balanced',
+    'you-lean', 'you-heavy', 'miro-heavy', 'balanced', 'miro-heavy', 'you-lean', 'you-heavy', 'balanced',
+    'miro-lean', 'miro-heavy', 'you-lean', 'balanced', 'miro-heavy', 'miro-lean', 'balanced', 'you-heavy',
+    'you-lean', 'miro-heavy', 'balanced', 'you-lean', 'miro-heavy', 'miro-lean', 'balanced', 'you-lean',
+    'you-heavy', 'miro-heavy', 'balanced', 'miro-lean', 'you-heavy', 'balanced', 'you-lean', 'miro-heavy',
+    'miro-lean', 'balanced', 'you-heavy', 'you-lean', 'balanced', 'miro-heavy', 'miro-heavy', 'you-lean',
+    'balanced', 'you-heavy', 'miro-lean', 'balanced'
   ],
-  broughtTaskBreakdown: [
-    {
-      label: 'Content generation',
-      note: 'I often carried more of the first-pass drafting here, while you kept the final tone and direction.',
-      lean: 34,
-      verdict: 'Leaned toward me'
-    },
-    {
-      label: 'Sense-making',
-      note: 'You usually held the judgment in these chats, especially when deciding what the signal meant.',
-      lean: 74,
-      verdict: 'Leaned toward you'
-    },
-    {
-      label: 'Information seeking',
-      note: 'This work felt more shared. I surfaced options quickly, but you kept deciding what actually mattered.',
-      lean: 52,
-      verdict: 'Shared'
-    },
-    {
-      label: 'Working through problems',
-      note: 'You tended to keep the stronger calls, even when I helped narrow the options.',
-      lean: 70,
-      verdict: 'Leaned toward you'
-    },
-    {
-      label: 'Creative & ideation',
-      note: 'This moved back and forth. I helped expand possibilities, but you often picked what felt alive.',
-      lean: 48,
-      verdict: 'Shared'
-    }
+
+  topics: [
+    { label: 'Capstone design', count: 18, size: 'xxl', x: 28, y: 34, youShare: 64, miroShare: 36 },
+    { label: 'Product framing', count: 14, size: 'xl', x: 44, y: 24, youShare: 57, miroShare: 43 },
+    { label: 'Coding', count: 6, size: 'md', x: 56, y: 14, youShare: 18, miroShare: 82 },
+    { label: 'Interview synthesis', count: 9, size: 'lg', x: 68, y: 32, youShare: 41, miroShare: 59 },
+    { label: 'UX research', count: 5, size: 'md', x: 60, y: 50, youShare: 54, miroShare: 46 },
+    { label: 'Prototyping', count: 7, size: 'lg', x: 38, y: 58, youShare: 61, miroShare: 39 },
+    { label: 'Metacognition', count: 4, size: 'sm', x: 78, y: 54, youShare: 46, miroShare: 54 },
+    { label: 'AI in education', count: 4, size: 'sm', x: 74, y: 70, youShare: 34, miroShare: 66 },
+    { label: 'Career planning', count: 3, size: 'xs', x: 20, y: 74, youShare: 68, miroShare: 32 },
+    { label: 'Personal', count: 2, size: 'xs', x: 32, y: 80, youShare: 73, miroShare: 27 }
   ],
-  aspectBreakdown: [
+
+  aspects: [
     {
       label: 'Coming up with ideas',
-      note: 'You often shaped which ideas were actually worth keeping, even when I generated options.',
-      lean: 68,
-      verdict: 'Leaned toward you'
+      position: 68,
+      lo: 52,
+      hi: 82,
+      verdict: 'Mostly you',
+      tone: 'you',
+      trendLine: 'Shifting toward you since January.',
+      aiLine: 'AI generated most of the ideas in',
+      aiTopics: ['Coding', 'AI in education'],
+      youLine: 'You came up with more of the ideas in',
+      youTopics: ['Capstone design', 'Prototyping']
     },
     {
       label: 'Deciding the direction',
-      note: 'The bigger directional calls still felt clearly yours across most sessions.',
-      lean: 84,
-      verdict: 'Leaned toward you'
+      position: 84,
+      lo: 70,
+      hi: 94,
+      verdict: 'Clearly you',
+      tone: 'you',
+      trendLine: 'Stayed consistent over time.',
+      aiLine: 'AI set more of the direction in',
+      aiTopics: ['Coding'],
+      youLine: 'You decided the direction in',
+      youTopics: ['Capstone design', 'Product framing', 'Prototyping']
     },
     {
       label: 'Doing the research',
-      note: 'This tended to be more shared. I moved faster at gathering, while you set the filter.',
-      lean: 50,
-      verdict: 'Shared'
+      position: 50,
+      lo: 32,
+      hi: 66,
+      verdict: 'Shared',
+      tone: 'shared',
+      trendLine: 'Shifting toward AI since February.',
+      aiLine: 'AI did more of the gathering and synthesis in',
+      aiTopics: ['Interview synthesis', 'AI in education'],
+      youLine: 'You drove the research yourself in',
+      youTopics: ['UX research', 'Career planning']
     },
     {
       label: 'Building the thing',
-      note: 'I carried more of the first-pass building and prototyping once the goal was clear enough.',
-      lean: 30,
-      verdict: 'Leaned toward me'
+      position: 30,
+      lo: 16,
+      hi: 48,
+      verdict: 'Leaned to AI',
+      tone: 'miro',
+      trendLine: 'Shifting toward AI since January.',
+      aiLine: 'AI did most of the building in',
+      aiTopics: ['Coding', 'Prototyping', 'Product framing'],
+      youLine: 'You built more of the work yourself in',
+      youTopics: ['Personal']
     },
     {
       label: 'Catching problems',
-      note: 'A lot of the meaningful corrections came from your sense that something still felt off.',
-      lean: 76,
-      verdict: 'Leaned toward you'
+      position: 76,
+      lo: 58,
+      hi: 88,
+      verdict: 'Mostly you',
+      tone: 'you',
+      trendLine: 'Shifting toward you since March.',
+      aiLine: 'AI caught more of the issues in',
+      aiTopics: ['Coding'],
+      youLine: 'Your corrections drove most fixes in',
+      youTopics: ['Capstone design', 'Product framing', 'UX research']
     },
     {
       label: 'Making the final call',
-      note: 'Even when I narrowed or drafted, the final judgment still lived more with you.',
-      lean: 91,
-      verdict: 'Leaned toward you'
+      position: 91,
+      lo: 78,
+      hi: 98,
+      verdict: 'Clearly you',
+      tone: 'you',
+      trendLine: 'Stayed consistent over time.',
+      aiLine: '',
+      aiTopics: [],
+      youLine: 'You made the final call in',
+      youTopics: ['Capstone design', 'Product framing', 'Prototyping', 'Interview synthesis']
     }
   ],
-  topics: [
-    { id: 'capstone-design', label: 'Capstone design', count: 18, size: 'xxl', x: 28, y: 34, youShare: 64, miroShare: 36 },
-    { id: 'product-framing', label: 'Product framing', count: 14, size: 'xl', x: 42, y: 25, youShare: 57, miroShare: 43 },
-    { id: 'coding', label: 'Coding', count: 6, size: 'md', x: 54, y: 16, youShare: 18, miroShare: 82 },
-    { id: 'interview-synthesis', label: 'Interview synthesis', count: 9, size: 'lg', x: 66, y: 33, youShare: 41, miroShare: 59 },
-    { id: 'ux-research', label: 'UX research', count: 5, size: 'md', x: 57, y: 49, youShare: 54, miroShare: 46 },
-    { id: 'prototyping', label: 'Prototyping', count: 7, size: 'lg', x: 39, y: 58, youShare: 61, miroShare: 39 },
-    { id: 'metacognition', label: 'Metacognition', count: 4, size: 'sm', x: 77, y: 56, youShare: 46, miroShare: 54 },
-    { id: 'AI in education', label: 'AI in education', count: 4, size: 'sm', x: 73, y: 70, youShare: 34, miroShare: 66 },
-    { id: 'career-planning', label: 'Career planning', count: 3, size: 'xs', x: 18, y: 76, youShare: 68, miroShare: 32 },
-    { id: 'personal', label: 'Personal', count: 2, size: 'xs', x: 30, y: 82, youShare: 73, miroShare: 27 }
-  ],
-  shifts: [
+
+  strengths: [
     {
-      label: 'Your opening prompts changed',
-      before: "In January you started chats with context - 'I'm working on X for my capstone, here's where I am so far.'",
-      after: "By March most opening messages were shorter and more directive - 'prototype this' or 'critique this design.'",
-      evidence: "You stopped explaining your thinking and started assuming I already understood. That might be trust, or it might be shorthand - you'd know better."
+      title: 'Your judgment is getting sharper',
+      note: 'Your redirects are more precise - fewer follow-ups, but each one changes the direction more. Keep pushing back on first drafts, even when they look fine.'
     },
     {
-      label: 'Your follow-ups changed',
-      before: 'Early chats averaged 8 follow-ups. You pushed back, redirected, asked why.',
-      after: 'Recent chats average 4 - but each redirect is sharper. You say less, but each turn carries more.',
-      evidence: "You're not asking fewer questions. You're asking better ones. But you're also letting more of my first drafts through."
+      title: 'You still own the final call',
+      note: 'Across almost every session, the final judgment - what to keep, cut, or change direction on - stayed with you. Keep making that decision deliberately.'
     },
     {
-      label: 'What you delegate expanded',
-      before: 'In January you delegated research and formatting. You wrote your own outlines and first drafts.',
-      after: "By April you're delegating full prototypes, pitch language, and argument structure.",
-      evidence: 'You still make the final call. But the raw material is increasingly mine.'
-    },
-    {
-      label: 'Your voice in the output',
-      before: 'Your early writing had short, direct sentences. Conversational tone. Your rhythm.',
-      after: "Recent work uses longer constructions and more hedging - 'it is worth noting,' 'this suggests that.'",
-      evidence: 'Three phrases that appear in your recent work but never in your January writing. Those are my patterns, not yours.'
+      title: 'You sharpen by reacting',
+      note: 'Our strongest sessions start once you have something concrete to push back on. That instinct to reshape rather than accept is doing real work.'
     }
   ],
+
+  watchItems: [
+    {
+      title: "You're delegating more of the starting point",
+      body: 'In January you wrote your own outlines and first drafts. Now you ask me to write them. The final quality is similar, but the raw material is increasingly mine. Over time, this can make it harder to generate ideas without AI.',
+      actionIcon: 'rework',
+      actionTitle: 'Write one first draft yourself this week',
+      actionCopy: "Pick a task you'd hand me. Write it rough first. Then ask me to critique, not create."
+    },
+    {
+      title: 'My writing patterns are showing up in yours',
+      body: 'Three phrases in your recent work - longer constructions, more hedging - never appeared in your January writing. Those are my patterns, not yours. Your natural voice is more direct.',
+      actionIcon: 'reclaim',
+      actionTitle: 'Read your output aloud before submitting',
+      actionCopy: "If a sentence doesn't sound like something you'd say in conversation, rewrite it."
+    },
+    {
+      title: 'Your prompts got shorter',
+      body: 'Your opening messages went from paragraph-length context to short directives. This can mean you know what you want - but it also means I get less of your reasoning, which changes what I produce.',
+      actionIcon: 'reframe',
+      actionTitle: 'Add your reasoning to your next prompt',
+      actionCopy: "Before the task, write one sentence about why you're doing it or what you've already decided."
+    }
+  ],
+
   reflection: {
-    seed: 'What part of this still feels most like yours, even when I help you move faster?',
-    nextTitle: 'Take back one starting point',
-    nextStep: 'Pick one kind of task you now tend to hand me first. Next time, make your own rough first pass before you ask for help, just to notice what changes.'
+    seed: 'What part of this still feels most like yours?'
   },
-  style: {
-    rhythmTitle: 'A clearer hand, with more delegation at the start.',
-    rhythmCopy:
-      'Our rhythm now often starts with you asking me to build the first pass, especially when the work is moving quickly. The useful part is still your judgment, but the opening move changed.',
-    quote:
-      '<strong>You</strong> still shape what matters most.<br><span class="miro-line">I</span> increasingly shape the first structure you respond to.<br>That shift is worth noticing, even if it still feels collaborative.',
-    patterns: [
-      {
-        title: 'You sharpen by reacting',
-        label: 'Where you lead',
-        tone: 'you',
-        body: 'A lot of our stronger sessions begin once there is something concrete for you to push back on.'
-      },
-      {
-        title: 'Judgment stayed with you',
-        label: 'Where you lead',
-        tone: 'you',
-        body: 'Even when I draft, summarize, or scaffold, the stronger directional call still tends to be yours.'
-      },
-      {
-        title: 'First drafts are shifting',
-        label: 'Worth noticing',
-        tone: 'shared',
-        body: 'In your earlier chats, you wrote your own first drafts and asked me to react. Lately, you ask me to write the first draft and then you edit. The quality is similar, but the starting point changed.'
-      },
-      {
-        title: 'I carry momentum when time is tight',
-        label: 'Where I tend to step in',
-        tone: 'miro',
-        body: 'When the work needs to move quickly, I often hold the early structure so you can react faster.'
-      }
-    ]
-  },
+
   tabs: {
     overview: {
       title: 'The story so far',
-      subtitle: 'A softer read of how the recent stretch between you and me has been unfolding.'
+      subtitle: 'How the stretch between you and your AI has unfolded.'
     },
-    brought: {
-      title: 'What you brought to me',
-      subtitle: 'The kinds of cognitive work you have been bringing into these chats, from topic clusters to task types.'
+    who: {
+      title: 'Who did what',
+      subtitle: 'The topics you brought and how the work split between us.'
     },
-    task: {
-      title: 'By task',
-      subtitle: 'A fixed six-part read of where the weight usually seemed to sit across the work.'
-    },
-    shifted: {
-      title: 'What shifted',
-      subtitle: 'Concrete places where your way of using me appears to have changed over time.'
-    },
-    style: {
-      title: 'How you work with me',
-      subtitle: 'A softer portrait of the patterns, judgments, and delegation habits that keep showing up.'
+    watch: {
+      title: 'What to watch for',
+      subtitle: "What's working, what to keep an eye on, and what to try next."
     }
   }
 };
@@ -200,189 +187,183 @@ document.addEventListener('DOMContentLoaded', () => {
   renderOverview();
   renderArc();
   renderTapestry();
-  renderBroughtTaskBreakdown();
-  renderAspectBreakdown();
   renderTopics();
-  renderShifts();
+  renderSliders();
+  renderStrengths();
+  renderWatchItems();
   renderReflection();
-  renderStyle();
   bindTabs();
 });
 
 function renderChrome() {
-  document.getElementById('periodLabel').textContent = dashboardData.periodLabel;
-  document.getElementById('periodMeta').textContent = dashboardData.periodMeta;
+  document.getElementById('periodLabel').textContent = D.periodLabel;
+  document.getElementById('periodMeta').textContent = D.periodMeta;
   applyTabCopy('overview');
 }
 
 function bindTabs() {
   const buttons = Array.from(document.querySelectorAll('.tab-button'));
   const panels = Array.from(document.querySelectorAll('.panel'));
+
   buttons.forEach((button) => {
     button.addEventListener('click', () => {
-      const nextTab = button.dataset.tab;
+      const tab = button.dataset.tab;
       buttons.forEach((item) => item.classList.toggle('active', item === button));
-      panels.forEach((panel) => panel.classList.toggle('active', panel.dataset.panel === nextTab));
-      applyTabCopy(nextTab);
+      panels.forEach((item) => item.classList.toggle('active', item.dataset.panel === tab));
+      applyTabCopy(tab);
     });
   });
 }
 
-function applyTabCopy(tabKey) {
-  const tab = dashboardData.tabs[tabKey] || dashboardData.tabs.overview;
-  const kicker = document.getElementById('pageKicker');
-  if (kicker) {
-    kicker.textContent = `Dashboard - ${tab.title}`;
-  }
+function applyTabCopy(key) {
+  const tab = D.tabs[key] || D.tabs.overview;
+  document.getElementById('pageKicker').textContent = `Dashboard - ${tab.title}`;
   document.getElementById('pageTitle').textContent = tab.title;
   document.getElementById('pageSubtitle').textContent = tab.subtitle;
 }
 
 function renderOverview() {
-  document.getElementById('overviewTitle').textContent = dashboardData.overview.title;
-  document.getElementById('overviewLetter').innerHTML = dashboardData.overview.letter
-    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
-    .join('');
-  document.getElementById('overviewSignoff').textContent = dashboardData.overview.signoff;
+  document.getElementById('overviewTitle').textContent = D.overview.title;
+  document.getElementById('overviewLetter').innerHTML = D.overview.letter.map((paragraph) => `<p>${esc(paragraph)}</p>`).join('');
+  document.getElementById('overviewSignoff').textContent = D.overview.signoff;
 }
 
 function renderArc() {
-  const host = document.getElementById('arcStory');
-  host.innerHTML = dashboardData.arc.map((item) => `
-    <div class="arc-chapter${item.current ? ' current' : ''}">
-      <div class="arc-month">${escapeHtml(item.month)}</div>
-      <div class="arc-chapter-text">${escapeHtml(item.text)}</div>
+  document.getElementById('arcStory').innerHTML = D.arc.map((item) => (
+    `<div class="arc-chapter${item.current ? ' current' : ''}"><div class="arc-month">${esc(item.month)}</div><div class="arc-chapter-text">${esc(item.text)}</div></div>`
+  )).join('');
+}
+
+function renderTapestry() {
+  document.getElementById('tapestryGrid').innerHTML = D.tapestry.map((kind) => `<div class="tap-cell ${kind}"></div>`).join('');
+}
+
+function renderTopics() {
+  document.getElementById('topicsViz').innerHTML = D.topics.map((topic) => {
+    const style = bubbleStyle(topic);
+    return `<div class="topic-bubble ${topic.size}" style="left:${topic.x}%;top:${topic.y}%;${style}"><div class="topic-bubble-label">${esc(topic.label)}</div><div class="topic-bubble-count">${topic.count} chats</div></div>`;
+  }).join('');
+}
+
+function renderSliders() {
+  document.getElementById('sliderRows').innerHTML = D.aspects.map((aspect) => {
+    const topicPill = (name, type) => `<span class="slider-topic-pill ${type}-pill">${esc(name)}</span>`;
+    const joinTopics = (items, type) => items.map((item) => topicPill(item, type)).join(' and ');
+    const lines = [`<div class="slider-exp-line trend">${esc(aspect.trendLine)}</div>`];
+
+    if (aspect.aiLine && aspect.aiTopics.length) {
+      lines.push(`<div class="slider-exp-line">${esc(aspect.aiLine)} ${joinTopics(aspect.aiTopics, 'ai')}.</div>`);
+    }
+
+    if (aspect.youLine && aspect.youTopics.length) {
+      lines.push(`<div class="slider-exp-line">${esc(aspect.youLine)} ${joinTopics(aspect.youTopics, 'you')}.</div>`);
+    }
+
+    return `
+      <button class="slider-row" type="button" aria-expanded="false">
+        <div class="slider-row-top">
+          <div class="slider-label">${esc(aspect.label)}</div>
+          <div class="slider-row-right">
+            <div class="slider-verdict ${aspect.tone}">${esc(aspect.verdict)}</div>
+            <div class="slider-chevron">+</div>
+          </div>
+        </div>
+        <div class="slider-scale-labels"><span>AI</span><span>You</span></div>
+        <div class="slider-track has-range">
+          <div class="slider-track-left"></div>
+          <div class="slider-track-right"></div>
+          <div class="slider-range-fill" style="left:${aspect.lo}%;width:${aspect.hi - aspect.lo}%"></div>
+          <div class="slider-tick" style="left:${aspect.lo}%"></div>
+          <div class="slider-tick" style="left:${aspect.hi}%"></div>
+          <div class="slider-dot" style="left:${aspect.position}%"></div>
+        </div>
+        <div class="slider-expanded">
+          ${lines.join('')}
+        </div>
+      </button>
+    `;
+  }).join('');
+
+  document.querySelectorAll('.slider-row').forEach((row) => {
+    row.addEventListener('click', () => {
+      const wasOpen = row.classList.contains('open');
+      document.querySelectorAll('.slider-row').forEach((item) => {
+        item.classList.remove('open');
+        item.setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        row.classList.add('open');
+        row.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+}
+
+function renderStrengths() {
+  document.getElementById('strengthsRow').innerHTML = D.strengths.map((item) => `
+    <div class="strength-card">
+      <div class="strength-icon">✓</div>
+      <div>
+        <div class="strength-title">${esc(item.title)}</div>
+        <div class="strength-note">${esc(item.note)}</div>
+      </div>
     </div>
   `).join('');
 }
 
-function renderTapestry() {
-  document.getElementById('tapestryGrid').innerHTML = dashboardData.tapestry
-    .map((kind) => `<div class="tap-cell ${kind}"></div>`)
-    .join('');
-}
-
-function renderBroughtTaskBreakdown() {
-  renderTaskRows('broughtTaskList', dashboardData.broughtTaskBreakdown);
-}
-
-function renderAspectBreakdown() {
-  renderTaskRows('aspectList', dashboardData.aspectBreakdown);
-}
-
-function renderTaskRows(hostId, rows) {
-  const host = document.getElementById(hostId);
-  host.innerHTML = rows
-    .map((item, index) => `
-      <div class="task-row">
-        <div class="task-lead">
-          <div class="task-num">${index + 1}</div>
-          <div class="task-copy">
-            <div class="task-label">${escapeHtml(item.label)}</div>
-            <div class="task-note">${escapeHtml(item.note)}</div>
-          </div>
+function renderWatchItems() {
+  document.getElementById('watchList').innerHTML = D.watchItems.map((item, index) => `
+    <article class="watch-card">
+      <div class="watch-card-summary">
+        <div class="watch-card-summary-top">
+          <div class="watch-card-title">${esc(item.title)}</div>
+          <div class="watch-card-chevron">+</div>
         </div>
-        <div class="task-meter-wrap">
-          <div class="task-meter-labels">
-            <span class="miro-text">Miro</span>
-            <span class="you-text">You</span>
+        <div class="watch-card-action-inline">
+          <div class="watch-action-icon ${item.actionIcon}">${index + 1}</div>
+          <div class="watch-action-content">
+            <div class="watch-action-title">${esc(item.actionTitle)}</div>
+            <div class="watch-action-copy">${esc(item.actionCopy)}</div>
           </div>
-          <div class="task-track">
-            <div class="task-thumb" style="left:${item.lean}%;"></div>
-          </div>
-          <div class="task-verdict ${verdictTone(item.verdict)}"><span class="dot"></span>${escapeHtml(item.verdict)}</div>
         </div>
       </div>
-    `)
-    .join('');
-}
-
-function renderTopics() {
-  const host = document.getElementById('topicsViz');
-  host.innerHTML = dashboardData.topics
-    .map((topic) => {
-      const bubbleStyle = buildTopicBubbleStyle(topic);
-      return `
-        <div
-          class="topic-bubble ${topic.size}"
-          style="left:${topic.x}%; top:${topic.y}%; ${bubbleStyle.style}"
-        >
-          <div class="topic-bubble-label">${escapeHtml(topic.label)}</div>
-          <div class="topic-bubble-count">${topic.count} chats</div>
-        </div>
-      `;
-    })
-    .join('');
-}
-
-function renderShifts() {
-  const host = document.getElementById('shiftList');
-  host.innerHTML = dashboardData.shifts.map((item) => `
-    <article class="card shift-card">
-      <div class="shift-card-label">${escapeHtml(item.label)}</div>
-      <div class="shift-phase-label">Before</div>
-      <p class="shift-paragraph shift-before">${escapeHtml(item.before)}</p>
-      <div class="shift-phase-label">After</div>
-      <p class="shift-paragraph shift-after">${escapeHtml(item.after)}</p>
-      <div class="shift-evidence">${escapeHtml(item.evidence)}</div>
+      <div class="watch-card-detail">
+        <div class="watch-card-detail-label">Why this matters</div>
+        <div class="watch-card-body">${esc(item.body)}</div>
+      </div>
     </article>
   `).join('');
-}
 
-function renderStyle() {
-  document.getElementById('portraitTitle').textContent = dashboardData.style.rhythmTitle;
-  document.getElementById('portraitText').textContent = dashboardData.style.rhythmCopy;
-  document.getElementById('profileParagraph').innerHTML = dashboardData.style.quote;
-  document.getElementById('rhythmList').innerHTML = dashboardData.style.patterns
-    .map((item) => `
-      <div class="pattern-card ${item.tone}">
-        <div class="pattern-top">
-          <div class="pattern-title-wrap">
-            <span class="pattern-dot"></span>
-            <div class="pattern-title">${escapeHtml(item.title)}</div>
-          </div>
-          <div class="pattern-label">${escapeHtml(item.label)}</div>
-        </div>
-        <div class="pattern-body">${escapeHtml(item.body)}</div>
-      </div>
-    `)
-    .join('');
+  document.querySelectorAll('.watch-card-summary').forEach((summary) => {
+    summary.addEventListener('click', () => {
+      const card = summary.closest('.watch-card');
+      const wasOpen = card.classList.contains('open');
+      document.querySelectorAll('.watch-card').forEach((item) => item.classList.remove('open'));
+      if (!wasOpen) {
+        card.classList.add('open');
+      }
+    });
+  });
 }
 
 function renderReflection() {
-  document.getElementById('seedQuestion').textContent = dashboardData.reflection.seed;
-  document.getElementById('nextStepTitle').textContent = dashboardData.reflection.nextTitle;
-  document.getElementById('nextStepCopy').textContent = dashboardData.reflection.nextStep;
+  document.getElementById('seedQuestion').textContent = D.reflection.seed;
 }
 
-function buildTopicBubbleStyle(topic) {
+function bubbleStyle(topic) {
   const miroColor = { r: 74, g: 178, b: 212 };
   const youColor = { r: 201, g: 122, b: 92 };
   const sharedColor = { r: 201, g: 161, b: 100 };
-  const difference = Math.abs((topic.youShare || 0) - (topic.miroShare || 0));
-  const toneColor = difference <= 14
-    ? sharedColor
-    : (topic.youShare >= topic.miroShare ? youColor : miroColor);
-
-  return {
-    style: [
-      `--topic-fill: radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.16) 24%, rgba(255, 255, 255, 0) 42%), linear-gradient(165deg, ${toRgba(toneColor, 0.98)} 0%, ${toRgba(toneColor, 0.92)} 100%)`,
-      `--topic-shadow: 0 18px 36px ${toRgba(toneColor, 0.2)}, 0 8px 24px rgba(51, 43, 36, 0.12)`
-    ].join('; ')
-  };
+  const delta = Math.abs((topic.youShare || 0) - (topic.miroShare || 0));
+  const color = delta <= 14 ? sharedColor : (topic.youShare >= topic.miroShare ? youColor : miroColor);
+  return `--topic-fill:radial-gradient(circle at 28% 24%,rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.16) 24%,rgba(255,255,255,0) 42%),linear-gradient(165deg,${rgba(color, 0.98)} 0%,${rgba(color, 0.92)} 100%);--topic-shadow:0 18px 36px ${rgba(color, 0.2)},0 8px 24px rgba(51,43,36,0.12)`;
 }
 
-function verdictTone(verdict) {
-  if (verdict === 'Leaned toward you') return 'you-text';
-  if (verdict === 'Leaned toward me') return 'miro-text';
-  return 'shared-text';
+function rgba(color, alpha) {
+  return `rgba(${color.r},${color.g},${color.b},${alpha.toFixed(2)})`;
 }
 
-function toRgba(color, alpha) {
-  return `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha.toFixed(2)})`;
-}
-
-function escapeHtml(value) {
+function esc(value) {
   return String(value || '').replace(/[&<>"']/g, (match) => ({
     '&': '&amp;',
     '<': '&lt;',

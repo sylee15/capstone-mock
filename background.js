@@ -1,23 +1,5 @@
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 const MODEL = 'gpt-4o-mini';
-const TASK_TYPES = [
-  'Information seeking',
-  'Content generation',
-  'Sense-making',
-  'Problem solving',
-  'Creative work',
-  'Language refinement'
-];
-const CONTRIBUTION_TAGS = [
-  'judgment',
-  'direction',
-  'ideas',
-  'critique',
-  'execution',
-  'structure',
-  'research',
-  'momentum'
-];
 
 const reflectionSchema = {
   name: 'miro_session_reflection',
@@ -25,25 +7,28 @@ const reflectionSchema = {
     type: 'object',
     additionalProperties: false,
     properties: {
-      state_mode: {
-        type: 'string',
-        enum: ['builder', 'thoughtful', 'shared', 'tired']
-      },
-      state_title: { type: 'string' },
-      state_description: { type: 'string' },
-      turning_points: {
+      session_read_title: { type: 'string' },
+      session_read_chips: {
         type: 'array',
-        minItems: 3,
-        maxItems: 4,
-        items: { type: 'string' }
+        minItems: 1,
+        maxItems: 2,
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            label: { type: 'string' },
+            tone: {
+              type: 'string',
+              enum: ['miro', 'shared', 'task']
+            }
+          },
+          required: ['label', 'tone']
+        }
       },
-      task_type: {
-        type: 'string',
-        enum: TASK_TYPES
-      },
+      session_read_narrative: { type: 'string' },
       weight_rows: {
         type: 'array',
-        minItems: 6,
+        minItems: 5,
         maxItems: 6,
         items: {
           type: 'object',
@@ -52,79 +37,46 @@ const reflectionSchema = {
             key: { type: 'string' },
             label: { type: 'string' },
             position: { type: 'number' },
+            range_start: { type: 'number' },
+            range_end: { type: 'number' },
+            verdict: { type: 'string' },
             reason: { type: 'string' }
           },
-          required: ['key', 'label', 'position', 'reason']
+          required: ['key', 'label', 'position', 'range_start', 'range_end', 'verdict', 'reason']
         }
       },
-      you_brought_tagged: {
+      pattern_title: { type: 'string' },
+      pattern_copy: { type: 'string' },
+      try_items: {
         type: 'array',
         minItems: 2,
-        maxItems: 4,
+        maxItems: 3,
         items: {
           type: 'object',
           additionalProperties: false,
           properties: {
-            tag: {
+            icon_type: {
               type: 'string',
-              enum: CONTRIBUTION_TAGS
+              enum: ['rework', 'reframe', 'reclaim']
             },
-            text: { type: 'string' }
+            title: { type: 'string' },
+            copy: { type: 'string' },
+            source: { type: 'string' }
           },
-          required: ['tag', 'text']
+          required: ['icon_type', 'title', 'copy', 'source']
         }
       },
-      miro_brought_tagged: {
-        type: 'array',
-        minItems: 2,
-        maxItems: 4,
-        items: {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            tag: {
-              type: 'string',
-              enum: CONTRIBUTION_TAGS
-            },
-            text: { type: 'string' }
-          },
-          required: ['tag', 'text']
-        }
-      },
-      behavioral_note_label: { type: 'string' },
-      behavioral_note_text: { type: 'string' },
-      you_brought: {
-        type: 'array',
-        minItems: 2,
-        maxItems: 4,
-        items: { type: 'string' }
-      },
-      miro_brought: {
-        type: 'array',
-        minItems: 2,
-        maxItems: 4,
-        items: { type: 'string' }
-      },
-      seed_to_sit_with: { type: 'string' },
-      gentle_next_step_title: { type: 'string' },
-      gentle_next_step: { type: 'string' }
+      closing_question: { type: 'string' }
     },
     required: [
-      'state_mode',
-      'state_title',
-      'state_description',
-      'turning_points',
-      'task_type',
+      'session_read_title',
+      'session_read_chips',
+      'session_read_narrative',
       'weight_rows',
-      'you_brought_tagged',
-      'miro_brought_tagged',
-      'behavioral_note_label',
-      'behavioral_note_text',
-      'you_brought',
-      'miro_brought',
-      'seed_to_sit_with',
-      'gentle_next_step_title',
-      'gentle_next_step'
+      'pattern_title',
+      'pattern_copy',
+      'try_items',
+      'closing_question'
     ]
   },
   strict: true
@@ -158,7 +110,7 @@ async function handleAnalyze(payload) {
     body: JSON.stringify({
       model: MODEL,
       messages,
-      temperature: 0,
+      temperature: 0.25,
       response_format: {
         type: 'json_schema',
         json_schema: reflectionSchema
@@ -179,7 +131,6 @@ function buildMessages(payload) {
   const {
     conversation = [],
     pageTitle,
-    chatFingerprint = '',
     analysisMode = 'full',
     previousReflection = null,
     previousMessageCount = 0,
@@ -197,27 +148,30 @@ function buildMessages(payload) {
     '- Stay gentle, thoughtful, slightly playful, and emotionally intelligent.',
     '- Never sound like a judge, warning system, cheating detector, therapist, or analytics dashboard.',
     '- Focus on ownership, authorship, learning, collaboration, and how the work was shared.',
-    '- When the evidence is ambiguous, resolve toward shared or me-led rather than automatically crediting you with ownership.',
     '- Ground everything in the actual chat. Be concrete enough that the student can recognize the moments.',
     '- Do not use direct quotes from the conversation.',
-    '- turning_points should tell the arc of the session, not isolated fragments.',
-    '- task_type must be exactly one of: Information seeking, Content generation, Sense-making, Problem solving, Creative work, Language refinement.',
-    '- weight_rows must always use these exact six labels: Coming up with ideas, Deciding the direction, Doing the research, Building the thing, Catching problems, Making the final call.',
+    '- session_read_title should be short and concrete, like a distilled read of how this session went.',
+    '- session_read_chips should be one or two very short labels that describe the split or the task type.',
+    '- session_read_narrative should describe what happened in this session specifically: how the user started, where they redirected me, and what the final shape of the work felt like.',
+    '- weight_rows must always be exactly these six work dimensions, in this exact order:',
+    '  1. ideas / Coming up with ideas',
+    '  2. direction / Deciding the direction',
+    '  3. research / Doing the research',
+    '  4. building / Building the thing',
+    '  5. problems / Catching problems',
+    '  6. final_call / Making the final call',
+    '- Do not invent custom category names such as task-specific labels. Put session-specific detail in the reason field, not in the label.',
+    '- Keep the same weight_rows keys, labels, and overall order stable across rereads of the same session whenever possible.',
     '- position is 0 to 100 where 0 means I carried more of that work and 100 means you carried more.',
+    '- range_start and range_end should show the rough band where that work seemed to move during the session. Keep them on the same 0 to 100 scale, with range_start <= position <= range_end.',
+    '- When rereading the same session, do not swing slider positions dramatically unless the new messages clearly changed who carried that kind of work.',
+    '- If only a little changed, nudge the relevant sliders instead of reinventing the whole map.',
+    '- verdict should be a short phrase such as Leaned to me, Shared, Mostly you, or Clearly you.',
     '- reason should sound like my read, not a verdict.',
-    '- Supplying source articles, files, links, or raw materials is not by itself evidence that you owned the thinking or final judgment.',
-    '- Asking me for summaries, discussion questions, outlines, or first drafts is delegation unless the later turns clearly show you redirecting, rejecting, selecting, rewriting, or making a strong final decision.',
-    '- Do not infer judgment, direction, or a strong final call from brief approvals or task setup alone.',
-    '- If evidence for judgment is thin, do not force judgment language into the reflection or contribution tags.',
-    '- you_brought_tagged and miro_brought_tagged should each have 2-4 concise items with one tag from: judgment, direction, ideas, critique, execution, structure, research, momentum.',
-    '- Also include plain you_brought and miro_brought string arrays that match those tagged contributions in simpler language.',
-    '- behavioral_note_label should usually be PROMPT PATTERN or BEHAVIORAL NOTE.',
-    '- behavioral_note_text should be 2-3 sentences noticing one specific behavior shift or pattern in this chat.',
-    '- state_title should be short, warm, and match the state_mode.',
-    '- state_description should sound like me describing how this session felt.',
-    '- seed_to_sit_with should be one sharp reflective question about ownership, judgment, learning, or reliance.',
-    '- gentle_next_step_title should be short and action-oriented.',
-    '- gentle_next_step should suggest one small, useful next move based on this session.',
+    '- pattern_title and pattern_copy should name one specific prompt or usage pattern I noticed in this session.',
+    '- try_items should be small, concrete next moves based on this exact session, not generic study advice.',
+    '- source should point back to the basis for the suggestion in a short phrase such as Based on: Building leaned to me or Based on: Prompt pattern.',
+    '- closing_question should be one distilled reflective question about authorship, ownership, or reliance.',
     '- Avoid numbers, scoring language, or overclaiming certainty.',
     isIncremental
       ? '- You may receive a previous structured reflection plus only the new messages since I was last opened. Update the reflection from that prior read instead of starting from zero.'
@@ -228,7 +182,6 @@ function buildMessages(payload) {
     role: 'user',
     content: buildUserMessage({
       pageTitle,
-      chatFingerprint,
       conversation,
       isIncremental,
       previousReflection,
@@ -245,7 +198,6 @@ function buildMessages(payload) {
 
 function buildUserMessage({
   pageTitle,
-  chatFingerprint,
   conversation,
   isIncremental,
   previousReflection,
@@ -253,9 +205,6 @@ function buildUserMessage({
   fullMessageCount
 }) {
   const lines = [`Page title: ${pageTitle || 'Untitled chat'}`];
-  if (typeof chatFingerprint === 'string' && chatFingerprint) {
-    lines.push(`Chat fingerprint: ${chatFingerprint}`);
-  }
 
   if (isIncremental) {
     lines.push(`This is an incremental reread of the same session.`);
@@ -279,44 +228,36 @@ function buildUserMessage({
 
 function compactPreviousReflection(reflection) {
   return {
-    state_mode: reflection?.state_mode,
-    state_title: sanitize(reflection?.state_title),
-    state_description: sanitize(reflection?.state_description),
-    turning_points: Array.isArray(reflection?.turning_points)
-      ? reflection.turning_points.map((item) => sanitize(item)).slice(0, 4)
+    session_read_title: sanitize(reflection?.session_read_title),
+    session_read_chips: Array.isArray(reflection?.session_read_chips)
+      ? reflection.session_read_chips.slice(0, 2).map((chip) => ({
+          label: sanitize(chip?.label),
+          tone: sanitize(chip?.tone)
+        }))
       : [],
+    session_read_narrative: sanitize(reflection?.session_read_narrative),
     weight_rows: Array.isArray(reflection?.weight_rows)
       ? reflection.weight_rows.slice(0, 6).map((row) => ({
           key: sanitize(row?.key),
           label: sanitize(row?.label),
           position: Number.isFinite(Number(row?.position)) ? Number(row.position) : 50,
+          range_start: Number.isFinite(Number(row?.range_start)) ? Number(row.range_start) : 38,
+          range_end: Number.isFinite(Number(row?.range_end)) ? Number(row.range_end) : 62,
+          verdict: sanitize(row?.verdict),
           reason: sanitize(row?.reason)
         }))
       : [],
-    task_type: sanitize(reflection?.task_type),
-    you_brought_tagged: Array.isArray(reflection?.you_brought_tagged)
-      ? reflection.you_brought_tagged.slice(0, 4).map((item) => ({
-          tag: sanitize(item?.tag),
-          text: sanitize(item?.text)
+    pattern_title: sanitize(reflection?.pattern_title),
+    pattern_copy: sanitize(reflection?.pattern_copy),
+    try_items: Array.isArray(reflection?.try_items)
+      ? reflection.try_items.slice(0, 3).map((item) => ({
+          icon_type: sanitize(item?.icon_type),
+          title: sanitize(item?.title),
+          copy: sanitize(item?.copy),
+          source: sanitize(item?.source)
         }))
       : [],
-    miro_brought_tagged: Array.isArray(reflection?.miro_brought_tagged)
-      ? reflection.miro_brought_tagged.slice(0, 4).map((item) => ({
-          tag: sanitize(item?.tag),
-          text: sanitize(item?.text)
-        }))
-      : [],
-    you_brought: Array.isArray(reflection?.you_brought)
-      ? reflection.you_brought.map((item) => sanitize(item)).slice(0, 4)
-      : [],
-    miro_brought: Array.isArray(reflection?.miro_brought)
-      ? reflection.miro_brought.map((item) => sanitize(item)).slice(0, 4)
-      : [],
-    behavioral_note_label: sanitize(reflection?.behavioral_note_label),
-    behavioral_note_text: sanitize(reflection?.behavioral_note_text),
-    seed_to_sit_with: sanitize(reflection?.seed_to_sit_with),
-    gentle_next_step_title: sanitize(reflection?.gentle_next_step_title),
-    gentle_next_step: sanitize(reflection?.gentle_next_step)
+    closing_question: sanitize(reflection?.closing_question)
   };
 }
 
