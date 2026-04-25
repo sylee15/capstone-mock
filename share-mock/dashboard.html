@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../dashboard.css" />
+  <link rel="stylesheet" href="dashboard.css" />
 </head>
 <body>
   <div class="review-shell ani">
@@ -28,12 +28,12 @@
     <aside class="sidebar ani">
       <div class="sidebar-brand">
         <div class="sidebar-avatar">
-          <img src="../sprites/cute.png" alt="Miro sprite" />
+          <img src="sprites/cute.png" alt="Miro slime" />
         </div>
         <div>
-          <div class="sidebar-kicker">Looking back</div>
-          <div class="sidebar-name">with Miro</div>
-          <div class="sidebar-note-static">A softer read of how the work moved between us.</div>
+          <div class="kicker">Your AI</div>
+          <div class="sidebar-name">Looking back</div>
+          <div class="sidebar-note">How the work moved between us.</div>
         </div>
       </div>
 
@@ -47,41 +47,28 @@
           </span>
           <span>The story so far</span>
         </button>
-        <button class="tab-button" data-tab="made" type="button">
+        <button class="tab-button" data-tab="who" type="button">
           <span class="tab-ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="7.5" cy="9" r="3.5"></circle>
               <circle cx="16" cy="15" r="4.5"></circle>
             </svg>
           </span>
-          <span>What we made</span>
+          <span>Who did what</span>
         </button>
-        <button class="tab-button" data-tab="task" type="button">
+        <button class="tab-button" data-tab="watch" type="button">
           <span class="tab-ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 6h16"></path>
-              <path d="M4 12h16"></path>
-              <path d="M4 18h16"></path>
-              <circle cx="8" cy="6" r="1.5" fill="currentColor"></circle>
-              <circle cx="16" cy="12" r="1.5" fill="currentColor"></circle>
-              <circle cx="10" cy="18" r="1.5" fill="currentColor"></circle>
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v6l4 2"></path>
             </svg>
           </span>
-          <span>By task</span>
-        </button>
-        <button class="tab-button" data-tab="style" type="button">
-          <span class="tab-ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 12c2-5 6-7 10-5s4 7 0 9-8 0-8 4"></path>
-              <circle cx="6" cy="19" r="1.5"></circle>
-            </svg>
-          </span>
-          <span>How you work with me</span>
+          <span>What to watch for</span>
         </button>
       </nav>
 
       <div class="sidebar-foot">
-        <div class="sidebar-foot-kicker">Looking back at</div>
+        <div class="kicker">Based on</div>
         <div class="sidebar-foot-value" id="periodLabel"></div>
         <div class="sidebar-foot-note" id="periodMeta"></div>
       </div>
@@ -89,99 +76,86 @@
 
     <main class="dashboard ani">
       <header class="topbar">
-        <div class="topbar-kicker" id="pageKicker">Dashboard - Overview</div>
+        <div class="kicker" id="pageKicker"></div>
         <h1 class="topbar-title" id="pageTitle"></h1>
         <p class="topbar-sub" id="pageSubtitle"></p>
       </header>
 
       <section class="panel active" data-panel="overview">
         <article class="card letter-card">
-          <div class="letter-copy">
-            <div class="letter-kicker">A letter from Miro</div>
+          <div>
+            <div class="kicker">From your AI</div>
             <h2 class="letter-title" id="overviewTitle"></h2>
             <div class="letter-body" id="overviewLetter"></div>
             <div class="letter-sign">
-              <span class="letter-glyph">Miro</span>
+              <span class="letter-glyph">Your AI</span>
               <span class="letter-signoff" id="overviewSignoff"></span>
             </div>
           </div>
           <div class="letter-art">
-            <img id="overviewSlime" src="../sprites/cute.png" alt="Miro sprite" />
+            <img class="letter-art-slime" src="sprites/cute.png" alt="Miro slime" />
           </div>
         </article>
 
         <div class="overview-grid">
           <article class="card arc-card">
-            <div class="section-kicker">A quick arc</div>
-            <h3 class="section-title">How our rhythm has shifted</h3>
+            <div class="kicker">How our rhythm shifted</div>
             <div class="arc-story" id="arcStory"></div>
           </article>
 
           <article class="card tapestry-card">
-            <div class="section-kicker">Every chat, at a glance</div>
-            <h3 class="section-title serif">A small tapestry</h3>
-            <p class="section-sub small">Each square is one conversation. Color shows where the weight seemed to sit.</p>
+            <div class="kicker">Every chat at a glance</div>
+            <p class="section-sub">Each square = one conversation.</p>
             <div class="tapestry-grid" id="tapestryGrid"></div>
             <div class="tapestry-legend">
-              <div class="leg-item"><div class="leg-swatch miro-swatch"></div>I carried more</div>
+              <div class="leg-item"><div class="leg-swatch miro-swatch"></div>AI carried more</div>
               <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
               <div class="leg-item"><div class="leg-swatch you-swatch"></div>You carried more</div>
             </div>
           </article>
         </div>
-
-        <section class="closing-band">
-          <article class="card seed-card">
-            <div class="section-kicker">A seed to sit with</div>
-            <div class="reflection-question" id="seedQuestion"></div>
-            <div class="seed-mark">?</div>
-          </article>
-
-          <article class="card next-card">
-            <div class="section-kicker">A gentle next step</div>
-            <div class="next-step-title" id="nextStepTitle"></div>
-            <div class="next-step-copy" id="nextStepCopy"></div>
-          </article>
-        </section>
       </section>
 
-      <section class="panel" data-panel="made">
-        <section class="card made-stage-card">
-          <div class="section-kicker">What we have been talking about</div>
-          <p class="section-sub">Bigger bubbles held more space. Blue and terracotta show the general lean of the work.</p>
+      <section class="panel" data-panel="who">
+        <article class="card bubbles-card">
+          <div class="kicker">Topics you kept coming back to</div>
+          <p class="section-sub">Bigger bubbles came up in more chats. The color shows who tended to carry the work in that topic.</p>
           <div class="topic-bubble-stage" id="topicsViz"></div>
-        </section>
-      </section>
-
-      <section class="panel" data-panel="task">
-        <section class="card task-card">
-          <div class="section-kicker">Task breakdown</div>
-          <p class="section-sub">A rough read of who tended to carry each kind of work. Not a score, just a sense.</p>
-          <div class="task-list" id="taskList"></div>
-        </section>
-      </section>
-
-      <section class="panel" data-panel="style">
-        <section class="card style-hero-card">
-          <div class="section-kicker">Our rhythm</div>
-          <div class="style-hero-grid">
-            <div>
-              <div class="style-hero-title" id="portraitTitle"></div>
-              <div class="style-hero-copy" id="portraitText"></div>
-            </div>
-            <div class="style-quote-card" id="profileParagraph"></div>
+          <div class="bubble-legend">
+            <div class="bubble-legend-item"><div class="bubble-legend-swatch bl"></div>AI carried more</div>
+            <div class="bubble-legend-item"><div class="bubble-legend-swatch yl"></div>Shared</div>
+            <div class="bubble-legend-item"><div class="bubble-legend-swatch rd"></div>You carried more</div>
           </div>
-        </section>
+        </article>
 
-        <section class="style-patterns">
-          <div class="section-kicker">Patterns I keep noticing</div>
-          <div class="pattern-list" id="rhythmList"></div>
-        </section>
+        <article class="card sliders-card">
+          <div class="kicker">How the work typically splits</div>
+          <p class="section-sub">Averaged across 52 chats. The shaded area shows how much it varied. Click any row for detail.</p>
+          <div class="slider-rows" id="sliderRows"></div>
+        </article>
+      </section>
+
+      <section class="panel" data-panel="watch">
+        <article class="card seed-hero">
+          <div class="kicker">Sit with this</div>
+          <div class="reflection-question" id="seedQuestion"></div>
+        </article>
+
+        <div class="watch-columns">
+          <div class="strengths-col">
+            <div class="kicker">Keep doing this</div>
+            <div class="strengths-stack" id="strengthsRow"></div>
+          </div>
+
+          <div class="watch-col">
+            <div class="kicker">Things to watch for</div>
+            <div class="watch-list" id="watchList"></div>
+          </div>
+        </div>
       </section>
     </main>
   </div>
 
-  <script src="../dashboard.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>
-
