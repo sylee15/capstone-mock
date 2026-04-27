@@ -74,7 +74,9 @@
     observer: null,
     stale: false,
     sessionKey: getSessionKey(),
-    analysisInstances: []
+    analysisInstances: [],
+    introNudgeShown: false,
+    introNudgeTimer: null
   };
 
   const SPRITES = {
@@ -99,7 +101,7 @@
         <img id="miro-pet-image" alt="Miro" />
         <div id="miro-badge">!</div>
       </button>
-      <div id="miro-hover">I can read this chat.</div>
+      <div id="miro-hover" role="status" aria-live="polite">I can read this chat.</div>
       <aside id="miro-panel" class="miro-hidden" aria-label="Miro reflection panel">
         <div class="miro-panel-header">
           <div class="miro-header-left">
@@ -131,8 +133,13 @@
       hover.textContent = getHoverText();
       hover.classList.add('visible');
     });
-    pet.addEventListener('mouseleave', () => hover.classList.remove('visible'));
+    pet.addEventListener('mouseleave', () => {
+      if (!state.introNudgeTimer) {
+        hover.classList.remove('visible');
+      }
+    });
     pet.addEventListener('click', async () => {
+      hidePetHint();
       togglePanel(true);
       await analyzeIfNeeded();
     });
@@ -163,6 +170,8 @@
     if (badge) {
       badge.style.display = messages.length >= MIN_TURNS ? 'flex' : 'none';
     }
+
+    maybeShowIntroNudge();
 
     const meaningfulChange = state.latestAnalysis && hasMeaningfulChange(messages, state.analyzedMessages);
     state.stale = Boolean(meaningfulChange);
@@ -290,9 +299,6 @@
         <div>
           <div class="miro-kicker miro-tight-kicker">This session</div>
           <div class="miro-session-title">${escapeHtml(data.session_read_title)}</div>
-          <div class="miro-session-meta">
-            ${data.session_read_chips.map((chip) => `<span class="miro-chip ${escapeAttr(chip.tone)}">${escapeHtml(chip.label)}</span>`).join('')}
-          </div>
           <div class="miro-session-narrative">${escapeHtml(data.session_read_narrative)}</div>
         </div>
       </section>
@@ -306,24 +312,18 @@
         </div>
       </section>
 
+      <section class="miro-try-section">
+        <div class="miro-section-label">What you could try</div>
+        <div class="miro-try-list">
+          ${renderTryItems(data.try_items, data.weight_rows)}
+        </div>
+      </section>
+
       <section>
         <div class="miro-pattern-card">
           <div class="miro-pattern-eyebrow">A pattern I noticed</div>
           <div class="miro-pattern-title">${escapeHtml(data.pattern_title)}</div>
           <div class="miro-pattern-copy">${escapeHtml(data.pattern_copy)}</div>
-        </div>
-      </section>
-
-      <section class="miro-try-section">
-        <div class="miro-section-label">What you could try</div>
-        <div class="miro-try-list">
-          ${renderTryItems(data.try_items)}
-        </div>
-      </section>
-
-      <section>
-        <div class="miro-closing-question">
-          <div class="miro-closing-question-text">${escapeHtml(data.closing_question)}</div>
         </div>
       </section>
 
@@ -362,14 +362,14 @@
     `).join('');
   }
 
-  function renderTryItems(items) {
+  function renderTryItems(items, weightRows) {
     return items.map((item, index) => `
       <div class="miro-try-item">
         <div class="miro-try-icon ${escapeAttr(item.icon_type)}">${index + 1}</div>
         <div>
           <div class="miro-try-title">${escapeHtml(item.title)}</div>
           <div class="miro-try-copy">${escapeHtml(item.copy)}</div>
-          <span class="miro-try-source">${escapeHtml(item.source)}</span>
+          ${item.source ? `<span class="miro-try-source">${escapeHtml(item.source)}</span>` : ''}
         </div>
       </div>
     `).join('');
@@ -393,17 +393,18 @@
   }
 
   function normalizeAnalysis(data) {
+    const weightRows = normalizeWeightRows(data?.weight_rows, CANONICAL_WEIGHT_ROWS);
     return {
       session_read_title: cleanText(
         data?.session_read_title,
         'Mostly me building, you steering'
       ),
       session_read_chips: normalizeChips(data?.session_read_chips),
-      session_read_narrative: cleanText(
+      session_read_narrative: shortenSessionNarrative(cleanText(
         data?.session_read_narrative,
         'You came in with a concrete task and let me build the first pass. The stronger shift happened once you redirected what the work needed to become.'
-      ),
-      weight_rows: normalizeWeightRows(data?.weight_rows, CANONICAL_WEIGHT_ROWS),
+      )),
+      weight_rows: weightRows,
       pattern_title: cleanText(
         data?.pattern_title,
         'Prompt pattern'
@@ -412,11 +413,7 @@
         data?.pattern_copy,
         'You started by handing me the task directly, then shifted into redirecting what the task needed to become. The authorship got stronger once you started shaping instead of delegating.'
       ),
-      try_items: normalizeTryItems(data?.try_items),
-      closing_question: cleanText(
-        data?.closing_question || data?.seed_to_sit_with || data?.reflection,
-        'What part of this still feels most like yours?'
-      )
+      try_items: normalizeTryItems(data?.try_items, weightRows)
     };
   }
 
@@ -497,19 +494,21 @@
     }));
   }
 
-  function normalizeTryItems(value) {
+  function normalizeTryItems(value, weightRows) {
     const fallback = [
       {
+        basis_key: 'building',
         icon_type: 'rework',
         title: 'Rewrite one part in your own words',
-        copy: 'Pick the part I carried most heavily and rewrite it without looking at my version first.',
-        source: 'Based on: Building leaned to me'
+        copy: 'Building leaned heavily to AI this session, so try writing a rough version yourself before asking me to build it.',
+        source: 'Use me to critique or tighten it after you have a first pass.'
       },
       {
+        basis_key: 'direction',
         icon_type: 'reframe',
         title: 'Start with your own outline',
-        copy: 'Before asking me to generate, jot the shape you want me to build from.',
-        source: 'Based on: Prompt pattern'
+        copy: 'Deciding the direction stayed mostly yours, so name the shape you want before I generate anything.',
+        source: 'A one-sentence frame is enough to keep the direction anchored in you.'
       }
     ];
 
@@ -518,11 +517,12 @@
     }
 
     return value.slice(0, 3).map((item, index) => ({
+      basis_key: sanitizeTryBasisKey(item?.basis_key, fallback[index]?.basis_key || fallback[0].basis_key),
       icon_type: sanitizeTryIcon(item?.icon_type, fallback[index]?.icon_type || 'rework'),
       title: cleanText(item?.title, fallback[index]?.title || 'Try this next'),
       copy: cleanText(item?.copy, fallback[index]?.copy || ''),
-      source: cleanText(item?.source, fallback[index]?.source || 'Based on: This session')
-    }));
+      source: cleanText(item?.source, fallback[index]?.source || '')
+    })).map((item) => groundTryItem(item, weightRows));
   }
 
   function normalizeStringList(value, fallback, minItems, maxItems) {
@@ -543,6 +543,35 @@
 
   function sanitizeTryIcon(value, fallback) {
     return ['rework', 'reframe', 'reclaim'].includes(value) ? value : fallback;
+  }
+
+  function sanitizeTryBasisKey(value, fallback) {
+    return ['ideas', 'direction', 'research', 'building', 'problems', 'final_call'].includes(value) ? value : fallback;
+  }
+
+  function groundTryItem(item, weightRows) {
+    const row = Array.isArray(weightRows) ? weightRows.find((entry) => entry.key === item.basis_key) : null;
+    if (!row) return item;
+
+    const basis = describeWeightBasisFromRow(row);
+    const copy = cleanText(item.copy, '');
+    const groundedCopy = copy.toLowerCase().includes(row.label.toLowerCase()) || copy.toLowerCase().includes('this session')
+      ? copy
+      : `${basis}, so ${copy.charAt(0).toLowerCase()}${copy.slice(1)}`;
+
+    return {
+      ...item,
+      copy: groundedCopy
+    };
+  }
+
+  function shortenSessionNarrative(text) {
+    const cleaned = cleanText(text, '');
+    if (!cleaned) return '';
+    const sentences = cleaned.match(/[^.!?]+[.!?]?/g) || [cleaned];
+    const compact = sentences.slice(0, 2).join(' ').trim();
+    if (compact.length <= 220) return compact;
+    return `${compact.slice(0, 217).trimEnd()}...`;
   }
 
   function normalizeWeightRange(row) {
@@ -601,6 +630,19 @@
     return 'Mostly you';
   }
 
+  function describeWeightBasisFromRow(row) {
+    return `${row.label} ${describeWeightLean(row.position)} this session`;
+  }
+
+  function describeWeightLean(position) {
+    const value = clamp(Number(position), 0, 100, 50);
+    if (value <= 24) return 'leaned heavily to AI';
+    if (value <= 42) return 'leaned to AI';
+    if (value < 58) return 'felt shared';
+    if (value < 76) return 'leaned to you';
+    return 'leaned heavily to you';
+  }
+
   function weightVerdictTone(value) {
     const text = String(value || '').toLowerCase();
     if (text.includes('you')) return 'you';
@@ -646,6 +688,43 @@
       return cleanText(state.latestAnalysis.session_read_title, 'I have a read on this chat.');
     }
     return 'I can read this chat.';
+  }
+
+  function maybeShowIntroNudge() {
+    if (state.introNudgeShown || state.panelOpen || state.latestAnalysis || state.messages.length < MIN_TURNS) {
+      return;
+    }
+
+    state.introNudgeShown = true;
+    showPetHint("Click me when you're done", 4800);
+  }
+
+  function showPetHint(message, duration = 4000) {
+    const hover = document.getElementById('miro-hover');
+    if (!hover) return;
+
+    hover.textContent = message;
+    hover.classList.add('visible', 'miro-hint');
+
+    if (state.introNudgeTimer) {
+      clearTimeout(state.introNudgeTimer);
+    }
+
+    state.introNudgeTimer = window.setTimeout(() => {
+      hidePetHint();
+    }, duration);
+  }
+
+  function hidePetHint() {
+    const hover = document.getElementById('miro-hover');
+    if (!hover) return;
+
+    if (state.introNudgeTimer) {
+      clearTimeout(state.introNudgeTimer);
+      state.introNudgeTimer = null;
+    }
+
+    hover.classList.remove('visible', 'miro-hint');
   }
 
   function openMockDashboard() {

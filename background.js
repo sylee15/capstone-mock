@@ -55,6 +55,10 @@ const reflectionSchema = {
           type: 'object',
           additionalProperties: false,
           properties: {
+            basis_key: {
+              type: 'string',
+              enum: ['ideas', 'direction', 'research', 'building', 'problems', 'final_call']
+            },
             icon_type: {
               type: 'string',
               enum: ['rework', 'reframe', 'reclaim']
@@ -63,10 +67,9 @@ const reflectionSchema = {
             copy: { type: 'string' },
             source: { type: 'string' }
           },
-          required: ['icon_type', 'title', 'copy', 'source']
+          required: ['basis_key', 'icon_type', 'title', 'copy', 'source']
         }
-      },
-      closing_question: { type: 'string' }
+      }
     },
     required: [
       'session_read_title',
@@ -75,8 +78,7 @@ const reflectionSchema = {
       'weight_rows',
       'pattern_title',
       'pattern_copy',
-      'try_items',
-      'closing_question'
+      'try_items'
     ]
   },
   strict: true
@@ -152,7 +154,7 @@ function buildMessages(payload) {
     '- Do not use direct quotes from the conversation.',
     '- session_read_title should be short and concrete, like a distilled read of how this session went.',
     '- session_read_chips should be one or two very short labels that describe the split or the task type.',
-    '- session_read_narrative should describe what happened in this session specifically: how the user started, where they redirected me, and what the final shape of the work felt like.',
+    '- session_read_narrative should be short: one compact read in 1 to 2 sentences about how this session moved.',
     '- weight_rows must always be exactly these six work dimensions, in this exact order:',
     '  1. ideas / Coming up with ideas',
     '  2. direction / Deciding the direction',
@@ -170,8 +172,9 @@ function buildMessages(payload) {
     '- reason should sound like my read, not a verdict.',
     '- pattern_title and pattern_copy should name one specific prompt or usage pattern I noticed in this session.',
     '- try_items should be small, concrete next moves based on this exact session, not generic study advice.',
-    '- source should point back to the basis for the suggestion in a short phrase such as Based on: Building leaned to me or Based on: Prompt pattern.',
-    '- closing_question should be one distilled reflective question about authorship, ownership, or reliance.',
+    '- Every try item must anchor to one slider using basis_key. Choose the slider that most clearly justifies the recommendation.',
+    '- The copy of each try item should explicitly reflect that slider, for example: "Building the thing leaned heavily to AI this session, so..."',
+    '- source should be a brief follow-on note that supports the action, not a generic label.',
     '- Avoid numbers, scoring language, or overclaiming certainty.',
     isIncremental
       ? '- You may receive a previous structured reflection plus only the new messages since I was last opened. Update the reflection from that prior read instead of starting from zero.'
@@ -251,13 +254,13 @@ function compactPreviousReflection(reflection) {
     pattern_copy: sanitize(reflection?.pattern_copy),
     try_items: Array.isArray(reflection?.try_items)
       ? reflection.try_items.slice(0, 3).map((item) => ({
+          basis_key: sanitize(item?.basis_key),
           icon_type: sanitize(item?.icon_type),
           title: sanitize(item?.title),
           copy: sanitize(item?.copy),
           source: sanitize(item?.source)
         }))
-      : [],
-    closing_question: sanitize(reflection?.closing_question)
+      : []
   };
 }
 

@@ -96,6 +96,28 @@
   transition: opacity 0.16s ease, transform 0.16s ease;
 }
 
+#miro-hover.miro-hint {
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 250, 243, 0.96);
+  color: var(--miro-text);
+  border: 1px solid rgba(230, 217, 200, 0.95);
+  box-shadow: var(--miro-shadow-soft);
+}
+
+#miro-hover.miro-hint::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  background: rgba(255, 250, 243, 0.96);
+  border-right: 1px solid rgba(230, 217, 200, 0.95);
+  border-bottom: 1px solid rgba(230, 217, 200, 0.95);
+  transform: rotate(45deg);
+}
+
 #miro-hover.visible {
   opacity: 1;
   transform: translateY(0);
@@ -213,7 +235,6 @@
 .miro-error-card,
 .miro-weight-card,
 .miro-pattern-card,
-.miro-closing-question,
 .miro-try-item {
   background: rgba(255, 253, 250, 0.96);
   border: 1px solid var(--miro-border);
@@ -333,13 +354,6 @@
   line-height: 1.2;
 }
 
-.miro-session-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 8px 0 10px;
-}
-
 .miro-chip {
   display: inline-flex;
   align-items: center;
@@ -370,8 +384,9 @@
 
 .miro-session-narrative {
   color: var(--miro-muted);
-  font-size: 13px;
-  line-height: 1.72;
+  font-size: 14px;
+  line-height: 1.68;
+  max-width: 246px;
 }
 
 .miro-weight-card {
@@ -587,54 +602,17 @@
 }
 
 .miro-try-copy {
-  font-size: 12.5px;
-  line-height: 1.6;
+  font-size: 13.5px;
+  line-height: 1.65;
   color: var(--miro-muted);
 }
 
 .miro-try-source {
   display: inline-block;
-  margin-top: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 500;
   color: var(--miro-soft);
-}
-
-.miro-closing-question {
-  position: relative;
-  overflow: hidden;
-  padding: 20px 18px;
-  text-align: center;
-  border-radius: 20px;
-  background:
-    radial-gradient(200px 120px at 50% 0%, rgba(201, 161, 100, 0.16), transparent 70%),
-    linear-gradient(180deg, #fffaf0 0%, #fbf5e7 100%);
-  border: 1px solid var(--miro-border);
-}
-
-.miro-closing-question::before,
-.miro-closing-question::after {
-  content: "";
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  height: 1px;
-  background: repeating-linear-gradient(90deg, rgba(201, 161, 100, 0.4) 0 4px, transparent 4px 10px);
-}
-
-.miro-closing-question::before { top: 8px; }
-.miro-closing-question::after { bottom: 8px; }
-
-.miro-closing-question-text {
-  color: var(--miro-text);
-  font-family: "Instrument Serif", "Newsreader", Georgia, serif;
-  font-size: 17px;
-  line-height: 1.45;
-  font-style: italic;
-  max-width: 30ch;
-  margin: 0 auto;
 }
 
 .miro-panel-foot {
