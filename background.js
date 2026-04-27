@@ -8,7 +8,12 @@ const reflectionSchema = {
     additionalProperties: false,
     properties: {
       session_read_title: { type: 'string' },
-      session_read_chips: {
+      session_read_narrative: { type: 'string' },
+      session_read_mode: {
+        type: 'string',
+        enum: ['builder', 'shared', 'thoughtful', 'tired']
+      },
+      areas: {
         type: 'array',
         minItems: 1,
         maxItems: 2,
@@ -16,19 +21,24 @@ const reflectionSchema = {
           type: 'object',
           additionalProperties: false,
           properties: {
-            label: { type: 'string' },
-            tone: {
+            key: {
               type: 'string',
-              enum: ['miro', 'shared', 'task']
+              enum: ['research', 'writing', 'coding', 'design', 'studying', 'career', 'presenting', 'personal']
+            },
+            salience: {
+              type: 'string',
+              enum: ['primary', 'secondary']
+            },
+            weight: {
+              type: ['number', 'null']
             }
           },
-          required: ['label', 'tone']
+          required: ['key', 'salience', 'weight']
         }
       },
-      session_read_narrative: { type: 'string' },
       weight_rows: {
         type: 'array',
-        minItems: 5,
+        minItems: 6,
         maxItems: 6,
         items: {
           type: 'object',
@@ -45,40 +55,87 @@ const reflectionSchema = {
           required: ['key', 'label', 'position', 'range_start', 'range_end', 'verdict', 'reason']
         }
       },
-      pattern_title: { type: 'string' },
-      pattern_copy: { type: 'string' },
-      try_items: {
-        type: 'array',
-        minItems: 2,
-        maxItems: 3,
-        items: {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            basis_key: {
-              type: 'string',
-              enum: ['ideas', 'direction', 'research', 'building', 'problems', 'final_call']
-            },
-            icon_type: {
-              type: 'string',
-              enum: ['rework', 'reframe', 'reclaim']
-            },
-            title: { type: 'string' },
-            copy: { type: 'string' },
-            source: { type: 'string' }
+      try_now: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          title: { type: 'string' },
+          copy: { type: 'string' }
+        },
+        required: ['title', 'copy']
+      },
+      collaboration_markers: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          user_provided_material: { type: 'boolean' },
+          user_redirected_after_output: { type: 'boolean' },
+          user_critiqued_or_corrected: { type: 'boolean' },
+          user_made_final_selection: { type: 'boolean' },
+          ai_produced_first_pass: { type: 'boolean' }
+        },
+        required: [
+          'user_provided_material',
+          'user_redirected_after_output',
+          'user_critiqued_or_corrected',
+          'user_made_final_selection',
+          'ai_produced_first_pass'
+        ]
+      },
+      interaction_pattern: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          opening_mode: {
+            type: 'string',
+            enum: ['delegation', 'contextualized', 'critique', 'pastein', 'exploration']
           },
-          required: ['basis_key', 'icon_type', 'title', 'copy', 'source']
-        }
+          arc: {
+            type: 'string',
+            enum: ['draft_redirect_rebuild', 'ask_synthesize_decide', 'debug_test_fix', 'brainstorm_refine', 'explain_practice_check']
+          },
+          confidence: {
+            type: 'string',
+            enum: ['low', 'medium', 'high']
+          }
+        },
+        required: ['opening_mode', 'arc', 'confidence']
+      },
+      evidence_note: { type: 'string' },
+      trace: {
+        anyOf: [
+          {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              first_key_turn: {
+                type: ['integer', 'null']
+              },
+              key_turn_indices: {
+                type: 'array',
+                maxItems: 4,
+                items: { type: 'integer' }
+              }
+            },
+            required: ['first_key_turn', 'key_turn_indices']
+          },
+          {
+            type: 'null'
+          }
+        ]
       }
     },
     required: [
       'session_read_title',
-      'session_read_chips',
       'session_read_narrative',
+      'session_read_mode',
+      'areas',
       'weight_rows',
-      'pattern_title',
-      'pattern_copy',
-      'try_items'
+      'try_now',
+      'collaboration_markers',
+      'interaction_pattern',
+      'evidence_note',
+      'trace'
     ]
   },
   strict: true
@@ -126,7 +183,7 @@ async function handleAnalyze(payload) {
 
   const data = await response.json();
   const parsed = parseStructuredOutput(data);
-  return parsed;
+  return enrichReflectionResult(parsed, payload);
 }
 
 function buildMessages(payload) {
@@ -153,8 +210,14 @@ function buildMessages(payload) {
     '- Ground everything in the actual chat. Be concrete enough that the student can recognize the moments.',
     '- Do not use direct quotes from the conversation.',
     '- session_read_title should be short and concrete, like a distilled read of how this session went.',
-    '- session_read_chips should be one or two very short labels that describe the split or the task type.',
-    '- session_read_narrative should be short: one compact read in 1 to 2 sentences about how this session moved.',
+    '- session_read_narrative should be one compact first-person block that naturally carries my role in the session.',
+    '- session_read_narrative should explicitly make clear that "I" means the AI companion and "you" means the student.',
+    '- A good shape is: "I, your AI, showed up more like a builder here. You were doing X, and I helped with Y."',
+    '- session_read_mode should be builder, shared, thoughtful, or tired based on the role I mostly played in this session.',
+    '- areas must use this taxonomy only: research, writing, coding, design, studying, career, presenting, personal.',
+    '- areas should contain exactly one primary area and optionally one secondary area.',
+    '- areas.weight should always be included. Use a number from 0 to 1 when helpful, or null if the chat does not need weighting.',
+    '- areas describe where AI showed up in this chat, not the student overall.',
     '- weight_rows must always be exactly these six work dimensions, in this exact order:',
     '  1. ideas / Coming up with ideas',
     '  2. direction / Deciding the direction',
@@ -170,11 +233,13 @@ function buildMessages(payload) {
     '- If only a little changed, nudge the relevant sliders instead of reinventing the whole map.',
     '- verdict should be a short phrase such as Leaned to me, Shared, Mostly you, or Clearly you.',
     '- reason should sound like my read, not a verdict.',
-    '- pattern_title and pattern_copy should name one specific prompt or usage pattern I noticed in this session.',
-    '- try_items should be small, concrete next moves based on this exact session, not generic study advice.',
-    '- Every try item must anchor to one slider using basis_key. Choose the slider that most clearly justifies the recommendation.',
-    '- The copy of each try item should explicitly reflect that slider, for example: "Building the thing leaned heavily to AI this session, so..."',
-    '- source should be a brief follow-on note that supports the action, not a generic label.',
+    '- try_now should be one short, concrete action the student can do immediately in the next turn of this chat.',
+    '- try_now should feel like a small way to shift the collaboration pattern, not broad future advice or a study habit tip.',
+    '- collaboration_markers should capture only these stable signals: user_provided_material, user_redirected_after_output, user_critiqued_or_corrected, user_made_final_selection, ai_produced_first_pass.',
+    '- interaction_pattern should use the allowed values only, and should stay simple and stable rather than overly specific.',
+    '- evidence_note must be strictly behavioral and concrete. Describe what the student and I did, not what kind of session this "was".',
+    '- trace is required. If useful, it may include the first key turn and a few key turn indices for later drill-down.',
+    '- If trace is not useful, set trace to null.',
     '- Avoid numbers, scoring language, or overclaiming certainty.',
     isIncremental
       ? '- You may receive a previous structured reflection plus only the new messages since I was last opened. Update the reflection from that prior read instead of starting from zero.'
@@ -232,13 +297,15 @@ function buildUserMessage({
 function compactPreviousReflection(reflection) {
   return {
     session_read_title: sanitize(reflection?.session_read_title),
-    session_read_chips: Array.isArray(reflection?.session_read_chips)
-      ? reflection.session_read_chips.slice(0, 2).map((chip) => ({
-          label: sanitize(chip?.label),
-          tone: sanitize(chip?.tone)
+    session_read_narrative: sanitize(reflection?.session_read_narrative),
+    session_read_mode: sanitize(reflection?.session_read_mode),
+    areas: Array.isArray(reflection?.areas)
+      ? reflection.areas.slice(0, 2).map((area) => ({
+          key: sanitize(area?.key),
+          salience: sanitize(area?.salience),
+          weight: Number.isFinite(Number(area?.weight)) ? Number(area.weight) : null
         }))
       : [],
-    session_read_narrative: sanitize(reflection?.session_read_narrative),
     weight_rows: Array.isArray(reflection?.weight_rows)
       ? reflection.weight_rows.slice(0, 6).map((row) => ({
           key: sanitize(row?.key),
@@ -250,17 +317,34 @@ function compactPreviousReflection(reflection) {
           reason: sanitize(row?.reason)
         }))
       : [],
-    pattern_title: sanitize(reflection?.pattern_title),
-    pattern_copy: sanitize(reflection?.pattern_copy),
-    try_items: Array.isArray(reflection?.try_items)
-      ? reflection.try_items.slice(0, 3).map((item) => ({
-          basis_key: sanitize(item?.basis_key),
-          icon_type: sanitize(item?.icon_type),
-          title: sanitize(item?.title),
-          copy: sanitize(item?.copy),
-          source: sanitize(item?.source)
-        }))
-      : []
+    try_now: {
+      title: sanitize(reflection?.try_now?.title),
+      copy: sanitize(reflection?.try_now?.copy)
+    },
+    collaboration_markers: {
+      user_provided_material: Boolean(reflection?.collaboration_markers?.user_provided_material),
+      user_redirected_after_output: Boolean(reflection?.collaboration_markers?.user_redirected_after_output),
+      user_critiqued_or_corrected: Boolean(reflection?.collaboration_markers?.user_critiqued_or_corrected),
+      user_made_final_selection: Boolean(reflection?.collaboration_markers?.user_made_final_selection),
+      ai_produced_first_pass: Boolean(reflection?.collaboration_markers?.ai_produced_first_pass)
+    },
+    interaction_pattern: {
+      opening_mode: sanitize(reflection?.interaction_pattern?.opening_mode),
+      arc: sanitize(reflection?.interaction_pattern?.arc),
+      confidence: sanitize(reflection?.interaction_pattern?.confidence)
+    },
+    evidence_note: sanitize(reflection?.evidence_note),
+    trace: reflection?.trace && typeof reflection.trace === 'object'
+      ? {
+          first_key_turn: Number.isFinite(Number(reflection?.trace?.first_key_turn)) ? Number(reflection.trace.first_key_turn) : null,
+          key_turn_indices: Array.isArray(reflection?.trace?.key_turn_indices)
+            ? reflection.trace.key_turn_indices
+                .map((value) => Number(value))
+                .filter((value) => Number.isFinite(value))
+                .slice(0, 4)
+            : []
+        }
+      : null
   };
 }
 
@@ -332,4 +416,52 @@ function parseStructuredOutput(data) {
   }
 
   throw new Error('I got a response back, but I could not read the reflection payload.');
+}
+
+function enrichReflectionResult(result, payload) {
+  const chatKey = sanitize(payload?.sessionKey || payload?.pageTitle || 'current-chat');
+  const analyzedAt = new Date().toISOString();
+  const messageCount = Array.isArray(payload?.conversation)
+    ? payload.conversation.length + (Number(payload?.previousMessageCount) || 0)
+    : Number(payload?.fullMessageCount) || 0;
+  const weightRows = Array.isArray(result?.weight_rows) ? result.weight_rows : [];
+
+  return {
+    ...result,
+    session_id: sanitize(result?.session_id) || `session_${simpleHash(`${chatKey}|${messageCount}`)}`,
+    chat_key: sanitize(result?.chat_key) || chatKey,
+    analyzed_at: sanitize(result?.analyzed_at) || analyzedAt,
+    message_count: Number.isFinite(Number(result?.message_count)) ? Number(result.message_count) : messageCount,
+    work_split: deriveWorkSplitFromRows(weightRows)
+  };
+}
+
+function deriveWorkSplitFromRows(rows) {
+  const split = {
+    ideas: 50,
+    direction: 50,
+    research: 50,
+    building: 50,
+    problems: 50,
+    final_call: 50
+  };
+
+  rows.forEach((row) => {
+    const key = sanitize(row?.key);
+    if (Object.prototype.hasOwnProperty.call(split, key) && Number.isFinite(Number(row?.position))) {
+      split[key] = Number(row.position);
+    }
+  });
+
+  return split;
+}
+
+function simpleHash(value) {
+  let hash = 0;
+  const text = String(value || '');
+  for (let index = 0; index < text.length; index += 1) {
+    hash = ((hash << 5) - hash) + text.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
 }

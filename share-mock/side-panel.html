@@ -35,13 +35,13 @@
             I want this to feel less like a report card and more like a reflective companion.
           </div>
           <div class="chat-message assistant">
-            Then the panel should tell a softer story of the session. It can show where the work sat, notice a pattern, and suggest one or two things to try next.
+            Then the panel should tell a softer story of the session. It can show where the work sat, notice a pattern, and suggest one small move to try in the chat itself.
           </div>
           <div class="chat-message user">
             I keep noticing that the useful part is not the draft itself. It is what happens when I react to it.
           </div>
           <div class="chat-message assistant">
-            That feels important. The read could say I carried more of the first pass, but you became more directive once there was something concrete to push against.
+            That feels important. I might have carried more of the first pass, but you became more specific once there was something concrete to push against.
           </div>
         </div>
       </div>
@@ -61,18 +61,19 @@
         </div>
 
         <div class="mock-panel-body">
-          <section class="mock-session-read">
-            <img class="mock-session-sprite" src="sprites/builder.png" alt="Miro sprite" />
-            <div>
-              <div class="mock-panel-kicker">This session</div>
-              <div class="mock-session-title">Sharpening what mattered</div>
-              <div class="mock-session-meta">
-                <span class="mock-chip gold">Shared direction</span>
-                <span class="mock-chip miro">AI carried drafting</span>
-                <span class="mock-chip neutral">Your judgment sharpened it</span>
-              </div>
-              <div class="mock-session-narrative">
-                This felt like a revision-heavy session. I carried more of the first-pass structure, but the shape of the work changed when you redirected what was actually worth keeping.
+          <section>
+            <div class="mock-section-label">This session</div>
+            <div class="mock-session-read">
+              <img class="mock-session-sprite" src="sprites/builder.png" alt="Miro sprite" />
+              <div class="mock-session-stack">
+                <div class="mock-session-title">Sharpening what mattered</div>
+                <div class="mock-area-chip-row">
+                  <span class="mock-area-chip primary">Design</span>
+                  <span class="mock-area-chip secondary">Writing</span>
+                </div>
+                <div class="mock-session-narrative">
+                  I, your AI, showed up more like a builder here. You were shaping the direction and narrowing what mattered, and I helped turn the first pass into something clearer to react to.
+                </div>
               </div>
             </div>
           </section>
@@ -85,7 +86,7 @@
                   <div class="mock-weight-row-top">
                     <div class="mock-weight-label">Coming up with ideas</div>
                     <div class="mock-weight-row-right">
-                      <div class="mock-weight-verdict you">Mostly you</div>
+                      <div class="mock-weight-verdict you">Leaned to you</div>
                       <div class="mock-weight-chevron">+</div>
                     </div>
                   </div>
@@ -95,7 +96,7 @@
                     <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 68%;"></div>
                   </div>
-                  <div class="mock-weight-reason">You kept pulling the ideas toward what the experience was actually for. I surfaced options, but the useful ones came into focus through your redirects.</div>
+                  <div class="mock-weight-reason">You took the lead on coming up with ideas here. You kept pulling the ideas toward what the experience was actually for.</div>
                 </button>
 
                 <button class="mock-weight-row" type="button" aria-expanded="false">
@@ -112,6 +113,7 @@
                     <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 84%;"></div>
                   </div>
+                  <div class="mock-weight-reason">You took the lead on deciding the direction here. You were the one shaping what path the work followed.</div>
                 </button>
 
                 <button class="mock-weight-row" type="button" aria-expanded="false">
@@ -128,6 +130,7 @@
                     <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 50%;"></div>
                   </div>
+                  <div class="mock-weight-reason">We did the research together here. You set the direction, and I helped do the legwork and sorting.</div>
                 </button>
 
                 <button class="mock-weight-row" type="button" aria-expanded="false">
@@ -144,13 +147,14 @@
                     <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 30%;"></div>
                   </div>
+                  <div class="mock-weight-reason">I took the lead on building the thing here. I was the one making the first version of the thing itself.</div>
                 </button>
 
                 <button class="mock-weight-row" type="button" aria-expanded="false">
                   <div class="mock-weight-row-top">
                     <div class="mock-weight-label">Catching problems</div>
                     <div class="mock-weight-row-right">
-                      <div class="mock-weight-verdict you">Mostly you</div>
+                      <div class="mock-weight-verdict you">Clearly you</div>
                       <div class="mock-weight-chevron">+</div>
                     </div>
                   </div>
@@ -160,6 +164,7 @@
                     <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 76%;"></div>
                   </div>
+                  <div class="mock-weight-reason">You took the lead on catching problems here. You were the one spotting what needed to be fixed or adjusted.</div>
                 </button>
 
                 <button class="mock-weight-row" type="button" aria-expanded="false">
@@ -176,62 +181,35 @@
                     <div class="mock-weight-track-right"></div>
                     <div class="mock-weight-dot" style="left: 91%;"></div>
                   </div>
+                  <div class="mock-weight-reason">You took the lead on making the final call here. You were the one determining what stayed in and what got dropped.</div>
                 </button>
               </div>
             </div>
           </section>
 
-          <section>
+          <section class="mock-pattern-section">
             <div class="mock-pattern-card">
-              <div class="mock-pattern-eyebrow">A pattern I noticed</div>
-              <div class="mock-pattern-title">You got more specific once there was something to react to.</div>
-              <div class="mock-pattern-copy">
-                The early turns were broad and open-ended. Once a draft existed, your replies became sharper and more directional, which is where the session really started to feel like yours.
+              <div class="mock-pattern-block">
+                <div class="mock-pattern-eyebrow">Did you know...</div>
+                <div class="mock-pattern-title">You mostly shaped this chat by reacting after I gave you something to push against.</div>
               </div>
-            </div>
-          </section>
-
-          <section class="mock-try-section">
-            <div class="mock-section-label">What you could try</div>
-            <div class="mock-try-list">
-              <div class="mock-try-item">
-                <div class="mock-try-icon rework">1</div>
-                <div>
-                  <div class="mock-try-title">Write one first pass yourself</div>
-                  <div class="mock-try-copy">Pick one small piece you would usually hand over and sketch it first, even roughly, before asking me to reshape it.</div>
-                  <span class="mock-try-source">If you want to test authorship</span>
+              <div class="mock-pattern-block">
+                <div class="mock-pattern-eyebrow">This helps when...</div>
+                <div class="mock-pattern-copy">
+                  That can help when it is easier to notice what you want by seeing an option first than by starting cold.
                 </div>
               </div>
-
-              <div class="mock-try-item">
-                <div class="mock-try-icon reframe">2</div>
-                <div>
-                  <div class="mock-try-title">Name your reason earlier</div>
-                  <div class="mock-try-copy">Before the task itself, add one sentence about what matters most so I get more of your frame, not just the assignment.</div>
-                  <span class="mock-try-source">If you want clearer direction</span>
-                </div>
-              </div>
-
-              <div class="mock-try-item">
-                <div class="mock-try-icon reclaim">3</div>
-                <div>
-                  <div class="mock-try-title">Pause on the first usable draft</div>
-                  <div class="mock-try-copy">When something looks good quickly, stop and ask what feels like your judgment versus what feels like my default patterning.</div>
-                  <span class="mock-try-source">If you want to notice the split</span>
+              <div class="mock-pattern-block">
+                <div class="mock-pattern-eyebrow">Try a different move</div>
+                <div class="mock-pattern-copy">
+                  Before the next reply, name the one part that still feels off in your own words.
                 </div>
               </div>
             </div>
           </section>
 
-          <section>
-            <div class="mock-closing-question">
-              <div class="mock-closing-question-text">What part of this only became clear once you reacted to my draft?</div>
-            </div>
-          </section>
-
-          <div class="mock-panel-foot">
-            <div class="mock-panel-meta">12 messages in this chat</div>
-            <a class="mock-dashboard-link" href="dashboard.html">View full dashboard</a>
+          <div class="mock-panel-foot mock-panel-foot-single">
+            <a class="mock-dashboard-link mock-dashboard-link-block" href="dashboard.html">View full dashboard</a>
           </div>
         </div>
       </aside>

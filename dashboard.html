@@ -1,147 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Miro Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="dashboard.css" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Miro Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="dashboard.css"/>
 </head>
 <body>
-  <div class="shell">
-    <aside class="sidebar ani">
-      <div class="sidebar-brand">
-        <div class="sidebar-avatar">
-          <img src="sprites/cute.png" alt="Miro slime" />
+
+<header class="topbar">
+  <div class="tb-brand">
+    <div class="tb-avatar"><img src="sprites/cute.png" alt="Miro"/></div>
+    <div>
+      <div class="tb-name">Looking back</div>
+      <div class="tb-meta">52 chats · Dec – Apr</div>
+    </div>
+  </div>
+  <nav class="tb-nav" id="topNav">
+    <a href="#areas" class="active">Where AI shows up</a>
+    <a href="#splits">How the work splits</a>
+    <a href="#profile">Your profile</a>
+  </nav>
+</header>
+
+<div class="main">
+
+  <div class="section" id="areas">
+    <div class="sec-head">
+      <div class="kicker">Where AI shows up in your work</div>
+      <div class="sec-title">The areas you bring AI into</div>
+      <div class="sec-sub">Each bubble is a part of your work where AI tends to appear. Bigger means more activity. Click any bubble to see what's happening there.</div>
+    </div>
+    <div class="bubbles-layout" id="bubblesLayout">
+      <div class="card bubble-stage bubble-stage-cardless" id="bubbleStage"></div>
+      <div class="bubble-panel" id="bubblePanel">
+        <div class="bp-placeholder" id="bpPlaceholder">
+          <div class="bp-placeholder-icon">←</div>
+          <div class="bp-placeholder-text">Click a bubble to see what's going on in that area</div>
         </div>
-        <div>
-          <div class="kicker">Your AI</div>
-          <div class="sidebar-name">Looking back</div>
-          <div class="sidebar-note">How the work moved between us.</div>
-        </div>
+        <div class="bp-content" id="bpContent"></div>
       </div>
-
-      <nav class="tab-list" aria-label="Dashboard sections">
-        <button class="tab-button active" data-tab="overview" type="button">
-          <span class="tab-ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5V6a2 2 0 0 1 2-2h10a4 4 0 0 1 4 4v11.5"></path>
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            </svg>
-          </span>
-          <span>The story so far</span>
-        </button>
-        <button class="tab-button" data-tab="who" type="button">
-          <span class="tab-ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="7.5" cy="9" r="3.5"></circle>
-              <circle cx="16" cy="15" r="4.5"></circle>
-            </svg>
-          </span>
-          <span>Who did what</span>
-        </button>
-        <button class="tab-button" data-tab="watch" type="button">
-          <span class="tab-ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M12 6v6l4 2"></path>
-            </svg>
-          </span>
-          <span>What to watch for</span>
-        </button>
-      </nav>
-
-      <div class="sidebar-foot">
-        <div class="kicker">Based on</div>
-        <div class="sidebar-foot-value" id="periodLabel"></div>
-        <div class="sidebar-foot-note" id="periodMeta"></div>
-      </div>
-    </aside>
-
-    <main class="dashboard ani">
-      <header class="topbar">
-        <div class="kicker" id="pageKicker"></div>
-        <h1 class="topbar-title" id="pageTitle"></h1>
-        <p class="topbar-sub" id="pageSubtitle"></p>
-      </header>
-
-      <section class="panel active" data-panel="overview">
-        <article class="card letter-card">
-          <div>
-            <div class="kicker">From your AI</div>
-            <h2 class="letter-title" id="overviewTitle"></h2>
-            <div class="letter-body" id="overviewLetter"></div>
-            <div class="letter-sign">
-              <span class="letter-glyph">Your AI</span>
-              <span class="letter-signoff" id="overviewSignoff"></span>
-            </div>
-          </div>
-          <div class="letter-art">
-            <img class="letter-art-slime" src="sprites/cute.png" alt="Miro slime" />
-          </div>
-        </article>
-
-        <div class="overview-grid">
-          <article class="card arc-card">
-            <div class="kicker">How our rhythm shifted</div>
-            <div class="arc-story" id="arcStory"></div>
-          </article>
-
-          <article class="card tapestry-card">
-            <div class="kicker">Every chat at a glance</div>
-            <p class="section-sub">Each square = one conversation.</p>
-            <div class="tapestry-grid" id="tapestryGrid"></div>
-            <div class="tapestry-legend">
-              <div class="leg-item"><div class="leg-swatch miro-swatch"></div>AI carried more</div>
-              <div class="leg-item"><div class="leg-swatch shared-swatch"></div>Shared</div>
-              <div class="leg-item"><div class="leg-swatch you-swatch"></div>You carried more</div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="panel" data-panel="who">
-        <article class="card bubbles-card">
-          <div class="kicker">Topics you kept coming back to</div>
-          <p class="section-sub">Bigger bubbles came up in more chats. The color shows who tended to carry the work in that topic.</p>
-          <div class="topic-bubble-stage" id="topicsViz"></div>
-          <div class="bubble-legend">
-            <div class="bubble-legend-item"><div class="bubble-legend-swatch bl"></div>AI carried more</div>
-            <div class="bubble-legend-item"><div class="bubble-legend-swatch yl"></div>Shared</div>
-            <div class="bubble-legend-item"><div class="bubble-legend-swatch rd"></div>You carried more</div>
-          </div>
-        </article>
-
-        <article class="card sliders-card">
-          <div class="kicker">How the work typically splits</div>
-          <p class="section-sub">Averaged across 52 chats. The shaded area shows how much it varied. Click any row for detail.</p>
-          <div class="slider-rows" id="sliderRows"></div>
-        </article>
-      </section>
-
-      <section class="panel" data-panel="watch">
-        <article class="card seed-hero">
-          <div class="kicker">Sit with this</div>
-          <div class="reflection-question" id="seedQuestion"></div>
-        </article>
-
-        <div class="watch-columns">
-          <div class="strengths-col">
-            <div class="kicker">Keep doing this</div>
-            <div class="strengths-stack" id="strengthsRow"></div>
-          </div>
-
-          <div class="watch-col">
-            <div class="kicker">Things to watch for</div>
-            <div class="watch-list" id="watchList"></div>
-          </div>
-        </div>
-      </section>
-    </main>
+    </div>
   </div>
 
-  <script src="dashboard.js"></script>
+  <div class="section" id="splits">
+    <div class="sec-head">
+      <div class="kicker">How the work splits</div>
+      <div class="sec-title">Who tends to carry what</div>
+      <div class="sec-sub">Averaged across 52 chats. The band shows how much it varied. Click any row to see more.</div>
+    </div>
+    <div class="card sliders-card" id="slidersCard"></div>
+  </div>
+
+  <div class="section" id="profile">
+    <div class="sec-head">
+      <div class="kicker">Your profile</div>
+      <div class="sec-title">The collaborator you're becoming</div>
+      <div class="sec-sub">How you tend to show up, how AI tends to show up for you, and what that creates together.</div>
+    </div>
+    <div class="profile-grid" id="profileGrid"></div>
+  </div>
+
+</div>
+
+<script src="dashboard.js"></script>
 </body>
 </html>

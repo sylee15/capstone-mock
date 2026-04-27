@@ -7,6 +7,17 @@
   const MAX_MESSAGES = 24;
   const STALE_ASSISTANT_GROWTH = 220;
   const MAX_ANALYSIS_INSTANCES = 12;
+  const DASHBOARD_SESSION_STORAGE_KEY = 'miro_dashboard_sessions';
+  const AREA_LABELS = {
+    research: 'Research',
+    writing: 'Writing',
+    coding: 'Coding',
+    design: 'Design',
+    studying: 'Studying',
+    career: 'Career',
+    presenting: 'Presenting',
+    personal: 'Personal'
+  };
   const CANONICAL_WEIGHT_ROWS = [
     {
       key: 'ideas',
@@ -74,6 +85,7 @@
     observer: null,
     stale: false,
     sessionKey: getSessionKey(),
+    dashboardSession: null,
     analysisInstances: [],
     introNudgeShown: false,
     introNudgeTimer: null
@@ -224,14 +236,17 @@
           meaningfulChange
         }
       );
+      state.dashboardSession = buildDashboardSessionRecord(state.latestAnalysis);
       state.convoHash = newHash;
       state.analyzedMessages = cloneMessages(state.messages);
       state.analysisInstances = appendAnalysisInstance(state.analysisInstances, {
-        analyzed_at: new Date().toISOString(),
-        message_count: state.messages.length,
+        analyzed_at: state.latestAnalysis.analyzed_at,
+        message_count: state.latestAnalysis.message_count,
         new_message_count: payload.conversation.length,
         analysis_mode: payload.analysisMode,
         session_read_title: state.latestAnalysis.session_read_title,
+        areas: state.latestAnalysis.areas.map((area) => area.key),
+        work_split: state.latestAnalysis.work_split,
         weight_rows: state.latestAnalysis.weight_rows.map((row) => ({
           key: row.key,
           position: row.position,
@@ -287,19 +302,25 @@
   function renderPanel(rawData) {
     const data = normalizeAnalysis(rawData);
     const sprite = getAnalysisSprite(data);
-    const messageCount = state.messages.length || state.analyzedMessages.length || 0;
+    const patternCard = derivePatternCard(data);
+    const sessionReadCopy = composeSessionReadNarrative(data);
 
     const body = document.getElementById('miro-panel-body');
     const headerIcon = document.getElementById('miro-header-icon');
     if (headerIcon) headerIcon.src = sprite;
 
     body.innerHTML = `
-      <section class="miro-card miro-session-read">
-        <img class="miro-session-sprite" src="${sprite}" alt="${escapeAttr(data.session_read_title)}" />
-        <div>
-          <div class="miro-kicker miro-tight-kicker">This session</div>
-          <div class="miro-session-title">${escapeHtml(data.session_read_title)}</div>
-          <div class="miro-session-narrative">${escapeHtml(data.session_read_narrative)}</div>
+      <section>
+        <div class="miro-section-label">This session</div>
+        <div class="miro-card miro-session-read">
+          <img class="miro-session-sprite" src="${sprite}" alt="${escapeAttr(data.session_read_title)}" />
+          <div class="miro-session-stack">
+            <div class="miro-session-title">${escapeHtml(data.session_read_title)}</div>
+            <div class="miro-area-chip-row">
+              ${renderAreaChips(data.areas)}
+            </div>
+            <div class="miro-session-narrative">${escapeHtml(sessionReadCopy)}</div>
+          </div>
         </div>
       </section>
 
@@ -312,23 +333,24 @@
         </div>
       </section>
 
-      <section class="miro-try-section">
-        <div class="miro-section-label">What you could try</div>
-        <div class="miro-try-list">
-          ${renderTryItems(data.try_items, data.weight_rows)}
-        </div>
-      </section>
-
-      <section>
+      <section class="miro-pattern-section">
         <div class="miro-pattern-card">
-          <div class="miro-pattern-eyebrow">A pattern I noticed</div>
-          <div class="miro-pattern-title">${escapeHtml(data.pattern_title)}</div>
-          <div class="miro-pattern-copy">${escapeHtml(data.pattern_copy)}</div>
+          <div class="miro-pattern-block">
+            <div class="miro-pattern-label">Did you know...</div>
+            <div class="miro-pattern-lead">${escapeHtml(patternCard.didYouKnow)}</div>
+          </div>
+          <div class="miro-pattern-block">
+            <div class="miro-pattern-label">This helps when...</div>
+            <div class="miro-pattern-copy">${escapeHtml(patternCard.thisHelpsWhen)}</div>
+          </div>
+          <div class="miro-pattern-block">
+            <div class="miro-pattern-label">Try a different move</div>
+            <div class="miro-pattern-copy">${escapeHtml(patternCard.tryDifferentMove)}</div>
+          </div>
         </div>
       </section>
 
-      <div class="miro-panel-foot">
-        <div class="miro-panel-meta">${messageCount} messages in this chat</div>
+      <div class="miro-footer-action">
         <button class="miro-dashboard-link" id="miro-open-dashboard">View full dashboard</button>
       </div>
     `;
@@ -362,17 +384,123 @@
     `).join('');
   }
 
-  function renderTryItems(items, weightRows) {
-    return items.map((item, index) => `
-      <div class="miro-try-item">
-        <div class="miro-try-icon ${escapeAttr(item.icon_type)}">${index + 1}</div>
-        <div>
-          <div class="miro-try-title">${escapeHtml(item.title)}</div>
-          <div class="miro-try-copy">${escapeHtml(item.copy)}</div>
-          ${item.source ? `<span class="miro-try-source">${escapeHtml(item.source)}</span>` : ''}
-        </div>
-      </div>
+  function renderAreaChips(areas) {
+    return areas.map((area) => `
+      <span class="miro-area-chip ${escapeAttr(area.salience)}">${escapeHtml(getAreaLabel(area.key))}</span>
     `).join('');
+  }
+
+  function derivePatternCard(data) {
+    const rows = mapWeightRowsByKey(data?.weight_rows);
+    const markers = data?.collaboration_markers || {};
+    const building = rows.building?.position ?? 50;
+    const direction = rows.direction?.position ?? 50;
+    const research = rows.research?.position ?? 50;
+    const problems = rows.problems?.position ?? 50;
+    const finalCall = rows.final_call?.position ?? 50;
+    const ideas = rows.ideas?.position ?? 50;
+
+    if (building <= 36 && direction >= 62 && finalCall >= 70) {
+      return {
+        didYouKnow: 'You kept the direction here even when I handled most of the first pass.',
+        thisHelpsWhen: 'That can help when you know what the work needs to become, but do not want to start from a blank page.',
+        tryDifferentMove: 'Before the next reply, write one sentence of direction in your own words.'
+      };
+    }
+
+    if (markers.user_redirected_after_output || markers.user_critiqued_or_corrected || problems >= 60) {
+      return {
+        didYouKnow: 'You mostly shaped this chat by reacting after I gave you something to push against.',
+        thisHelpsWhen: 'That can help when it is easier to notice what you want by seeing an option first than by starting cold.',
+        tryDifferentMove: 'Before the next reply, name the one part that still feels off in your own words.'
+      };
+    }
+
+    if (markers.user_provided_material && research <= 40) {
+      return {
+        didYouKnow: 'You handed me the material, and I carried more of the sorting and synthesis from there.',
+        thisHelpsWhen: 'That can help when you already have the ingredients and want help turning them into a usable first shape.',
+        tryDifferentMove: 'Ask me for two possible framings before asking for a full summary.'
+      };
+    }
+
+    if (building <= 34 && !markers.user_redirected_after_output && !markers.user_critiqued_or_corrected) {
+      return {
+        didYouKnow: 'I showed up more as a drafter here than as a thinking partner.',
+        thisHelpsWhen: 'That can help when momentum matters more than polish and you mainly need a workable starting point.',
+        tryDifferentMove: 'Tell me not to polish yet - just help choose the argument first.'
+      };
+    }
+
+    if (ideas >= 58 && direction >= 58 && finalCall >= 72) {
+      return {
+        didYouKnow: 'You kept more of the judgment here, even while I helped move the process along.',
+        thisHelpsWhen: 'That can help when the thinking is already yours and you mostly want a sounding board or a sharper first pass.',
+        tryDifferentMove: 'Ask for two options instead of a full rewrite.'
+      };
+    }
+
+    return {
+      didYouKnow: 'This chat stayed fairly shared, with each of us carrying a different part of the work.',
+      thisHelpsWhen: 'That can help when you want support without handing over the whole shape of the task.',
+      tryDifferentMove: cleanText(
+        data?.try_now?.copy,
+        'Before the next reply, tell me what part you want to keep fully yours.'
+      )
+    };
+  }
+
+  function mapWeightRowsByKey(rows) {
+    return (Array.isArray(rows) ? rows : []).reduce((mapped, row) => {
+      if (row?.key) {
+        mapped[row.key] = row;
+      }
+      return mapped;
+    }, {});
+  }
+
+  function composeSessionReadNarrative(data) {
+    const modeLead = getSessionModeLead(data?.session_read_mode);
+    const provided = cleanText(data?.session_read_narrative, '');
+    const stripped = provided
+      .replace(/^I,\s*your AI,[^.?!]*[.?!]\s*/i, '')
+      .replace(/^(You were|You came in|You started|This chat)/i, (match) => match)
+      .trim();
+
+    if (stripped) {
+      return `${modeLead} ${stripped}`;
+    }
+
+    return `${modeLead} ${buildSessionReadFallback(data?.weight_rows)}`;
+  }
+
+  function getSessionModeLead(mode) {
+    if (mode === 'builder') return 'I, your AI, showed up more like a builder here.';
+    if (mode === 'shared') return 'I, your AI, showed up more like a collaborator here.';
+    if (mode === 'tired') return 'I, your AI, showed up more like a lighter helper here.';
+    return 'I, your AI, showed up more like a thinking partner here.';
+  }
+
+  function buildSessionReadFallback(rows) {
+    const mapped = mapWeightRowsByKey(rows);
+    const building = mapped.building?.position ?? 50;
+    const direction = mapped.direction?.position ?? 50;
+    const research = mapped.research?.position ?? 50;
+    const finalCall = mapped.final_call?.position ?? 50;
+
+    if (building <= 36 && direction >= 60) {
+      return 'You were shaping the direction, and I helped turn the first pass into something more workable.';
+    }
+
+    if (research <= 40) {
+      return 'You were bringing the question or material, and I helped gather, sort, and synthesize what was there.';
+    }
+
+    if (finalCall >= 72) {
+      return 'You were narrowing what mattered, and I helped make the options easier to work with.';
+    }
+
+    return 'You were working through the task with me, and I helped give the chat more structure and momentum.';
   }
 
   function bindWeightRows() {
@@ -394,26 +522,40 @@
 
   function normalizeAnalysis(data) {
     const weightRows = normalizeWeightRows(data?.weight_rows, CANONICAL_WEIGHT_ROWS);
+    const areas = normalizeAreas(data?.areas, state.messages.length ? state.messages : state.analyzedMessages);
+    const sessionReadMode = normalizeSessionReadMode(data?.session_read_mode, data?.session_read_chips, weightRows);
+    const analyzedAt = cleanText(data?.analyzed_at, new Date().toISOString());
+    const messageCount = clamp(
+      Number(data?.message_count),
+      0,
+      9999,
+      state.messages.length || state.analyzedMessages.length || 0
+    );
     return {
+      session_id: cleanText(
+        data?.session_id,
+        buildSessionId(state.sessionKey, data?.chat_key, data?.analyzed_at || state.convoHash || hashConversation(state.messages))
+      ),
+      chat_key: cleanText(data?.chat_key, state.sessionKey),
+      analyzed_at: analyzedAt,
+      message_count: messageCount,
       session_read_title: cleanText(
         data?.session_read_title,
         'Mostly me building, you steering'
       ),
-      session_read_chips: normalizeChips(data?.session_read_chips),
       session_read_narrative: shortenSessionNarrative(cleanText(
         data?.session_read_narrative,
         'You came in with a concrete task and let me build the first pass. The stronger shift happened once you redirected what the work needed to become.'
       )),
+      session_read_mode: sessionReadMode,
+      areas,
       weight_rows: weightRows,
-      pattern_title: cleanText(
-        data?.pattern_title,
-        'Prompt pattern'
-      ),
-      pattern_copy: cleanText(
-        data?.pattern_copy,
-        'You started by handing me the task directly, then shifted into redirecting what the task needed to become. The authorship got stronger once you started shaping instead of delegating.'
-      ),
-      try_items: normalizeTryItems(data?.try_items, weightRows)
+      work_split: buildWorkSplit(weightRows),
+      try_now: normalizeTryNow(data?.try_now, data?.try_items, weightRows),
+      collaboration_markers: normalizeCollaborationMarkers(data?.collaboration_markers),
+      interaction_pattern: normalizeInteractionPattern(data?.interaction_pattern),
+      evidence_note: normalizeEvidenceNote(data?.evidence_note, data?.pattern_copy),
+      trace: normalizeTrace(data?.trace)
     };
   }
 
@@ -422,32 +564,43 @@
       return nextAnalysis;
     }
 
+    const stabilizedWeightRows = stabilizeWeightRows(
+      nextAnalysis.weight_rows,
+      previousAnalysis.weight_rows,
+      options
+    );
+
     return {
       ...nextAnalysis,
-      weight_rows: stabilizeWeightRows(
-        nextAnalysis.weight_rows,
-        previousAnalysis.weight_rows,
-        options
-      )
+      weight_rows: stabilizedWeightRows,
+      work_split: buildWorkSplit(stabilizedWeightRows)
     };
   }
 
   function normalizeWeightRows(rows, fallback) {
     if (!Array.isArray(rows) || rows.length === 0) {
-      return fallback;
+      return fallback.map((row) => ({
+        ...row,
+        verdict: deriveWeightVerdict(row.position)
+      }));
     }
 
     const normalized = Array.from({ length: fallback.length }, (_, index) => {
       const template = fallback[index];
       const sourceRow = findWeightRowForTemplate(rows, template, index);
+      const position = clamp(Number(sourceRow?.position), 0, 100, template.position);
       return normalizeWeightRange({
         key: template.key,
         label: template.label,
-        position: clamp(Number(sourceRow?.position), 0, 100, template.position),
+        position,
         range_start: clamp(Number(sourceRow?.range_start), 0, 100, template.range_start),
         range_end: clamp(Number(sourceRow?.range_end), 0, 100, template.range_end),
-        verdict: cleanText(sourceRow?.verdict, template.verdict),
-        reason: cleanText(sourceRow?.reason, template.reason)
+        verdict: deriveWeightVerdict(position),
+        reason: harmonizeWeightReason(
+          template.label,
+          position,
+          cleanText(sourceRow?.reason, template.reason)
+        )
       });
     });
 
@@ -478,100 +631,203 @@
     return '';
   }
 
-  function normalizeChips(value) {
-    const fallback = [
-      { label: 'Shared read', tone: 'shared' },
-      { label: 'This chat', tone: 'task' }
-    ];
-
-    if (!Array.isArray(value) || value.length === 0) {
-      return fallback;
-    }
-
-    return value.slice(0, 2).map((chip, index) => ({
-      label: cleanText(chip?.label, fallback[index]?.label || 'This chat'),
-      tone: sanitizeChipTone(chip?.tone, fallback[index]?.tone || 'task')
-    }));
-  }
-
-  function normalizeTryItems(value, weightRows) {
-    const fallback = [
-      {
-        basis_key: 'building',
-        icon_type: 'rework',
-        title: 'Rewrite one part in your own words',
-        copy: 'Building leaned heavily to AI this session, so try writing a rough version yourself before asking me to build it.',
-        source: 'Use me to critique or tighten it after you have a first pass.'
-      },
-      {
-        basis_key: 'direction',
-        icon_type: 'reframe',
-        title: 'Start with your own outline',
-        copy: 'Deciding the direction stayed mostly yours, so name the shape you want before I generate anything.',
-        source: 'A one-sentence frame is enough to keep the direction anchored in you.'
-      }
-    ];
-
-    if (!Array.isArray(value) || value.length < 2) {
-      return fallback;
-    }
-
-    return value.slice(0, 3).map((item, index) => ({
-      basis_key: sanitizeTryBasisKey(item?.basis_key, fallback[index]?.basis_key || fallback[0].basis_key),
-      icon_type: sanitizeTryIcon(item?.icon_type, fallback[index]?.icon_type || 'rework'),
-      title: cleanText(item?.title, fallback[index]?.title || 'Try this next'),
-      copy: cleanText(item?.copy, fallback[index]?.copy || ''),
-      source: cleanText(item?.source, fallback[index]?.source || '')
-    })).map((item) => groundTryItem(item, weightRows));
-  }
-
-  function normalizeStringList(value, fallback, minItems, maxItems) {
-    const list = Array.isArray(value)
-      ? value.map((item) => cleanText(item, '')).filter(Boolean)
+  function normalizeAreas(value, messages) {
+    const normalized = Array.isArray(value)
+      ? value
+          .map((area) => ({
+            key: sanitizeAreaKey(area?.key),
+            salience: sanitizeAreaSalience(area?.salience),
+            weight: Number.isFinite(Number(area?.weight)) ? clamp(Number(area.weight), 0, 1, undefined) : undefined
+          }))
+          .filter((area) => area.key)
       : [];
 
-    if (list.length >= minItems) {
-      return list.slice(0, maxItems);
+    const primary = normalized.find((area) => area.salience === 'primary');
+    const secondary = normalized.find((area) => area.salience === 'secondary' && area.key !== primary?.key);
+
+    if (primary) {
+      return [primary, ...(secondary ? [secondary] : [])];
     }
 
-    return fallback.slice(0, maxItems);
+    return inferAreasFromMessages(messages);
   }
 
-  function sanitizeChipTone(value, fallback) {
-    return ['miro', 'shared', 'task'].includes(value) ? value : fallback;
+  function inferAreasFromMessages(messages) {
+    const text = (Array.isArray(messages) ? messages : [])
+      .map((message) => cleanText(message?.content, ''))
+      .join(' ')
+      .toLowerCase();
+
+    const scores = {
+      research: countAreaMatches(text, ['research', 'source', 'article', 'citation', 'paper', 'readings', 'literature']),
+      writing: countAreaMatches(text, ['essay', 'writing', 'draft', 'rewrite', 'paragraph', 'discussion post', 'summary']),
+      coding: countAreaMatches(text, ['code', 'bug', 'debug', 'javascript', 'python', 'html', 'css', 'extension']),
+      design: countAreaMatches(text, ['design', 'ui', 'ux', 'wireframe', 'prototype', 'layout', 'dashboard']),
+      studying: countAreaMatches(text, ['study', 'studying', 'exam', 'quiz', 'lecture', 'practice question', 'class']),
+      career: countAreaMatches(text, ['resume', 'cover letter', 'interview', 'job', 'career', 'linkedin']),
+      presenting: countAreaMatches(text, ['slide', 'presentation', 'speaker notes', 'deck', 'pitch']),
+      personal: countAreaMatches(text, ['personal', 'life', 'decision', 'feeling', 'relationship'])
+    };
+
+    const ranked = Object.entries(scores)
+      .sort((left, right) => right[1] - left[1]);
+
+    const primaryKey = ranked[0]?.[1] > 0 ? ranked[0][0] : 'writing';
+    const secondaryKey = ranked[1]?.[1] > 0 && ranked[1][0] !== primaryKey ? ranked[1][0] : '';
+
+    return [
+      { key: primaryKey, salience: 'primary' },
+      ...(secondaryKey ? [{ key: secondaryKey, salience: 'secondary' }] : [])
+    ];
   }
 
-  function sanitizeTryIcon(value, fallback) {
-    return ['rework', 'reframe', 'reclaim'].includes(value) ? value : fallback;
+  function countAreaMatches(text, keywords) {
+    return keywords.reduce((count, keyword) => count + (text.includes(keyword) ? 1 : 0), 0);
   }
 
-  function sanitizeTryBasisKey(value, fallback) {
-    return ['ideas', 'direction', 'research', 'building', 'problems', 'final_call'].includes(value) ? value : fallback;
+  function normalizeSessionReadMode(value, legacyChips, weightRows) {
+    if (['builder', 'shared', 'thoughtful', 'tired'].includes(value)) {
+      return value;
+    }
+
+    const chipTone = Array.isArray(legacyChips) ? legacyChips[0]?.tone : '';
+    if (chipTone === 'miro') return 'builder';
+    if (chipTone === 'shared') return 'shared';
+
+    const buildingRow = weightRows.find((row) => row.key === 'building');
+    const finalCallRow = weightRows.find((row) => row.key === 'final_call');
+    if (buildingRow && buildingRow.position <= 34) return 'builder';
+    if (buildingRow && finalCallRow && Math.abs(buildingRow.position - 50) < 12 && Math.abs(finalCallRow.position - 50) < 12) {
+      return 'shared';
+    }
+    return 'thoughtful';
   }
 
-  function groundTryItem(item, weightRows) {
-    const row = Array.isArray(weightRows) ? weightRows.find((entry) => entry.key === item.basis_key) : null;
-    if (!row) return item;
+  function normalizeTryNow(value, legacyItems, weightRows) {
+    const providedTitle = cleanText(value?.title, '');
+    const providedCopy = cleanText(value?.copy, '');
+    if (providedTitle && providedCopy) {
+      return {
+        title: providedTitle,
+        copy: providedCopy
+      };
+    }
 
-    const basis = describeWeightBasisFromRow(row);
-    const copy = cleanText(item.copy, '');
-    const groundedCopy = copy.toLowerCase().includes(row.label.toLowerCase()) || copy.toLowerCase().includes('this session')
-      ? copy
-      : `${basis}, so ${copy.charAt(0).toLowerCase()}${copy.slice(1)}`;
+    if (Array.isArray(legacyItems) && legacyItems.length > 0) {
+      const first = legacyItems[0];
+      return {
+        title: cleanText(first?.title, 'Try this now'),
+        copy: cleanText(first?.copy, 'Before asking for another revision, name the one part that still feels off.')
+      };
+    }
+
+    const buildingRow = weightRows.find((row) => row.key === 'building');
+    const directionRow = weightRows.find((row) => row.key === 'direction');
+    if (buildingRow && buildingRow.position <= 36) {
+      return {
+        title: 'Set the target for my next answer',
+        copy: 'Tell me what you want the next answer to optimize for: clarity, depth, or speed.'
+      };
+    }
+    if (directionRow && directionRow.position >= 64) {
+      return {
+        title: 'Name what is still off',
+        copy: 'Before asking for another revision, name the one part that still feels off.'
+      };
+    }
+    return {
+      title: 'Reset the goal',
+      copy: 'Reset the conversation with: "Ignore the earlier framing - here is the actual goal."'
+    };
+  }
+
+  function normalizeCollaborationMarkers(value) {
+    return {
+      user_provided_material: Boolean(value?.user_provided_material),
+      user_redirected_after_output: Boolean(value?.user_redirected_after_output),
+      user_critiqued_or_corrected: Boolean(value?.user_critiqued_or_corrected),
+      user_made_final_selection: Boolean(value?.user_made_final_selection),
+      ai_produced_first_pass: Boolean(value?.ai_produced_first_pass)
+    };
+  }
+
+  function normalizeInteractionPattern(value) {
+    return {
+      opening_mode: sanitizeOpeningMode(value?.opening_mode),
+      arc: sanitizeInteractionArc(value?.arc),
+      confidence: sanitizePatternConfidence(value?.confidence)
+    };
+  }
+
+  function normalizeEvidenceNote(value, legacyPatternCopy) {
+    return cleanText(
+      value,
+      cleanText(
+        legacyPatternCopy,
+        'The user handed over the task, then redirected after seeing what the first answer made possible.'
+      )
+    );
+  }
+
+  function normalizeTrace(value) {
+    const firstKeyTurn = Number(value?.first_key_turn);
+    const keyTurnIndices = Array.isArray(value?.key_turn_indices)
+      ? value.key_turn_indices
+          .map((entry) => Number(entry))
+          .filter((entry) => Number.isFinite(entry) && entry > 0)
+          .slice(0, 4)
+      : [];
 
     return {
-      ...item,
-      copy: groundedCopy
+      first_key_turn: Number.isFinite(firstKeyTurn) && firstKeyTurn > 0 ? Math.round(firstKeyTurn) : undefined,
+      key_turn_indices: keyTurnIndices
+    };
+  }
+
+  function buildWorkSplit(weightRows) {
+    return weightRows.reduce((split, row) => {
+      split[row.key] = row.position;
+      return split;
+    }, {
+      ideas: 50,
+      direction: 50,
+      research: 50,
+      building: 50,
+      problems: 50,
+      final_call: 50
+    });
+  }
+
+  function buildDashboardSessionRecord(analysis) {
+    return {
+      session_id: analysis.session_id,
+      chat_key: analysis.chat_key,
+      analyzed_at: analysis.analyzed_at,
+      message_count: analysis.message_count,
+      areas: analysis.areas.map((area) => ({
+        key: area.key,
+        salience: area.salience,
+        ...(typeof area.weight === 'number' ? { weight: area.weight } : {})
+      })),
+      work_split: { ...analysis.work_split },
+      collaboration_markers: { ...analysis.collaboration_markers },
+      interaction_pattern: { ...analysis.interaction_pattern },
+      evidence_note: analysis.evidence_note,
+      trace: analysis.trace && (analysis.trace.first_key_turn || analysis.trace.key_turn_indices.length)
+        ? {
+            ...(analysis.trace.first_key_turn ? { first_key_turn: analysis.trace.first_key_turn } : {}),
+            ...(analysis.trace.key_turn_indices.length ? { key_turn_indices: [...analysis.trace.key_turn_indices] } : {})
+          }
+        : undefined
     };
   }
 
   function shortenSessionNarrative(text) {
     const cleaned = cleanText(text, '');
     if (!cleaned) return '';
-    const sentences = cleaned.match(/[^.!?]+[.!?]?/g) || [cleaned];
-    const compact = sentences.slice(0, 2).join(' ').trim();
-    if (compact.length <= 220) return compact;
-    return `${compact.slice(0, 217).trimEnd()}...`;
+    const firstSentence = (cleaned.match(/[^.!?]+[.!?]?/) || [cleaned])[0].trim();
+    if (firstSentence.length <= 190) return firstSentence;
+    return `${firstSentence.slice(0, 187).trimEnd()}...`;
   }
 
   function normalizeWeightRange(row) {
@@ -616,18 +872,99 @@
       return normalizeWeightRange({
         ...row,
         position: boundedPosition,
-        verdict: deriveWeightVerdict(boundedPosition)
+        verdict: deriveWeightVerdict(boundedPosition),
+        reason: harmonizeWeightReason(row.label, boundedPosition, row.reason)
       });
     });
   }
 
   function deriveWeightVerdict(position) {
     const value = clamp(Number(position), 0, 100, 50);
-    if (value <= 24) return 'Mostly AI';
+    if (value <= 24) return 'Clearly AI';
     if (value <= 42) return 'Leaned to AI';
     if (value < 58) return 'Shared';
     if (value < 76) return 'Leaned to you';
-    return 'Mostly you';
+    return 'Clearly you';
+  }
+
+  function harmonizeWeightReason(label, position, rawReason) {
+    const value = clamp(Number(position), 0, 100, 50);
+    if (value <= 24) {
+      return buildExtremeWeightReason('ai', label);
+    }
+
+    if (value >= 76) {
+      return buildExtremeWeightReason('you', label);
+    }
+
+    const lead = getWeightLeadSentence(label, value);
+    const cleaned = cleanText(rawReason, '');
+    const stripped = cleaned
+      .replace(/^(i|you|we)\s+took the lead[^.?!]*[.?!]\s*/i, '')
+      .replace(/^(i|you|we)\s+(carried|did|handled)\s+[^.?!]*[.?!]\s*/i, '')
+      .trim();
+
+    if (!stripped) {
+      return lead;
+    }
+
+    return `${lead} ${stripped}`;
+  }
+
+  function buildExtremeWeightReason(side, label) {
+    const action = getWeightActionPhrase(label);
+    if (side === 'ai') {
+      return `I took the lead on ${action} here. ${getExtremeWeightDetail('ai', label)}`;
+    }
+    return `You took the lead on ${action} here. ${getExtremeWeightDetail('you', label)}`;
+  }
+
+  function getExtremeWeightDetail(side, label) {
+    const key = canonicalWeightKey({ label });
+
+    if (side === 'ai') {
+      if (key === 'ideas') return 'I was the one surfacing most of the options and first directions.';
+      if (key === 'direction') return 'I was the one shaping what path the work followed.';
+      if (key === 'research') return 'I was the one gathering, sorting, and synthesizing the material.';
+      if (key === 'building') return 'I was the one making the first version of the thing itself.';
+      if (key === 'problems') return 'I was the one spotting what needed to be fixed or adjusted.';
+      if (key === 'final_call') return 'I was the one determining what stayed in and what got dropped.';
+      return 'I was the one carrying that part of the work.';
+    }
+
+    if (key === 'ideas') return 'You were the one surfacing most of the options and first directions.';
+    if (key === 'direction') return 'You were the one shaping what path the work followed.';
+    if (key === 'research') return 'You were the one gathering, sorting, and synthesizing the material.';
+    if (key === 'building') return 'You were the one making the first version of the thing itself.';
+    if (key === 'problems') return 'You were the one spotting what needed to be fixed or adjusted.';
+    if (key === 'final_call') return 'You were the one determining what stayed in and what got dropped.';
+    return 'You were the one carrying that part of the work.';
+  }
+
+  function getWeightLeadSentence(label, position) {
+    const action = getWeightActionPhrase(label);
+    const value = clamp(Number(position), 0, 100, 50);
+
+    if (value <= 42) {
+      return `I took the lead on ${action} here.`;
+    }
+
+    if (value < 58) {
+      return `We did ${action} together here.`;
+    }
+
+    return `You took the lead on ${action} here.`;
+  }
+
+  function getWeightActionPhrase(label) {
+    const text = String(label || '').toLowerCase();
+    if (text.includes('coming up with ideas')) return 'coming up with ideas';
+    if (text.includes('deciding the direction')) return 'deciding the direction';
+    if (text.includes('doing the research')) return 'doing the research';
+    if (text.includes('building the thing')) return 'building the thing';
+    if (text.includes('catching problems')) return 'catching problems';
+    if (text.includes('making the final call')) return 'making the final call';
+    return 'that part of the work';
   }
 
   function describeWeightBasisFromRow(row) {
@@ -651,9 +988,9 @@
   }
 
   function getAnalysisSprite(data) {
-    const firstChip = Array.isArray(data?.session_read_chips) ? data.session_read_chips[0] : null;
-    if (firstChip?.tone === 'miro') return SPRITES.builder;
-    if (firstChip?.tone === 'shared') return SPRITES.shared;
+    if (data?.session_read_mode === 'builder') return SPRITES.builder;
+    if (data?.session_read_mode === 'shared') return SPRITES.shared;
+    if (data?.session_read_mode === 'tired') return SPRITES.tired;
     return SPRITES.thoughtful;
   }
 
@@ -741,6 +1078,9 @@
       }
 
       state.latestAnalysis = snapshot.lastAnalysis ? normalizeAnalysis(snapshot.lastAnalysis) : null;
+      state.dashboardSession = snapshot.dashboardSession && typeof snapshot.dashboardSession === 'object'
+        ? snapshot.dashboardSession
+        : (state.latestAnalysis ? buildDashboardSessionRecord(state.latestAnalysis) : null);
       state.convoHash = cleanText(snapshot.convoHash, '');
       state.analyzedMessages = normalizeStoredMessages(snapshot.analyzedMessages);
       state.analysisInstances = Array.isArray(snapshot.analysisInstances)
@@ -799,10 +1139,12 @@
 
   async function persistSessionState() {
     const storageKey = getSessionStorageKey();
+    const dashboardSession = state.dashboardSession || (state.latestAnalysis ? buildDashboardSessionRecord(state.latestAnalysis) : null);
     const snapshot = {
       sessionKey: state.sessionKey,
       pageTitle: document.title,
       lastAnalysis: state.latestAnalysis,
+      dashboardSession,
       convoHash: state.convoHash,
       analyzedMessages: cloneMessages(state.analyzedMessages),
       analysisInstances: state.analysisInstances.slice(-MAX_ANALYSIS_INSTANCES),
@@ -810,7 +1152,19 @@
     };
 
     try {
-      await chrome.storage.local.set({ [storageKey]: snapshot });
+      const stored = await chrome.storage.local.get([DASHBOARD_SESSION_STORAGE_KEY]);
+      const dashboardSessions = stored[DASHBOARD_SESSION_STORAGE_KEY] && typeof stored[DASHBOARD_SESSION_STORAGE_KEY] === 'object'
+        ? stored[DASHBOARD_SESSION_STORAGE_KEY]
+        : {};
+
+      if (dashboardSession?.chat_key) {
+        dashboardSessions[dashboardSession.chat_key] = dashboardSession;
+      }
+
+      await chrome.storage.local.set({
+        [storageKey]: snapshot,
+        [DASHBOARD_SESSION_STORAGE_KEY]: dashboardSessions
+      });
     } catch (error) {
       console.warn('Miro could not save session memory.', error);
     }
@@ -856,6 +1210,10 @@
 
   function getSessionStorageKey() {
     return `miro_session:${state.sessionKey}`;
+  }
+
+  function buildSessionId(sessionKey, chatKey, nonce) {
+    return `session_${simpleHash(`${chatKey || sessionKey}|${nonce || ''}`)}`;
   }
 
   function cloneMessages(messages) {
@@ -962,5 +1320,43 @@
 
   function escapeAttr(value) {
     return escapeHtml(value).replace(/`/g, '&#96;');
+  }
+
+  function sanitizeAreaKey(value) {
+    return Object.prototype.hasOwnProperty.call(AREA_LABELS, value) ? value : '';
+  }
+
+  function sanitizeAreaSalience(value) {
+    return value === 'secondary' ? 'secondary' : 'primary';
+  }
+
+  function sanitizeOpeningMode(value) {
+    return ['delegation', 'contextualized', 'critique', 'pastein', 'exploration'].includes(value)
+      ? value
+      : 'delegation';
+  }
+
+  function sanitizeInteractionArc(value) {
+    return ['draft_redirect_rebuild', 'ask_synthesize_decide', 'debug_test_fix', 'brainstorm_refine', 'explain_practice_check'].includes(value)
+      ? value
+      : 'draft_redirect_rebuild';
+  }
+
+  function sanitizePatternConfidence(value) {
+    return ['low', 'medium', 'high'].includes(value) ? value : 'medium';
+  }
+
+  function getAreaLabel(key) {
+    return AREA_LABELS[key] || 'Writing';
+  }
+
+  function simpleHash(value) {
+    let hash = 0;
+    const text = String(value || '');
+    for (let index = 0; index < text.length; index += 1) {
+      hash = ((hash << 5) - hash) + text.charCodeAt(index);
+      hash |= 0;
+    }
+    return Math.abs(hash).toString(36);
   }
 })();

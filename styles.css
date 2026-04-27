@@ -14,8 +14,8 @@
   --miro-aqua: #4ab2d4;
   --miro-aqua-deep: #1d647b;
   --miro-aqua-dark: #2a8ca9;
-  --miro-you: #c97a5c;
-  --miro-you-deep: #8f533b;
+  --miro-you: #c9a164;
+  --miro-you-deep: #8f6735;
   --miro-gold: #c9a164;
   --miro-gold-deep: #8f6735;
   --miro-shadow: 0 18px 44px rgba(51, 43, 36, 0.08);
@@ -44,7 +44,7 @@
   inset: 10px;
   border-radius: 999px;
   background:
-    radial-gradient(circle at 35% 35%, rgba(248, 229, 220, 0.62), transparent 42%),
+    radial-gradient(circle at 35% 35%, rgba(243, 227, 193, 0.62), transparent 42%),
     radial-gradient(circle at 70% 60%, rgba(111, 195, 221, 0.42), transparent 55%),
     radial-gradient(circle at 50% 45%, rgba(207, 238, 248, 0.52), transparent 72%);
   filter: blur(12px);
@@ -234,8 +234,8 @@
 .miro-status-card,
 .miro-error-card,
 .miro-weight-card,
-.miro-pattern-card,
-.miro-try-item {
+.miro-area-card,
+.miro-try-now-card {
   background: rgba(255, 253, 250, 0.96);
   border: 1px solid var(--miro-border);
   border-radius: 24px;
@@ -330,8 +330,14 @@
   align-items: start;
   padding: 22px;
   background:
-    radial-gradient(220px 150px at 88% 12%, rgba(74, 178, 212, 0.12), transparent 64%),
-    linear-gradient(180deg, #fffaf0 0%, #fbf5e7 100%);
+    radial-gradient(220px 150px at 88% 12%, rgba(74, 178, 212, 0.08), transparent 64%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.96) 100%);
+}
+
+.miro-session-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .miro-session-sprite {
@@ -383,10 +389,40 @@
 }
 
 .miro-session-narrative {
-  color: var(--miro-muted);
+  color: var(--miro-text);
   font-size: 14px;
-  line-height: 1.68;
-  max-width: 246px;
+  line-height: 1.72;
+  max-width: 262px;
+}
+
+.miro-area-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.miro-area-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--miro-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--miro-text);
+  background: rgba(255, 252, 247, 0.92);
+}
+
+.miro-area-chip.primary {
+  color: var(--miro-aqua-deep);
+  background: rgba(74, 178, 212, 0.12);
+  border-color: rgba(74, 178, 212, 0.22);
+}
+
+.miro-area-chip.secondary {
+  color: var(--miro-gold-deep);
+  background: rgba(201, 161, 100, 0.14);
+  border-color: rgba(201, 161, 100, 0.24);
 }
 
 .miro-weight-card {
@@ -480,7 +516,7 @@
 }
 
 .miro-weight-track-right {
-  background: rgba(201, 122, 92, 0.36);
+  background: rgba(201, 161, 100, 0.36);
   border-radius: 0 999px 999px 0;
 }
 
@@ -513,132 +549,62 @@
 }
 
 .miro-pattern-card {
-  position: relative;
-  padding: 20px 18px 18px;
-  border: 1px solid rgba(201, 161, 100, 0.28);
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--miro-border);
   border-radius: 24px;
-  background: #f7ecd4;
   box-shadow: var(--miro-shadow);
+  overflow: hidden;
+  background:
+    radial-gradient(190px 120px at 90% 14%, rgba(201, 161, 100, 0.08), transparent 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.96) 100%);
 }
 
-.miro-pattern-eyebrow {
-  margin-bottom: 10px;
-  color: var(--miro-gold-deep);
+.miro-pattern-block {
+  padding: 18px 18px 20px;
+}
+
+.miro-pattern-block + .miro-pattern-block {
+  border-top: 1px solid rgba(218, 204, 187, 0.72);
+}
+
+.miro-pattern-label {
+  margin-bottom: 6px;
+  color: #9a8169;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 2.8px;
   text-transform: uppercase;
 }
 
-.miro-pattern-title {
-  margin-bottom: 6px;
+.miro-pattern-lead {
   color: var(--miro-text);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.45;
+  font-family: "Instrument Serif", "Newsreader", Georgia, serif;
+  font-size: 20px;
+  font-style: italic;
+  line-height: 1.42;
 }
 
 .miro-pattern-copy {
-  color: var(--miro-text);
-  font-size: 14px;
-  line-height: 1.65;
-}
-
-.miro-try-section .miro-section-label {
-  margin-bottom: 14px;
-}
-
-.miro-try-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.miro-try-item {
-  display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: 12px;
-  align-items: start;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: rgba(255, 253, 250, 0.97);
-  border: 1px solid var(--miro-border);
-  box-shadow: var(--miro-shadow-soft);
-}
-
-.miro-try-icon {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.miro-try-icon.rework {
-  background: rgba(201, 122, 92, 0.14);
-  border: 1px solid rgba(201, 122, 92, 0.24);
-  color: var(--miro-you-deep);
-}
-
-.miro-try-icon.reframe {
-  background: rgba(74, 178, 212, 0.12);
-  border: 1px solid rgba(74, 178, 212, 0.22);
-  color: var(--miro-aqua-deep);
-}
-
-.miro-try-icon.reclaim {
-  background: rgba(201, 161, 100, 0.14);
-  border: 1px solid rgba(201, 161, 100, 0.26);
-  color: var(--miro-gold-deep);
-}
-
-.miro-try-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--miro-text);
-  margin-bottom: 4px;
-}
-
-.miro-try-copy {
   font-size: 13.5px;
-  line-height: 1.65;
+  line-height: 1.72;
   color: var(--miro-muted);
 }
 
-.miro-try-source {
-  display: inline-block;
-  margin-top: 6px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--miro-soft);
-}
-
-.miro-panel-foot {
+.miro-footer-action {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 0 0;
-  border-top: 1px solid rgba(230, 217, 200, 0.72);
-}
-
-.miro-panel-meta {
-  color: var(--miro-soft);
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  justify-content: flex-start;
+  margin-top: -8px;
 }
 
 .miro-dashboard-link {
-  padding: 12px 16px;
-  border-radius: 999px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 18px;
   border: 1px solid var(--miro-border);
-  background: rgba(255, 253, 249, 0.94);
+  background: rgba(255, 253, 249, 0.98);
   color: var(--miro-text);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-align: center;
   cursor: pointer;
