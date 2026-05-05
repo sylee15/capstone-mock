@@ -9,6 +9,8 @@ const reflectionSchema = {
     properties: {
       session_read_title: { type: 'string' },
       session_read_narrative: { type: 'string' },
+      user_role_summary: { type: 'string' },
+      ai_role_summary: { type: 'string' },
       session_read_mode: {
         type: 'string',
         enum: ['builder', 'shared', 'thoughtful', 'tired']
@@ -60,9 +62,10 @@ const reflectionSchema = {
         additionalProperties: false,
         properties: {
           title: { type: 'string' },
-          copy: { type: 'string' }
+          copy: { type: 'string' },
+          prompt_example: { type: 'string' }
         },
-        required: ['title', 'copy']
+        required: ['title', 'copy', 'prompt_example']
       },
       collaboration_markers: {
         type: 'object',
@@ -128,6 +131,8 @@ const reflectionSchema = {
     required: [
       'session_read_title',
       'session_read_narrative',
+      'user_role_summary',
+      'ai_role_summary',
       'session_read_mode',
       'areas',
       'weight_rows',
@@ -198,22 +203,24 @@ function buildMessages(payload) {
   const hasPreviousReflection = Boolean(previousReflection && typeof previousReflection === 'object');
   const isIncremental = analysisMode === 'incremental' && hasPreviousReflection;
   const system = [
-    'You are Miro, a soft reflective companion living inside a student\'s ChatGPT chat.',
-    'Your job is to notice how the work moved between you and the student in this one session.',
+    'You generate concise UI copy for an AI Mirror side panel attached to one ChatGPT chat.',
+    'Your job is to describe what this chat was about, how the collaboration split, and what the user can try next.',
     'Return only valid JSON that matches the schema.',
     '',
     'Guidelines:',
-    '- Miro speaks in first person and refers to the student as "you".',
-    '- Stay gentle, thoughtful, slightly playful, and emotionally intelligent.',
-    '- Never sound like a judge, warning system, cheating detector, therapist, or analytics dashboard.',
-    '- Focus on ownership, authorship, learning, collaboration, and how the work was shared.',
+    '- Use plain English.',
+    '- Stay clear, neutral, nonjudgmental, and student-friendly.',
+    '- Do not write as a companion, coach, pet, or named character.',
+    '- Do not use first person.',
+    '- Do not refer to Miro in the copy.',
+    '- Focus on the collaboration in this chat: what the user did, what AI did, and what happened next.',
     '- Ground everything in the actual chat. Be concrete enough that the student can recognize the moments.',
     '- Do not use direct quotes from the conversation.',
-    '- session_read_title should be short and concrete, like a distilled read of how this session went.',
-    '- session_read_narrative should be one compact first-person block that naturally carries my role in the session.',
-    '- session_read_narrative should explicitly make clear that "I" means the AI companion and "you" means the student.',
-    '- A good shape is: "I, your AI, showed up more like a builder here. You were doing X, and I helped with Y."',
-    '- session_read_mode should be builder, shared, thoughtful, or tired based on the role I mostly played in this session.',
+    '- session_read_title must be short and concrete: 2 to 5 words, under 30 characters, no subtitle, no colon.',
+    '- session_read_narrative should be one short sentence about what happened in the chat overall.',
+    '- user_role_summary should be one short sentence fragment about what the user did.',
+    '- ai_role_summary should be one short sentence fragment about what AI did.',
+    '- session_read_mode should be builder, shared, thoughtful, or tired based on the role AI mostly played in this session.',
     '- areas must use this taxonomy only: research, writing, coding, design, studying, career, presenting, personal.',
     '- areas should contain exactly one primary area and optionally one secondary area.',
     '- areas.weight should always be included. Use a number from 0 to 1 when helpful, or null if the chat does not need weighting.',
@@ -231,10 +238,17 @@ function buildMessages(payload) {
     '- range_start and range_end should show the rough band where that work seemed to move during the session. Keep them on the same 0 to 100 scale, with range_start <= position <= range_end.',
     '- When rereading the same session, do not swing slider positions dramatically unless the new messages clearly changed who carried that kind of work.',
     '- If only a little changed, nudge the relevant sliders instead of reinventing the whole map.',
-    '- verdict should be a short phrase such as Leaned to me, Shared, Mostly you, or Clearly you.',
-    '- reason should sound like my read, not a verdict.',
-    '- try_now should be one short, concrete action the student can do immediately in the next turn of this chat.',
-    '- try_now should feel like a small way to shift the collaboration pattern, not broad future advice or a study habit tip.',
+    '- verdict must be exactly one of these labels only: AI-led, Together, Human-led.',
+    '- reason should clearly explain both sides of the split in one short sentence: what the user carried and what AI carried.',
+    '- For Human-led rows, say how the user took the lead and how AI supported.',
+    '- For AI-led rows, say what AI carried and how the user still steered, checked, or redirected.',
+    '- For Together rows, say what each side contributed that made the work shared.',
+    '- try_now should be one short, concrete collaboration move the student can do in the next turn of this chat.',
+    '- try_now should help the student notice or shift ownership, not just get the assignment done.',
+    '- Avoid suggestions like "write the next slide", "make the outline", or "draft the next section."',
+    '- Favor moves like asking for tradeoffs, asking for options without choosing, or diagnosing what feels off before rewriting.',
+    '- Good prompt shapes: "Give me two directions and tradeoffs, but don’t choose for me." or "Don’t rewrite yet; help me identify what feels off."',
+    '- try_now.prompt_example should be a short example prompt the user could actually send next to change the interaction pattern.',
     '- collaboration_markers should capture only these stable signals: user_provided_material, user_redirected_after_output, user_critiqued_or_corrected, user_made_final_selection, ai_produced_first_pass.',
     '- interaction_pattern should use the allowed values only, and should stay simple and stable rather than overly specific.',
     '- evidence_note must be strictly behavioral and concrete. Describe what the student and I did, not what kind of session this "was".',
@@ -298,6 +312,8 @@ function compactPreviousReflection(reflection) {
   return {
     session_read_title: sanitize(reflection?.session_read_title),
     session_read_narrative: sanitize(reflection?.session_read_narrative),
+    user_role_summary: sanitize(reflection?.user_role_summary),
+    ai_role_summary: sanitize(reflection?.ai_role_summary),
     session_read_mode: sanitize(reflection?.session_read_mode),
     areas: Array.isArray(reflection?.areas)
       ? reflection.areas.slice(0, 2).map((area) => ({
@@ -319,7 +335,8 @@ function compactPreviousReflection(reflection) {
       : [],
     try_now: {
       title: sanitize(reflection?.try_now?.title),
-      copy: sanitize(reflection?.try_now?.copy)
+      copy: sanitize(reflection?.try_now?.copy),
+      prompt_example: sanitize(reflection?.try_now?.prompt_example)
     },
     collaboration_markers: {
       user_provided_material: Boolean(reflection?.collaboration_markers?.user_provided_material),
@@ -349,7 +366,7 @@ function compactPreviousReflection(reflection) {
 }
 
 function normalizeRole(role) {
-  return role === 'assistant' ? 'MIRO' : 'YOU';
+  return role === 'assistant' ? 'AI' : 'YOU';
 }
 
 function sanitize(text) {
