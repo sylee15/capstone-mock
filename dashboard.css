@@ -50,9 +50,22 @@ body::before{
 .main{max-width:1100px;margin:0 auto;padding:28px 28px 80px}
 .section{margin-bottom:52px}
 .section:last-child{margin-bottom:0}
+.dashboard-note{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin-bottom:22px;padding:14px 18px;
+  border:1px solid var(--paper-edge);border-radius:18px;
+  background:rgba(255,252,247,0.96);box-shadow:var(--shadow-soft);
+}
+.dashboard-note-copy{font-size:13px;line-height:1.35;color:var(--ink-2)}
+.dashboard-note-button{
+  flex:0 0 auto;padding:9px 14px;border-radius:999px;border:1px solid var(--paper-edge);
+  background:var(--paper-3);color:var(--ink);font:inherit;font-size:12px;font-weight:600;
+  cursor:pointer;transition:background 0.15s,border-color 0.15s,color 0.15s;
+}
+.dashboard-note-button:hover{background:rgba(255,253,250,0.98);border-color:rgba(52,44,37,0.18)}
 .sec-head{margin-bottom:16px}
 .sec-title{font-family:var(--serif);font-size:clamp(26px,3.2vw,36px);font-weight:400;font-style:italic;line-height:1;letter-spacing:-0.01em;margin:6px 0 6px}
-.sec-sub{font-size:13px;line-height:1.5;color:var(--ink-2);max-width:52ch}
+.sec-sub{font-size:12px;line-height:1.35;color:var(--ink-2);max-width:none;white-space:nowrap}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
@@ -186,6 +199,8 @@ body::before{
 .slime-note.risk .db-label{color:var(--you-deep)}
 .slime-note.next .db-label{color:var(--shared-deep)}
 .slime-copy{font-size:12.5px;line-height:1.6;color:var(--ink-2)}
+.slime-copy .note-title{display:block;color:var(--ink);font-size:15px;font-weight:600;line-height:1.25;margin-bottom:8px}
 
-@media(max-width:900px){.bubbles-layout{grid-template-columns:1fr}.bubble-panel{border-top:1px solid var(--paper-edge);min-height:200px}}
+@media(max-width:1100px){.sec-sub{font-size:11px}}
+@media(max-width:900px){.bubbles-layout{grid-template-columns:1fr}.bubble-panel{border-top:1px solid var(--paper-edge);min-height:200px}.sec-sub{white-space:normal;font-size:12px;line-height:1.45}.dashboard-note{align-items:flex-start;flex-direction:column}}
 @media(max-width:700px){.main{padding:20px 16px 60px}.topbar{padding:10px 14px;flex-wrap:wrap;gap:8px}.profile-grid,.dynamic-sub{grid-template-columns:1fr}.bubble-stage{min-height:340px}.tb-nav a{padding:6px 10px;font-size:11px}}

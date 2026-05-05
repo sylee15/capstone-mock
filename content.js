@@ -614,20 +614,20 @@
     const providedCopy = cleanText(value?.copy, '');
     const providedPromptExample = cleanText(value?.prompt_example, '');
     if (providedTitle && providedCopy && providedPromptExample) {
-      return {
+      return finalizeTryNow({
         title: providedTitle,
         copy: providedCopy,
         prompt_example: providedPromptExample
-      };
+      }, weightRows);
     }
 
     if (Array.isArray(legacyItems) && legacyItems.length > 0) {
       const first = legacyItems[0];
-      return {
+      return finalizeTryNow({
         title: cleanText(first?.title, 'Try this now'),
         copy: cleanText(first?.copy, 'Use the next turn to shift who owns the decision, not just to get another draft.'),
         prompt_example: 'Give me two directions and tradeoffs, but don’t choose for me.'
-      };
+      }, weightRows);
     }
 
     const buildingRow = weightRows.find((row) => row.key === 'building');
@@ -654,6 +654,106 @@
         prompt_example: 'Give me two directions and tradeoffs, but don’t choose for me.'
       };
     }
+    return {
+      title: 'Shift the interaction, not just the output.',
+      copy: 'Use the next turn to change what AI is helping with, not just to ask for another version.',
+      prompt_example: 'Don’t rewrite yet; help me identify what feels off.'
+    };
+  }
+
+  function finalizeTryNow(tryNow, weightRows) {
+    if (isOutputOrientedTryNow(tryNow)) {
+      return buildOwnershipMoveFallback(weightRows);
+    }
+
+    return {
+      title: cleanText(tryNow?.title, 'Try a different move.'),
+      copy: cleanText(tryNow?.copy, 'Use the next turn to shift the interaction pattern, not just to get another version.'),
+      prompt_example: cleanText(
+        tryNow?.prompt_example,
+        'Give me two directions and tradeoffs, but don’t choose for me.'
+      )
+    };
+  }
+
+  function isOutputOrientedTryNow(tryNow) {
+    const combined = [
+      cleanText(tryNow?.title, ''),
+      cleanText(tryNow?.copy, ''),
+      cleanText(tryNow?.prompt_example, '')
+    ].join(' ').toLowerCase();
+
+    if (!combined) return true;
+
+    const disallowedPhrases = [
+      'write the next',
+      'draft the next',
+      'make the outline',
+      'create an outline',
+      'write the outline',
+      'generate the summary',
+      'make the summary',
+      'write the next slide',
+      'draft the next slide',
+      'write the next section',
+      'draft the next section',
+      'write the paragraph',
+      'draft the paragraph'
+    ];
+
+    if (disallowedPhrases.some((phrase) => combined.includes(phrase))) {
+      return true;
+    }
+
+    const outputNouns = [
+      'outline',
+      'slide',
+      'slides',
+      'section',
+      'paragraph',
+      'summary',
+      'essay',
+      'draft',
+      'presentation',
+      'speaker notes',
+      'bullet points'
+    ];
+    const outputVerb = /\b(write|draft|make|create|generate|build|polish|finish)\b/;
+    const collaborationSignal = /\b(tradeoff|tradeoffs|option|options|choose|decision|identify|what feels off|don’t choose|don't choose|don’t rewrite|don't rewrite|direction|compare|reaction|react)\b/;
+
+    return outputVerb.test(combined) && outputNouns.some((noun) => combined.includes(noun)) && !collaborationSignal.test(combined);
+  }
+
+  function buildOwnershipMoveFallback(weightRows) {
+    const buildingRow = weightRows.find((row) => row.key === 'building');
+    const directionRow = weightRows.find((row) => row.key === 'direction');
+    const problemsRow = weightRows.find((row) => row.key === 'problems');
+    const finalCallRow = weightRows.find((row) => row.key === 'final_call');
+
+    if (buildingRow && buildingRow.position <= 36) {
+      return {
+        title: 'Keep the next turn at the decision level.',
+        copy: 'AI carried more of the first pass here. Ask for tradeoffs or options before asking it to make the next version.',
+        prompt_example: 'Give me two directions and tradeoffs, but don’t choose for me.'
+      };
+    }
+
+    if (problemsRow && problemsRow.position >= 58) {
+      return {
+        title: 'Stay with what feels off for one more turn.',
+        copy: 'You were already catching the weak spots here. Name the problem before asking AI to rewrite it.',
+        prompt_example: 'Don’t rewrite yet; help me identify what feels off.'
+      };
+    }
+
+    if ((directionRow && directionRow.position >= 64) || (finalCallRow && finalCallRow.position >= 64)) {
+      return {
+        title: 'Keep the choice in your hands.',
+        copy: 'You were still carrying the direction here. Ask for comparisons so the decision stays with you.',
+        prompt_example: 'Give me two directions and tradeoffs, but don’t choose for me.'
+      };
+    }
+
     return {
       title: 'Shift the interaction, not just the output.',
       copy: 'Use the next turn to change what AI is helping with, not just to ask for another version.',
