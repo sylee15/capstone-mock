@@ -53,167 +53,193 @@
               <img src="sprites/cute.png" alt="Miro" />
             </div>
             <div>
-              <div class="mock-panel-kicker">This chat</div>
-              <h2>Miro</h2>
+              <div class="mock-panel-kicker">AI Mirror</div>
+              <h2>Quick read of this chat</h2>
             </div>
           </div>
           <div class="mock-close" aria-hidden="true">&times;</div>
         </div>
 
         <div class="mock-panel-body">
-          <section>
-            <div class="mock-section-label">This session</div>
-            <div class="mock-session-read">
-              <img class="mock-session-sprite" src="sprites/builder.png" alt="Miro sprite" />
-              <div class="mock-session-stack">
-                <div class="mock-session-title">Sharpening what mattered</div>
-                <div class="mock-area-chip-row">
-                  <span class="mock-area-chip primary">Design</span>
-                  <span class="mock-area-chip secondary">Writing</span>
-                </div>
-                <div class="mock-session-narrative">
-                  I, your AI, showed up more like a builder here. You were shaping the direction and narrowing what mattered, and I helped turn the first pass into something clearer to react to.
-                </div>
+          <section class="miro-card miro-at-a-glance-card">
+            <div class="miro-at-a-glance-top">
+              <div class="miro-at-a-glance-copy">
+                <div class="miro-section-label">This chat at a glance</div>
+                <div class="miro-session-title">Sharpening what mattered</div>
+              </div>
+            </div>
+            <div class="miro-area-row">
+              <div class="miro-area-chip-row">
+                <span class="miro-area-chip primary">Design</span>
+                <span class="miro-area-chip secondary">Writing</span>
+              </div>
+              <div class="miro-collab-helper">Tap rows for why</div>
+            </div>
+            <div class="miro-weight-card">
+              <div class="miro-weight-rows">
+                <button class="miro-weight-row open" type="button" aria-expanded="true">
+                  <div class="miro-weight-row-top">
+                    <div class="miro-weight-label">Coming up with ideas</div>
+                    <div class="miro-weight-track-wrap">
+                      <div class="miro-weight-track">
+                        <div class="miro-weight-track-left"></div>
+                        <div class="miro-weight-track-right"></div>
+                        <div class="miro-weight-dot" style="left:68%;"></div>
+                      </div>
+                    </div>
+                    <div class="miro-weight-row-right">
+                      <div class="miro-weight-verdict you">Leaned to you</div>
+                      <div class="miro-weight-chevron">+</div>
+                    </div>
+                  </div>
+                  <div class="miro-weight-reason">
+                    <span class="miro-weight-reason-label you">Leaned to you</span>
+                    <span class="miro-weight-reason-copy">You took the lead on coming up with ideas here. You kept pulling the ideas toward what the experience was actually for.</span>
+                  </div>
+                </button>
+
+                <button class="miro-weight-row" type="button" aria-expanded="false">
+                  <div class="miro-weight-row-top">
+                    <div class="miro-weight-label">Deciding the direction</div>
+                    <div class="miro-weight-track-wrap">
+                      <div class="miro-weight-track">
+                        <div class="miro-weight-track-left"></div>
+                        <div class="miro-weight-track-right"></div>
+                        <div class="miro-weight-dot" style="left:84%;"></div>
+                      </div>
+                    </div>
+                    <div class="miro-weight-row-right">
+                      <div class="miro-weight-verdict you">Clearly you</div>
+                      <div class="miro-weight-chevron">+</div>
+                    </div>
+                  </div>
+                  <div class="miro-weight-reason">
+                    <span class="miro-weight-reason-label you">Clearly you</span>
+                    <span class="miro-weight-reason-copy">You took the lead on deciding the direction here. You were the one shaping what path the work followed.</span>
+                  </div>
+                </button>
+
+                <button class="miro-weight-row" type="button" aria-expanded="false">
+                  <div class="miro-weight-row-top">
+                    <div class="miro-weight-label">Doing the research</div>
+                    <div class="miro-weight-track-wrap">
+                      <div class="miro-weight-track">
+                        <div class="miro-weight-track-left"></div>
+                        <div class="miro-weight-track-right"></div>
+                        <div class="miro-weight-dot" style="left:50%;"></div>
+                      </div>
+                    </div>
+                    <div class="miro-weight-row-right">
+                      <div class="miro-weight-verdict shared">Shared</div>
+                      <div class="miro-weight-chevron">+</div>
+                    </div>
+                  </div>
+                  <div class="miro-weight-reason">
+                    <span class="miro-weight-reason-label shared">Shared</span>
+                    <span class="miro-weight-reason-copy">We did the research together here. You set the direction, and I helped do the legwork and sorting.</span>
+                  </div>
+                </button>
+
+                <button class="miro-weight-row" type="button" aria-expanded="false">
+                  <div class="miro-weight-row-top">
+                    <div class="miro-weight-label">Building the thing</div>
+                    <div class="miro-weight-track-wrap">
+                      <div class="miro-weight-track">
+                        <div class="miro-weight-track-left"></div>
+                        <div class="miro-weight-track-right"></div>
+                        <div class="miro-weight-dot" style="left:30%;"></div>
+                      </div>
+                    </div>
+                    <div class="miro-weight-row-right">
+                      <div class="miro-weight-verdict miro">Leaned to AI</div>
+                      <div class="miro-weight-chevron">+</div>
+                    </div>
+                  </div>
+                  <div class="miro-weight-reason">
+                    <span class="miro-weight-reason-label miro">Leaned to AI</span>
+                    <span class="miro-weight-reason-copy">I took the lead on building the thing here. I was the one making the first version of the thing itself.</span>
+                  </div>
+                </button>
+
+                <button class="miro-weight-row" type="button" aria-expanded="false">
+                  <div class="miro-weight-row-top">
+                    <div class="miro-weight-label">Catching problems</div>
+                    <div class="miro-weight-track-wrap">
+                      <div class="miro-weight-track">
+                        <div class="miro-weight-track-left"></div>
+                        <div class="miro-weight-track-right"></div>
+                        <div class="miro-weight-dot" style="left:76%;"></div>
+                      </div>
+                    </div>
+                    <div class="miro-weight-row-right">
+                      <div class="miro-weight-verdict you">Leaned to you</div>
+                      <div class="miro-weight-chevron">+</div>
+                    </div>
+                  </div>
+                  <div class="miro-weight-reason">
+                    <span class="miro-weight-reason-label you">Leaned to you</span>
+                    <span class="miro-weight-reason-copy">You took the lead on catching problems here. You were the one spotting what needed to be fixed or adjusted.</span>
+                  </div>
+                </button>
+
+                <button class="miro-weight-row" type="button" aria-expanded="false">
+                  <div class="miro-weight-row-top">
+                    <div class="miro-weight-label">Making the final call</div>
+                    <div class="miro-weight-track-wrap">
+                      <div class="miro-weight-track">
+                        <div class="miro-weight-track-left"></div>
+                        <div class="miro-weight-track-right"></div>
+                        <div class="miro-weight-dot" style="left:91%;"></div>
+                      </div>
+                    </div>
+                    <div class="miro-weight-row-right">
+                      <div class="miro-weight-verdict you">Clearly you</div>
+                      <div class="miro-weight-chevron">+</div>
+                    </div>
+                  </div>
+                  <div class="miro-weight-reason">
+                    <span class="miro-weight-reason-label you">Clearly you</span>
+                    <span class="miro-weight-reason-copy">You took the lead on making the final call here. You were the one determining what stayed in and what got dropped.</span>
+                  </div>
+                </button>
               </div>
             </div>
           </section>
 
-          <section>
-            <div class="mock-section-label">Where the work sat</div>
-            <div class="mock-weight-card">
-              <div class="mock-weight-rows">
-                <button class="mock-weight-row open" type="button" aria-expanded="true">
-                  <div class="mock-weight-row-top">
-                    <div class="mock-weight-label">Coming up with ideas</div>
-                    <div class="mock-weight-row-right">
-                      <div class="mock-weight-verdict you">Leaned to you</div>
-                      <div class="mock-weight-chevron">+</div>
-                    </div>
-                  </div>
-                  <div class="mock-weight-scale"><span>AI</span><span>You</span></div>
-                  <div class="mock-weight-track">
-                    <div class="mock-weight-track-left"></div>
-                    <div class="mock-weight-track-right"></div>
-                    <div class="mock-weight-dot" style="left: 68%;"></div>
-                  </div>
-                  <div class="mock-weight-reason">You took the lead on coming up with ideas here. You kept pulling the ideas toward what the experience was actually for.</div>
-                </button>
-
-                <button class="mock-weight-row" type="button" aria-expanded="false">
-                  <div class="mock-weight-row-top">
-                    <div class="mock-weight-label">Deciding the direction</div>
-                    <div class="mock-weight-row-right">
-                      <div class="mock-weight-verdict you">Clearly you</div>
-                      <div class="mock-weight-chevron">+</div>
-                    </div>
-                  </div>
-                  <div class="mock-weight-scale"><span>AI</span><span>You</span></div>
-                  <div class="mock-weight-track">
-                    <div class="mock-weight-track-left"></div>
-                    <div class="mock-weight-track-right"></div>
-                    <div class="mock-weight-dot" style="left: 84%;"></div>
-                  </div>
-                  <div class="mock-weight-reason">You took the lead on deciding the direction here. You were the one shaping what path the work followed.</div>
-                </button>
-
-                <button class="mock-weight-row" type="button" aria-expanded="false">
-                  <div class="mock-weight-row-top">
-                    <div class="mock-weight-label">Doing the research</div>
-                    <div class="mock-weight-row-right">
-                      <div class="mock-weight-verdict shared">Shared</div>
-                      <div class="mock-weight-chevron">+</div>
-                    </div>
-                  </div>
-                  <div class="mock-weight-scale"><span>AI</span><span>You</span></div>
-                  <div class="mock-weight-track">
-                    <div class="mock-weight-track-left"></div>
-                    <div class="mock-weight-track-right"></div>
-                    <div class="mock-weight-dot" style="left: 50%;"></div>
-                  </div>
-                  <div class="mock-weight-reason">We did the research together here. You set the direction, and I helped do the legwork and sorting.</div>
-                </button>
-
-                <button class="mock-weight-row" type="button" aria-expanded="false">
-                  <div class="mock-weight-row-top">
-                    <div class="mock-weight-label">Building the thing</div>
-                    <div class="mock-weight-row-right">
-                      <div class="mock-weight-verdict miro">Leaned to AI</div>
-                      <div class="mock-weight-chevron">+</div>
-                    </div>
-                  </div>
-                  <div class="mock-weight-scale"><span>AI</span><span>You</span></div>
-                  <div class="mock-weight-track">
-                    <div class="mock-weight-track-left"></div>
-                    <div class="mock-weight-track-right"></div>
-                    <div class="mock-weight-dot" style="left: 30%;"></div>
-                  </div>
-                  <div class="mock-weight-reason">I took the lead on building the thing here. I was the one making the first version of the thing itself.</div>
-                </button>
-
-                <button class="mock-weight-row" type="button" aria-expanded="false">
-                  <div class="mock-weight-row-top">
-                    <div class="mock-weight-label">Catching problems</div>
-                    <div class="mock-weight-row-right">
-                      <div class="mock-weight-verdict you">Clearly you</div>
-                      <div class="mock-weight-chevron">+</div>
-                    </div>
-                  </div>
-                  <div class="mock-weight-scale"><span>AI</span><span>You</span></div>
-                  <div class="mock-weight-track">
-                    <div class="mock-weight-track-left"></div>
-                    <div class="mock-weight-track-right"></div>
-                    <div class="mock-weight-dot" style="left: 76%;"></div>
-                  </div>
-                  <div class="mock-weight-reason">You took the lead on catching problems here. You were the one spotting what needed to be fixed or adjusted.</div>
-                </button>
-
-                <button class="mock-weight-row" type="button" aria-expanded="false">
-                  <div class="mock-weight-row-top">
-                    <div class="mock-weight-label">Making the final call</div>
-                    <div class="mock-weight-row-right">
-                      <div class="mock-weight-verdict you">Clearly you</div>
-                      <div class="mock-weight-chevron">+</div>
-                    </div>
-                  </div>
-                  <div class="mock-weight-scale"><span>AI</span><span>You</span></div>
-                  <div class="mock-weight-track">
-                    <div class="mock-weight-track-left"></div>
-                    <div class="mock-weight-track-right"></div>
-                    <div class="mock-weight-dot" style="left: 91%;"></div>
-                  </div>
-                  <div class="mock-weight-reason">You took the lead on making the final call here. You were the one determining what stayed in and what got dropped.</div>
-                </button>
-              </div>
+          <section class="miro-card miro-try-now-card">
+            <div class="miro-section-label miro-try-now-label">Try this</div>
+            <div class="miro-try-now-title">Keep the next turn at the decision level.</div>
+            <div class="miro-try-now-copy">
+              AI carried more of the building here. Ask for options or tradeoffs before asking for another full pass.
             </div>
+            <div class="miro-try-now-example-label">Prompt example</div>
+            <div class="miro-try-now-example">Give me two directions and tradeoffs, but don&apos;t choose for me.</div>
           </section>
 
-          <section class="mock-pattern-section">
-            <div class="mock-pattern-card">
-              <div class="mock-pattern-block">
-                <div class="mock-pattern-eyebrow">Did you know...</div>
-                <div class="mock-pattern-title">You mostly shaped this chat by reacting after I gave you something to push against.</div>
-              </div>
-              <div class="mock-pattern-block">
-                <div class="mock-pattern-eyebrow">This helps when...</div>
-                <div class="mock-pattern-copy">
-                  That can help when it is easier to notice what you want by seeing an option first than by starting cold.
-                </div>
-              </div>
-              <div class="mock-pattern-block">
-                <div class="mock-pattern-eyebrow">Try a different move</div>
-                <div class="mock-pattern-copy">
-                  Before the next reply, name the one part that still feels off in your own words.
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div class="mock-panel-foot mock-panel-foot-single">
-            <a class="mock-dashboard-link mock-dashboard-link-block" href="dashboard.html">View full dashboard</a>
-          </div>
+          <button class="miro-dashboard-link miro-footer-button" type="button">View full dashboard &rarr;</button>
         </div>
       </aside>
     </section>
   </main>
+
+  <script>
+    document.querySelectorAll('.miro-weight-row').forEach((row) => {
+      row.addEventListener('click', () => {
+        const shouldOpen = !row.classList.contains('open');
+        document.querySelectorAll('.miro-weight-row').forEach((item) => {
+          item.classList.remove('open');
+          item.setAttribute('aria-expanded', 'false');
+        });
+        if (shouldOpen) {
+          row.classList.add('open');
+          row.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    document.querySelector('.miro-dashboard-link')?.addEventListener('click', () => {
+      window.location.href = 'dashboard.html';
+    });
+  </script>
 </body>
 </html>
