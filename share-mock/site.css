@@ -1362,6 +1362,12 @@ body::before {
   line-height: 1.08;
 }
 
+.mock-panel .miro-session-title {
+  font-style: normal;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .mock-panel .miro-area-row {
   display: flex;
   align-items: center;
